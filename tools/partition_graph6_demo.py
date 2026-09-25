@@ -9,7 +9,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from fov3d.experiments.classroom_partition.benchmark import REGION_KIND, _grid, _cells
+from fov3d.experiments.classroom_partition.benchmark import REGION_KIND, _grid, _cells, _covered
 
 PANEL_W, PANEL_H = 640, 520
 
@@ -24,16 +24,26 @@ def _class_rgb(a: np.ndarray) -> np.ndarray:
     return out
 
 def _region_rgb(rc: np.ndarray, regions: list[dict]) -> np.ndarray:
+    # BGR. Distinct regions must stay distinguishable: every UNKNOWN region gets its own dark
+    # tint, OTHER_SURFACE regions get muted gray-blue tones (never green, which panel 1 reserves
+    # for TARGET_EVIDENCE_UNMAPPED), and region boundaries are drawn in white.
     out = np.full(rc.shape + (3,), 235, np.uint8)
-    for r in regions:
+    unk = other = 0
+    for r in sorted(regions, key=lambda r: -int(r["cell_count"])):
         code = int(r["region_code"])
         if r["kind"] == "TARGET_SUPPORT": col = (40,210,245)
-        elif r["kind"] == "UNKNOWN": col = (55,55,55)
+        elif r["kind"] == "UNKNOWN":
+            k = unk; unk += 1
+            col = (35 + (37*k) % 50, 30 + (23*k) % 40, 40 + (53*k) % 60) if k else (45, 45, 45)
         elif r["kind"] == "OTHER_SURFACE":
-            iid = int(r.get("instance_id") or 0); col = ((53*iid+70)%180+40,(97*iid+20)%180+40,(151*iid+10)%180+40)
+            k = other; other += 1; g = 120 + (29*k) % 80
+            col = (g + 30 if g + 30 < 256 else 255, g, g - 20)
         elif r["kind"] == "AMBIGUOUS_BOUNDARY": col = (180,80,180)
         else: col = (80,180,80)
         out[rc == code] = col
+    edge = np.zeros(rc.shape, bool)
+    edge[:, 1:] |= rc[:, 1:] != rc[:, :-1]; edge[1:, :] |= rc[1:, :] != rc[:-1, :]
+    out[edge] = (250, 250, 250)
     return out
 
 def _panel(img: np.ndarray, title: str, footer: str = "") -> np.ndarray:
@@ -67,7 +77,7 @@ def main() -> int:
     seeds=json.loads((source/"bootstrap"/"seeds.json").read_text())
     domain=seeds["controller_domain_deg"]; y0,_y1,p0,_p1,h,w=_grid(domain,.1)
     with np.load(source/"bootstrap"/"evaluation_only"/"reachable_samples.npz",allow_pickle=False) as z:
-        tids=np.asarray(z["instance_id"],np.int32); tang=np.asarray(z["yaw_pitch_deg"],np.float64)
+        tids=np.asarray(z["instance_id"],np.int32); tang=np.asarray(z["yaw_pitch_deg"],np.float64); txyz=np.asarray(z["xyz_h"],np.float64)
     eval_summary=json.loads((ev/"summary.json").read_text())
     eval_by={int(r["instance_id"]):r for r in eval_summary["targets"]}
     frames=[]
@@ -80,14 +90,24 @@ def main() -> int:
         # recompute coverage is intentionally avoided here.  Instead plot all reachable target
         # truth cells and distinguish the evaluator's aggregate in the text panel.  The demo is
         # illustrative and evaluation-only, never a policy input.
-        mask=tids==iid; yy,xx,ok=_cells(tang[mask,0],tang[mask,1],y0,p0,.1,h,w)
-        truth_img=_region_rgb(rc,regions)
-        for y,x in zip(yy[ok],xx[ok]):
-            cv2.circle(truth_img,(int(x),int(y)),2,(0,0,255),-1)
+        # Evaluation-only: recompute the sealed 12 mm coverage with the evaluator's own function so
+        # missed and covered target samples can be told apart. Nothing is written anywhere.
+        mask=tids==iid
+        with np.load(source/"objects"/f"instance_{iid:04d}"/"final_map.npz",allow_pickle=False) as z:
+            sm=np.asarray(z["xyz_h"],np.float64)
+        sm=sm[np.isfinite(sm).all(axis=1)]
+        cov=_covered(txyz[mask],sm,0.012)
         r=eval_by[iid]
+        if int((~cov).sum())!=int(r["missed_samples"]):
+            raise RuntimeError(f"demo coverage recount disagrees with evaluator for {iid}")
+        truth_img=_region_rgb(rc,regions)
+        for sel,col in ((cov,(230,200,0)),(~cov,(0,0,255))):  # covered cyan, then missed red on top
+            yy,xx,ok=_cells(tang[mask][sel,0],tang[mask][sel,1],y0,p0,.1,h,w)
+            for y,x in zip(yy[ok],xx[ok]):
+                cv2.circle(truth_img,(int(x),int(y)),1,col,-1)
         p1=_panel(_class_rgb(cls),f"causal evidence classes: {iid} {obj['object_name']}","yellow=target | gray=other depth | dark=unknown | purple=ambiguous | green=target evidence")
-        p2=_panel(_region_rgb(rc,regions),"epistemic region partition","candidate kinds are UNKNOWN and OTHER_SURFACE; no ranking")
-        p3=_panel(truth_img,"evaluation-only reachable target truth overlay","red = dense reachable target samples (truth never enters proposal tree)")
+        p2=_panel(_region_rgb(rc,regions),"epistemic regions (causal, truth-free, unranked)","yellow=target | dark tints=UNKNOWN regions | gray-blue=OTHER_SURFACE | white=region edges")
+        p3=_panel(truth_img,"EVALUATION ONLY: dense reachable target truth","red=missed target sample | cyan=covered | truth never enters the proposal tree")
         lines=[
             f"reachable: {r['reachable_samples']}", f"covered: {r['covered_samples']}", f"missed: {r['missed_samples']}",
             f"candidate-captured misses: {r['candidate_captured_missed_samples']}",
@@ -115,6 +135,11 @@ def main() -> int:
         "# Partition-Graph Phase 6 demo\n\nEvaluation-only visualization. Dense truth is used only in the evaluation panels and never appears in the causal proposal tree.\n\n"
         "Evidence key: yellow TARGET_SUPPORT; gray OTHER_SURFACE; dark UNKNOWN; purple AMBIGUOUS_BOUNDARY; green TARGET_EVIDENCE_UNMAPPED. "
         "Only UNKNOWN and OTHER_SURFACE are emitted as attention *candidates*, and Phase 6 assigns no score or gaze.\n\n"
+        "Region panel (causal, truth-free): yellow TARGET_SUPPORT; each UNKNOWN region has its own dark tint (the largest is plain dark gray); "
+        "OTHER_SURFACE regions are gray-blue tones; purple AMBIGUOUS_BOUNDARY; white lines are region boundaries.\n\n"
+        "Truth panel (EVALUATION ONLY): the same region raster with dense reachable target samples of this target: red = missed by the sealed "
+        "12 mm coverage test, cyan = covered. Coverage is recomputed with the evaluator's own function and checked against the evaluator's "
+        "per-target missed count. Truth never enters the proposal tree and is not a controller feature.\n\n"
         f"Frames: {len(frames)}. Regenerate with `./.venv/bin/python tools/partition_graph6_demo.py {source} {prop} {ev} {out}`.\n",
         encoding="utf-8")
     print(f"[partition-graph6-demo] wrote {len(frames)} frames to {out}")
