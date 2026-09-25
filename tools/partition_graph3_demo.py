@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-PANEL_W, PANEL_H = 620, 360
+# Chart area = 1.25x the 501x401 chart (626x502) plus 58 px of title/footer: nearest
+# upsampling keeps every chart row and column, so one-cell corridors cannot be dropped.
+PANEL_W, PANEL_H = 626, 560
 
 
 def _id_color(iid: int) -> tuple[int, int, int]:
@@ -94,7 +96,7 @@ def main() -> int:
     summary = json.loads((lift / "summary.json").read_text(encoding="utf-8"))
 
     frames: list[Path] = []
-    frame_meta: list[tuple[tuple[int, int, int, int], Path]] = []
+    frame_meta: list[tuple[tuple[int, int, int, int], int, Path]] = []
     for s in summary["global_states"]:
         if not s.get("map_present"):
             continue
@@ -143,8 +145,6 @@ def main() -> int:
             f"raster interface edges: {bd['raster_interface_edges']}",
             f"encoded interface edges: {bd['encoded_interface_edges']}",
             f"unencoded: {bd['unencoded_interface_edges']}",
-            "",
-            "lineage: " + ", ".join(f"{k}={v}" for k, v in s["lineage"].items() if k != "initial"),
         ]
         p4 = _text_panel(lines, "joint dual + local relation summary (descriptive only)")
         frame = np.vstack((np.hstack((p1, p2)), np.hstack((p3, p4))))
@@ -157,7 +157,7 @@ def main() -> int:
             int(len(corridors)),
             int(s["object_regions"]),
         )
-        frame_meta.append((score, fn))
+        frame_meta.append((score, iid, fn))
 
     if frames:
         first = cv2.imread(str(frames[0]))
@@ -168,10 +168,16 @@ def main() -> int:
                 vw.write(cv2.imread(str(f)))
             vw.release()
 
-        picks = [p for _score, p in sorted(frame_meta, reverse=True)[:6]]
+        # Best-scoring frame per target first, so the overview shows six different targets
+        # rather than consecutive near-identical states of one target.
+        best: dict[int, tuple[tuple[int, int, int, int], Path]] = {}
+        for score, iid, fn in frame_meta:
+            if iid not in best or score > best[iid][0]:
+                best[iid] = (score, fn)
+        picks = [p for _score, p in sorted(best.values(), reverse=True)[:6]]
         if frames[-1] not in picks:
             picks = (picks[:5] + [frames[-1]]) if len(picks) >= 5 else picks + [frames[-1]]
-        thumbs = [cv2.resize(cv2.imread(str(p)), (640, 400)) for p in picks]
+        thumbs = [cv2.resize(cv2.imread(str(p)), (w // 2, h // 2), interpolation=cv2.INTER_AREA) for p in picks]
         while thumbs and len(thumbs) % 2:
             thumbs.append(np.full_like(thumbs[0], 255))
         if thumbs:
