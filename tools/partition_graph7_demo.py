@@ -48,12 +48,20 @@ def _region_rgb(class_code: np.ndarray, region_code: np.ndarray) -> np.ndarray:
     return out
 
 
-def _truth_rgb(missed: np.ndarray, gain: np.ndarray) -> np.ndarray:
+def _truth_rgb(missed: np.ndarray, gain: np.ndarray, context_region_code: np.ndarray | None = None) -> np.ndarray:
+    # Next-prefix gains are, by definition, a subset of current misses, so a "both" colour
+    # would hide every gain. Red = currently missed and not newly covered at the next prefix;
+    # cyan = currently missed and newly covered at the next historical prefix. Faint gray
+    # lines are the global-arm region edges, for context only.
     out = np.full(missed.shape + (3,), 245, np.uint8)
+    if context_region_code is not None:
+        rc = np.asarray(context_region_code, np.int32)
+        edge = np.zeros(rc.shape, bool)
+        edge[:, 1:] |= rc[:, 1:] != rc[:, :-1]
+        edge[1:, :] |= rc[1:, :] != rc[:-1, :]
+        out[edge] = (200, 200, 200)
     out[np.asarray(missed) > 0] = (35, 35, 230)      # red in RGB display
-    out[np.asarray(gain) > 0] = (220, 190, 40)       # cyan-ish in RGB display
-    both = (np.asarray(missed) > 0) & (np.asarray(gain) > 0)
-    out[both] = (40, 210, 210)
+    out[np.asarray(gain) > 0] = (220, 190, 40)       # cyan in RGB display
     return out
 
 
@@ -64,7 +72,10 @@ def _panel(img: np.ndarray, title: str, footer: str = "") -> np.ndarray:
     out[36:36 + img.shape[0]] = img
     cv2.putText(out, title, (12, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.57, (20, 20, 20), 1, cv2.LINE_AA)
     if footer:
-        cv2.putText(out, footer[:94], (12, PANEL_H - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (40, 40, 40), 1, cv2.LINE_AA)
+        scale = 0.38
+        while scale > 0.28 and cv2.getTextSize(footer, cv2.FONT_HERSHEY_SIMPLEX, scale, 1)[0][0] > PANEL_W - 20:
+            scale -= 0.01
+        cv2.putText(out, footer, (10, PANEL_H - 8), cv2.FONT_HERSHEY_SIMPLEX, scale, (40, 40, 40), 1, cv2.LINE_AA)
     return out
 
 
@@ -99,9 +110,11 @@ def main() -> int:
         iid = int(row["instance_id"])
         step = int(row["local_step"])
         imgs = {}
+        codes = {}
         for arm in ("local", "global"):
             with np.load(prop / "states" / f"global_{gi:03d}" / arm / "partition.npz", allow_pickle=False) as z:
                 imgs[arm] = _region_rgb(np.array(z["class_code"]), np.array(z["region_code"]))
+                codes[arm] = np.array(z["region_code"])
         with np.load(evdir / "states" / f"global_{gi:03d}" / "truth-evaluation.npz", allow_pickle=False) as z:
             missed = np.array(z["missed_count"])
             gain = np.array(z["next_gain_count"])
@@ -110,8 +123,8 @@ def main() -> int:
                     "green=target | gray-blue=other | tinted=UNKNOWN | purple=ambiguous | orange=target evidence")
         p2 = _panel(imgs["global"], "cross-target causal 3-D memory partition",
                     "same region semantics; only completed-prefix head 3-D memory is global")
-        p3 = _panel(_truth_rgb(missed, gain), "EVALUATION ONLY: current misses / next-prefix gain",
-                    "red=current missed reachable samples | cyan=truth samples newly covered at next historical prefix")
+        p3 = _panel(_truth_rgb(missed, gain, codes["global"]), "EVALUATION ONLY: current misses / next-prefix gain",
+                    "red=missed now | cyan=missed now, covered at next historical prefix | gray=global region edges")
         l, g = row["local"], row["global"]
         cmp = row["global_vs_local_miss_containing_region"]
         lines = [
@@ -139,7 +152,7 @@ def main() -> int:
             int(l["captured_misses_by_positive_region_area"]["gt_50"] - g["captured_misses_by_positive_region_area"]["gt_50"]),
             int(g["truth_positive_candidate_regions"]),
         )
-        scored.append((score, fn))
+        scored.append((score, iid, fn))
 
     if frames:
         first = cv2.imread(str(frames[0])); hh, ww = first.shape[:2]
@@ -148,7 +161,13 @@ def main() -> int:
             for f in frames:
                 vw.write(cv2.imread(str(f)))
             vw.release()
-        picks = [p for _s, p in sorted(scored, reverse=True)[:8]]
+        # Display selection only: best frame per target by the same descriptive tuple, so the
+        # overview shows eight different targets instead of consecutive states of two.
+        best: dict[int, tuple[tuple[int, int, int], Path]] = {}
+        for s, tid, fn in scored:
+            if tid not in best or s > best[tid][0]:
+                best[tid] = (s, fn)
+        picks = [p for _s, p in sorted(best.values(), key=lambda t: (t[0], str(t[1])), reverse=True)[:8]]
         thumbs = [cv2.resize(cv2.imread(str(p)), (ww // 2, hh // 2), interpolation=cv2.INTER_AREA) for p in picks]
         if thumbs:
             while len(thumbs) % 2:
@@ -161,6 +180,10 @@ def main() -> int:
         "Evaluation-side visualization of the 104 historical prefixes. It compares the same current target state under per-target head memory and causal cross-target head memory. No panel is a policy or ranking.\n\n"
         "Panels: local partition; global-memory partition; **EVALUATION ONLY** dense current misses and samples newly covered by the next historical prefix; descriptive metrics. Positive pitch is up.\n\n"
         "Region key: green target support; gray-blue measured other surface; individually tinted UNKNOWN components; purple ambiguous boundary; orange target evidence measured but not in the current target map.\n\n"
+        "Truth key (EVALUATION ONLY): red = reachable target sample missed by the current prefix map and not newly covered at the next historical prefix; "
+        "cyan = missed now and newly covered at the next historical prefix (next-prefix gains are always a subset of current misses). "
+        "Faint gray lines are the global-arm region edges, for context. The overview shows the best frame per target by a descriptive tuple "
+        "(misses moved to a smaller region, reduction of misses in >50%-chart regions, global positive candidates); it is a display selection, not a ranking.\n\n"
         f"Frames: {len(frames)}.\n",
         encoding="utf-8",
     )
