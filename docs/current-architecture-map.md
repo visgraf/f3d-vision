@@ -110,3 +110,40 @@ classroom_oracle1_eval ─ classroom_oracle1_public
   foveated OSL camera, which the project is named for, is not used by the golden run.
 - The runner binds inherited APIs by introspection (`_construct_patch`,
   `_history_entry`, `_decision_gaze`). That tolerance to API drift is a refactor target.
+
+## Consolidation 3: the `fov3d` facade boundary (appended; the map above is unchanged)
+
+Everything above still describes the sealed engine as it is. Consolidation 3 moved
+nothing. It put a conceptual API in front of the engine:
+
+```
+future code (partition, segmentation, topology, …)
+        │  imports only
+        ▼
+fov3d.*            stable conceptual API — 16 re-export wrappers, generated from
+                   docs/consolidation-3-layout.json (docs/fov3d-api.md)
+        │  re-exports, unchanged
+        ▼
+tools/*            sealed compatibility engine — the 17-file closure mapped above,
+                   byte-identical to legacy 48a3139
+```
+
+| block (above) | `fov3d` package |
+|---|---|
+| 1 sensing / rendering | `fov3d.rendering.{blender, foveated, exr, warp}`, `fov3d.experiments.classroom_oracle.render` |
+| 2 stereo / oracle measurement | `fov3d.stereo.core`, `fov3d.experiments.classroom_oracle.matcher` |
+| 3 geometry / fusion | `fov3d.geometry.core`, `fov3d.reconstruction.surface_map` |
+| 4 local frontier control | `fov3d.control.{frontier, frontier_config, object_policy}` |
+| 5 Cyclopean / epistemic control | `fov3d.experiments.classroom_oracle.epistemic` |
+| 6 experiment orchestration | `fov3d.experiments.classroom_oracle.{config, run}` |
+| 7 evaluation | `fov3d.experiments.classroom_oracle.eval` |
+
+`tools/dev/check_classroom_oracle1.py` stays a sealed check and has no facade.
+
+Rules from Consolidation 3 on:
+
+- Future code imports `fov3d`, never the historical module names or `tools.*`.
+- `tools/*` is the sealed compatibility engine for the legacy controller baseline.
+- Moving an implementation physically behind the facade is optional, one block at a
+  time, and must reproduce `tests/golden/` with 0 mismatches. It is not a prerequisite
+  for the new architecture.
