@@ -686,12 +686,15 @@ def corridors_for_object(
     return out
 
 
-def _lineage(prev_rc: np.ndarray | None, curr_rc: np.ndarray, graph: ScenePartitionGraph, target_id: int) -> dict[str, Any]:
-    """Classify births/merges/splits/deaths by actual component-cell overlap."""
-    curr_codes = [
-        int(r.attributes["state_region_code"])
-        for r in graph.object_components(str(target_id))
-    ] if str(target_id) in graph.objects else []
+def _lineage(prev_rc: np.ndarray | None, curr_rc: np.ndarray) -> dict[str, Any]:
+    """Classify lineage in one target-local component-label code space.
+
+    Both rasters use 0 for background and 1..k for the target's current
+    components. Phase 3 accidentally mixed these labels with state-global region
+    codes; that made stable components look like a birth plus a death.
+    """
+    curr = np.asarray(curr_rc, np.int32)
+    curr_codes = sorted(int(v) for v in np.unique(curr) if int(v) > 0)
     if prev_rc is None:
         return {
             "initial": True,
@@ -701,15 +704,16 @@ def _lineage(prev_rc: np.ndarray | None, curr_rc: np.ndarray, graph: ScenePartit
             "deaths": 0,
             "persistent_links": 0,
         }
-    prev_codes = sorted(int(v) for v in np.unique(prev_rc) if int(v) > 0)
-    # prev_rc passed here is target-only component labels: 0 background, >0 components.
+    prev = np.asarray(prev_rc, np.int32)
+    if prev.shape != curr.shape:
+        raise ValueError("lineage raster shape mismatch")
+    prev_codes = sorted(int(v) for v in np.unique(prev) if int(v) > 0)
     parents: dict[int, set[int]] = {c: set() for c in curr_codes}
     children: dict[int, set[int]] = {c: set() for c in prev_codes}
     for pc in prev_codes:
-        pm = prev_rc == pc
+        pm = prev == pc
         for cc in curr_codes:
-            cm = curr_rc == cc
-            if np.any(pm & cm):
+            if np.any(pm & (curr == cc)):
                 parents[cc].add(pc)
                 children[pc].add(cc)
     births = sum(len(parents[c]) == 0 for c in curr_codes)
@@ -844,7 +848,7 @@ def lift_joint_run(
             )
 
             current_target_labels = _target_component_raster(graph, state["region_code"], iid)
-            lineage = _lineage(previous_target_labels.get(iid), current_target_labels, graph, iid)
+            lineage = _lineage(previous_target_labels.get(iid), current_target_labels)
             previous_target_labels[iid] = current_target_labels
             if not lineage["initial"]:
                 for key in ("births", "merges", "splits", "deaths"):
