@@ -1,0 +1,473 @@
+{
+ "conventions": {
+  "units": "metres",
+  "head": "fixed; eyes rotate about their own centres",
+  "eye_object": "camera named EYE: local -Z primary gaze, local +Y head up",
+  "equirect_pixel_to_eye_direction": "lon=(u-0.5)*2pi, lat=(0.5-v)*pi, v=0 top; d=(sin lon cos lat, sin lat, -cos lon cos lat)",
+  "depth_pass": "ray distance from the eye centre (Blender 5.2, equirect camera)"
+ },
+ "measured_with": {
+  "blender": "5.2.1 LTS",
+  "device": "OPTIX (NVIDIA GeForce RTX 4090)",
+  "preview_size": [
+   2048,
+   1024
+  ],
+  "date": "2026-09-12",
+  "note": "first run of this pipeline on a GPU; the handover was verified on CPU only"
+ },
+ "scenes": [
+  {
+   "id": "calib_room",
+   "tier": 2,
+   "kind": "calib",
+   "blend": "scenes/calib_room/calib_room.blend",
+   "source": "tools/make_calib_room.py",
+   "license": "own",
+   "eye_position_m": [
+    0.0,
+    0.0,
+    1.6
+   ],
+   "preview": "previews/calib_room",
+   "checks": {
+    "hole_fraction": 0.0,
+    "backface_fraction": 0.0,
+    "nadir_depth_m": 1.60019,
+    "zenith_depth_m": 1.60019
+   },
+   "status": "ok",
+   "notes": "Closed room, so zero holes and zero back-faces as expected. Nadir and zenith both 1.600 m confirm metric scale (eye 1.6 m, floor 0, ceiling 3.2 m). Contact sheet matches the CPU reference in reference/calib_room_sheet.png structurally, so the OptiX path reproduces the sandbox result. 50 targets in calib_room.targets.json.",
+   "reference": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "path": "previews/reference/calib_room/pano.exr",
+    "backface": "previews/reference/calib_room/backface.exr",
+    "width": 7200,
+    "height": 3600,
+    "spp": 8192,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "render_seconds": 1939.84,
+    "render_seconds_includes_exr_write": true,
+    "exr_write_seconds": 0.38,
+    "projected_minutes_from_tiles": 35.1,
+    "measured_over_projected": 0.921,
+    "exr_bytes": 500855885,
+    "rel_rms_worst_at_spp": 0.00956,
+    "rel_rms_median_at_spp": 0.00618,
+    "d7_ratio_worst": 0.162,
+    "d7_ratio_median": 0.174,
+    "d7_note": "met against the full profile's 256 spp fixations: 0.162 / 0.174 from the noise table (0.177 by 1/sqrt(32)); the 0.341 / 0.350 recorded earlier was against 1024 spp fixations, closed 2026-09-13",
+    "checks": {
+     "hole_fraction": 0.0,
+     "backface_fraction": 0.0,
+     "nadir_depth_m": 1.6002,
+     "zenith_depth_m": 1.6002
+    },
+    "noise_floor": {
+     "path": "previews/noise/calib_room/noise.json",
+     "date": "2026-09-13",
+     "ns_per_pixel_sample_median": 9.92,
+     "call_floor_seconds_median": 0.0595,
+     "sqrt2_check_median": 1.006
+    },
+    "md5": "118b951832faf659409b1e337fae425d",
+    "backface_md5": "d6559c5c1b306271d087445180f0a7be",
+    "profile": "full",
+    "fixation_spp": 256,
+    "fixation_256_rel_rms_worst": 0.05912,
+    "fixation_256_rel_rms_median": 0.03561
+   },
+   "reference_small": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "profile": "small",
+    "path": "previews/reference_small/calib_room/pano.exr",
+    "backface": "previews/reference_small/calib_room/backface.exr",
+    "md5": "85e62f32b3ee6cee4de9c9c7be99a733",
+    "backface_md5": "7553e23d37a982311efedda2343395ee",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "fixation_spp": 64,
+    "render_seconds": 62.61,
+    "render_seconds_includes_exr_write": true,
+    "exr_write_seconds": 0.11,
+    "exr_bytes": 128539031,
+    "rel_rms_worst_at_spp": 0.02805,
+    "rel_rms_median_at_spp": 0.01764,
+    "fixation_64_rel_rms_worst": 0.1266,
+    "fixation_64_rel_rms_median": 0.07329,
+    "d7_ratio_worst": 0.222,
+    "d7_ratio_median": 0.241,
+    "d7_note": "met; noise values are the A2 table's, measured on 128 px tiles at s0 0.05, taken as the same per-spp noise at s0 0.1 (assumed)",
+    "checks": {
+     "hole_fraction": 0.0,
+     "backface_fraction": 0.0,
+     "nadir_depth_m": 1.6002,
+     "zenith_depth_m": 1.6002
+    }
+   },
+   "reference_small_L": {
+    "status": "rendered",
+    "date": "2026-09-15",
+    "profile": "small",
+    "path": "previews/reference_small_L/calib_room/pano.exr",
+    "backface": "previews/reference_small_L/calib_room/backface.exr",
+    "md5": "fdcbe57f7f0d575b532984dc1a8183e4",
+    "backface_md5": "4286c3ad5ecbde34d43edaa75c905885",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "fixation_spp": 64,
+    "render_seconds": 60.55,
+    "render_seconds_includes_exr_write": true,
+    "exr_bytes": 136912524,
+    "eye_offset_local_m": [
+     -0.0315,
+     0.0,
+     0.0
+    ],
+    "eye_position_m": [
+     -0.0315,
+     0.0,
+     1.6
+    ],
+    "head_position_m": [
+     0.0,
+     0.0,
+     1.6
+    ],
+    "device": "OPTIX",
+    "blender": "5.2.1 LTS",
+    "note": "B2 per-eye reference: preview360.py --eye-offset; same scene, s0 and spp as reference_small, centre at the eye (D12); noise taken as reference_small's (assumed)",
+    "backup": "/home/lvelho/data/reference/reference_small_L/calib_room (md5 verified)",
+    "checks": {
+     "hole_fraction": 0.0,
+     "backface_fraction": 0.0,
+     "nadir_depth_m": 1.6002,
+     "zenith_depth_m": 1.6002,
+     "depth_min_m": 0.5258
+    }
+   },
+   "reference_small_R": {
+    "status": "rendered",
+    "date": "2026-09-15",
+    "profile": "small",
+    "path": "previews/reference_small_R/calib_room/pano.exr",
+    "backface": "previews/reference_small_R/calib_room/backface.exr",
+    "md5": "5e268d470f70aa34f57625465daca306",
+    "backface_md5": "2a33408bc9efc9befefb73c179a145a5",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "fixation_spp": 64,
+    "render_seconds": 61.08,
+    "render_seconds_includes_exr_write": true,
+    "exr_bytes": 136894587,
+    "eye_offset_local_m": [
+     0.0315,
+     0.0,
+     0.0
+    ],
+    "eye_position_m": [
+     0.0315,
+     0.0,
+     1.6
+    ],
+    "head_position_m": [
+     0.0,
+     0.0,
+     1.6
+    ],
+    "device": "OPTIX",
+    "blender": "5.2.1 LTS",
+    "note": "B2 per-eye reference: preview360.py --eye-offset; same scene, s0 and spp as reference_small, centre at the eye (D12); noise taken as reference_small's (assumed)",
+    "backup": "/home/lvelho/data/reference/reference_small_R/calib_room (md5 verified)",
+    "checks": {
+     "hole_fraction": 0.0,
+     "backface_fraction": 0.0,
+     "nadir_depth_m": 1.6002,
+     "zenith_depth_m": 1.6002,
+     "depth_min_m": 0.4742
+    }
+   },
+   "reference_shift": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "profile": "full",
+    "path": "previews/reference_shift/calib_room/pano.exr",
+    "md5": "7f32d2752e498525cc3b32eaa2cc2611",
+    "width": 7200,
+    "height": 3600,
+    "spp": 1024,
+    "seed": 1,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "yaw_offset_px": 0.5,
+    "yaw_offset_deg": 0.025,
+    "render_seconds": 246.41,
+    "exr_bytes": 502004330,
+    "purpose": "the reference re-rendered half a pixel of yaw off-grid, seed 1: the resampling floor at s_eval (integrate_sphere.py --shifted); not a reference for anything else"
+   },
+   "reference_small_shift": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "profile": "small",
+    "path": "previews/reference_small_shift/calib_room/pano.exr",
+    "md5": "89100be22404f192a683e22cae94f9bf",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "seed": 1,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "yaw_offset_px": 0.5,
+    "yaw_offset_deg": 0.05,
+    "render_seconds": 62.82,
+    "exr_bytes": 129256773,
+    "purpose": "the reference re-rendered half a pixel of yaw off-grid, seed 1: the resampling floor at s_eval (integrate_sphere.py --shifted); not a reference for anything else"
+   }
+  },
+  {
+   "id": "hdri_workshop",
+   "tier": 1,
+   "kind": "hdri",
+   "blend": "scenes/hdri/workshop/scene.blend",
+   "source": "Poly Haven, see scenes/hdri/workshop/asset.json",
+   "license": "CC0",
+   "authors": {
+    "Dimitrios Savva": "Photography",
+    "Jarod Guest": "Processing"
+   },
+   "hdri_file": "scenes/hdri/workshop/workshop_8k.exr",
+   "hdri_resolution": [
+    8192,
+    4096
+   ],
+   "max_resolution": [
+    24576,
+    12288
+   ],
+   "eye_position_m": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "preview": "previews/hdri_workshop",
+   "checks": {
+    "column_shift_px": 0,
+    "rel_err_median": 0.01517,
+    "rel_err_p99": 0.22863
+   },
+   "status": "ok",
+   "notes": "Column shift exactly 0: the render reproduces the source mapping. Negative control confirmed on this machine - a 90 deg mis-rotated eye is reported as 512 px = W/4. hole_fraction is 1.0 by construction (environment at infinity). The 1.5% median error is NOT a mapping error: it is the mismatch between Cycles' default Blackman-Harris reconstruction filter and the exact 4x4 box average inspect_preview.py compares against. Re-rendering with pixel_filter_type=BOX, filter_width=1.0 drops it to 0.0032 (p99 0.047); raising samples 16 -> 512 changes nothing (0.01517 -> 0.01540), which is what rules out sampling noise. Use a box filter for the tier-1 identity check."
+  },
+  {
+   "id": "classroom",
+   "tier": 3,
+   "kind": "mesh",
+   "blend": "scenes/classroom/classroom_eye.blend",
+   "original_blend": "scenes/classroom/classroom.blend",
+   "source": "https://download.blender.org/demo/test/classroom.zip",
+   "source_zip_bytes": 70279690,
+   "source_zip_md5": "3adbb7114b514bfc6fc724ce20f86b4e",
+   "license": "CC0",
+   "authors": {
+    "Christophe Seux": "scene"
+   },
+   "eye_position_m": [
+    -0.6,
+    -1.0,
+    1.2
+   ],
+   "eye_yaw_deg": 0.0,
+   "eye_pitch_deg": 0.0,
+   "preview": "previews/classroom",
+   "checks": {
+    "hole_fraction": 0.02079,
+    "backface_fraction": 0.0038,
+    "nadir_depth_m": 1.20014,
+    "zenith_depth_m": 1.69665
+   },
+   "status": "ok",
+   "notes": "Scene '_mainScene' (Cycles, metric, unit scale 1.0); the file also holds dustParticules and volumeLight, both EEVEE, neither used. EYE placed headlessly with tools/place_eye.py and saved beside the original, which stays pristine. nadir 1.200 m equals the chosen eye height exactly, so metric scale is confirmed; zenith puts the ceiling at 2.90 m. Remaining 2.1% holes are the window panes only, escaping to a featureless world background - usable, but a real environment behind the windows would be better for gaze directions that cross them. First look from the file's own shot camera (previews/classroom_shotcam) failed badly: renderCam sits 0.46 m off the rear wall (depth_min 0.10 m) and sees its back side, giving backface_fraction 0.136. Moving the eye into the room cut that to 0.0038, a 36x reduction - the README's 'set dressing built for one shot camera' warning, measured.",
+   "reference": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "path": "previews/reference/classroom/pano.exr",
+    "backface": "previews/reference/classroom/backface.exr",
+    "width": 7200,
+    "height": 3600,
+    "spp": 8192,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "render_seconds": 2147.38,
+    "render_seconds_includes_exr_write": true,
+    "exr_write_seconds": 1.61,
+    "projected_minutes_from_tiles": 36.9,
+    "measured_over_projected": 0.97,
+    "exr_bytes": 2002119181,
+    "rel_rms_worst_at_spp": 0.03362,
+    "rel_rms_median_at_spp": 0.01449,
+    "d7_ratio_worst": 0.126,
+    "d7_ratio_median": 0.157,
+    "d7_note": "met against the full profile's 256 spp fixations: 0.126 / 0.157 from the noise table",
+    "checks": {
+     "hole_fraction": 0.0208,
+     "backface_fraction": 0.0038,
+     "nadir_depth_m": 1.2001,
+     "zenith_depth_m": 1.6967
+    },
+    "noise_floor": {
+     "path": "previews/noise/classroom/noise.json",
+     "date": "2026-09-13",
+     "ns_per_pixel_sample_median": 10.43,
+     "call_floor_seconds_median": 0.1583,
+     "sqrt2_check_median": 1.022,
+     "note": "worst tile is the darkest (level 0.042 vs 0.568). Scene action keyframes cycles.seed; tools strip it (bl_common.pin_seed)."
+    },
+    "md5": "327e2bc80c870d666ec437fe3ee94806",
+    "backface_md5": "1db763ab94b95ac0b1b6cfe0d28be2cc",
+    "profile": "full",
+    "fixation_spp": 256,
+    "fixation_256_rel_rms_worst": 0.26762,
+    "fixation_256_rel_rms_median": 0.09215
+   },
+   "reference_small": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "profile": "small",
+    "path": "previews/reference_small/classroom/pano.exr",
+    "backface": "previews/reference_small/classroom/backface.exr",
+    "md5": "646312670fd14417756b58cb621dea4e",
+    "backface_md5": "5d2789f30e697ec35a1f4db9900af8d7",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "fixation_spp": 64,
+    "render_seconds": 71.53,
+    "render_seconds_includes_exr_write": true,
+    "exr_write_seconds": 0.43,
+    "exr_bytes": 515128027,
+    "rel_rms_worst_at_spp": 0.12645,
+    "rel_rms_median_at_spp": 0.04417,
+    "fixation_64_rel_rms_worst": 0.5573,
+    "fixation_64_rel_rms_median": 0.1914,
+    "d7_ratio_worst": 0.227,
+    "d7_ratio_median": 0.231,
+    "d7_note": "met; noise values are the A2 table's, measured on 128 px tiles at s0 0.05, taken as the same per-spp noise at s0 0.1 (assumed)",
+    "checks": {
+     "hole_fraction": 0.02069,
+     "backface_fraction": 0.00381,
+     "nadir_depth_m": 1.20015,
+     "zenith_depth_m": 1.69666
+    }
+   },
+   "reference_shift": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "profile": "full",
+    "path": "previews/reference_shift/classroom/pano.exr",
+    "md5": "6badf771e8ec06f3645d135ca60217e8",
+    "width": 7200,
+    "height": 3600,
+    "spp": 1024,
+    "seed": 1,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "yaw_offset_px": 0.5,
+    "yaw_offset_deg": 0.025,
+    "render_seconds": 278.34,
+    "exr_bytes": 2004808790,
+    "purpose": "the reference re-rendered half a pixel of yaw off-grid, seed 1: the resampling floor at s_eval (integrate_sphere.py --shifted); not a reference for anything else"
+   },
+   "reference_small_shift": {
+    "status": "rendered",
+    "date": "2026-09-13",
+    "profile": "small",
+    "path": "previews/reference_small_shift/classroom/pano.exr",
+    "md5": "ee02c04925e273c63fd45abe465c61f1",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "seed": 1,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "yaw_offset_px": 0.5,
+    "yaw_offset_deg": 0.05,
+    "render_seconds": 71.29,
+    "exr_bytes": 515141795,
+    "purpose": "the reference re-rendered half a pixel of yaw off-grid, seed 1: the resampling floor at s_eval (integrate_sphere.py --shifted); not a reference for anything else"
+   },
+   "reference_full_L": {
+    "status": "rendered",
+    "date": "2026-09-17",
+    "profile": "full",
+    "path": "previews/reference_full_L/classroom/pano.exr",
+    "backface": "previews/reference_full_L/classroom/backface.exr",
+    "md5": "de47b7629026782015ede6cdaeaefb65",
+    "backface_md5": "ac86e5f65f40d69d9b3658821ad79de8",
+    "width": 7200,
+    "height": 3600,
+    "spp": 8192,
+    "filter": "BOX",
+    "filter_width": 1.0,
+    "adaptive_sampling": false,
+    "seed": 0,
+    "eye_offset_local_m": [
+     -0.0315,
+     0.0,
+     0.0
+    ],
+    "render_seconds": 2137.4,
+    "exr_bytes": 2002119181,
+    "note": "the L eye of the 63 mm rig (D12), rendered for sphere_views.py as the scene-as-it-is; Same class as `reference` (36 min)."
+   },
+   "reference_small_L": {
+    "status": "rendered",
+    "date": "2026-09-17",
+    "profile": "small",
+    "path": "previews/reference_small_L/classroom/pano.exr",
+    "backface": "previews/reference_small_L/classroom/backface.exr",
+    "md5": "17bdfa4a8dab7260fd95926b9a61aa9e",
+    "backface_md5": "06038dd4afbc5a0c7be885e1d1e05fa7",
+    "width": 3600,
+    "height": 1800,
+    "spp": 1024,
+    "eye_offset_local_m": [
+     -0.0315,
+     0.0,
+     0.0
+    ],
+    "render_seconds": 70.1,
+    "note": "md5 from the file (Code, 2026-09-17)"
+   }
+  }
+ ]
+}

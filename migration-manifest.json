@@ -1,0 +1,3412 @@
+{
+ "schema": "fov3d-consolidation1-migration-manifest-v1",
+ "legacy_repository": "https://github.com/visgraf/fov-3d-vision",
+ "freeze_tag": "legacy-classroom-oracle3b-2026-09-25",
+ "freeze_commit": "48a3139020e87bfaf1255df1585390f7e9094ec8",
+ "golden_result": {
+  "experiment": "Classroom-Oracle-1 full",
+  "result_commit": "48a3139 (branch classroom-oracle-3b); Oracle-1 full result recorded in docs/classroom-oracle-1.md",
+  "domain_deg": {
+   "yaw": [
+    -25,
+    25
+   ],
+   "pitch": [
+    -20,
+    20
+   ]
+  }
+ },
+ "roots": [
+  "tools/classroom_oracle1_public.py",
+  "tools/classroom_oracle1_render.py",
+  "tools/classroom_oracle1_matcher.py",
+  "tools/classroom_oracle1_epistemic.py",
+  "tools/classroom_oracle1_run.py",
+  "tools/classroom_oracle1_eval.py",
+  "tools/dev/check_classroom_oracle1.py",
+  "docs/classroom-oracle-1.md"
+ ],
+ "dependency_graph": {
+  "tools/bl_common.py": [],
+  "tools/classroom_oracle1_epistemic.py": [
+   "tools/classroom_oracle1_public.py",
+   "tools/fsg6f_public.py",
+   "tools/fsg_stereo.py"
+  ],
+  "tools/classroom_oracle1_eval.py": [
+   "tools/classroom_oracle1_public.py"
+  ],
+  "tools/classroom_oracle1_matcher.py": [
+   "tools/fsg_geometry.py",
+   "tools/fsg_stereo.py"
+  ],
+  "tools/classroom_oracle1_public.py": [],
+  "tools/classroom_oracle1_render.py": [
+   "tools/bl_common.py",
+   "tools/classroom_oracle1_public.py",
+   "tools/exr_lite.py",
+   "tools/fsg6f_public.py",
+   "tools/fsg_geometry.py",
+   "tools/render_foveated.py"
+  ],
+  "tools/classroom_oracle1_run.py": [
+   "tools/classroom_oracle1_epistemic.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_public.py",
+   "tools/fsg3_surface_map.py",
+   "tools/fsg6f_public.py",
+   "tools/multiobject2c_policy.py"
+  ],
+  "tools/dev/check_classroom_oracle1.py": [
+   "tools/classroom_oracle1_epistemic.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_public.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/fsg6f_public.py",
+   "tools/multiobject2c_policy.py"
+  ],
+  "tools/exr_lite.py": [],
+  "tools/fsg3_surface_map.py": [],
+  "tools/fsg6f_frontier.py": [
+   "tools/fsg6f_public.py",
+   "tools/fsg_geometry.py",
+   "tools/fsg_stereo.py"
+  ],
+  "tools/fsg6f_public.py": [],
+  "tools/fsg_geometry.py": [],
+  "tools/fsg_stereo.py": [
+   "tools/fsg_geometry.py"
+  ],
+  "tools/multiobject2c_policy.py": [
+   "tools/fsg6f_frontier.py",
+   "tools/fsg6f_public.py"
+  ],
+  "tools/render_foveated.py": [
+   "tools/bl_common.py",
+   "tools/warp.py"
+  ],
+  "tools/warp.py": []
+ },
+ "external_python": {
+  "host_venv": {
+   "PIL": [
+    "tools/fsg_stereo.py"
+   ],
+   "cv2": [
+    "tools/classroom_oracle1_epistemic.py",
+    "tools/classroom_oracle1_matcher.py",
+    "tools/classroom_oracle1_run.py",
+    "tools/fsg_stereo.py"
+   ],
+   "numpy": [
+    "tools/classroom_oracle1_epistemic.py",
+    "tools/classroom_oracle1_eval.py",
+    "tools/classroom_oracle1_matcher.py",
+    "tools/classroom_oracle1_render.py",
+    "tools/classroom_oracle1_run.py",
+    "tools/exr_lite.py",
+    "tools/fsg3_surface_map.py",
+    "tools/fsg6f_frontier.py",
+    "tools/fsg_geometry.py",
+    "tools/fsg_stereo.py",
+    "tools/multiobject2c_policy.py",
+    "tools/warp.py"
+   ]
+  },
+  "blender_bundled": {
+   "bpy": [
+    "tools/bl_common.py",
+    "tools/classroom_oracle1_render.py",
+    "tools/render_foveated.py"
+   ],
+   "mathutils": [
+    "tools/bl_common.py",
+    "tools/classroom_oracle1_render.py",
+    "tools/render_foveated.py"
+   ],
+   "addon_utils": [
+    "tools/bl_common.py"
+   ]
+  }
+ },
+ "stdlib": {
+  "__future__": [
+   "tools/bl_common.py",
+   "tools/classroom_oracle1_epistemic.py",
+   "tools/classroom_oracle1_eval.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_public.py",
+   "tools/classroom_oracle1_render.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/dev/check_classroom_oracle1.py",
+   "tools/exr_lite.py",
+   "tools/fsg3_surface_map.py",
+   "tools/fsg6f_frontier.py",
+   "tools/fsg6f_public.py",
+   "tools/fsg_geometry.py",
+   "tools/fsg_stereo.py",
+   "tools/multiobject2c_policy.py",
+   "tools/render_foveated.py",
+   "tools/warp.py"
+  ],
+  "argparse": [
+   "tools/bl_common.py",
+   "tools/classroom_oracle1_eval.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_render.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/fsg_geometry.py",
+   "tools/fsg_stereo.py",
+   "tools/render_foveated.py"
+  ],
+  "collections": [
+   "tools/classroom_oracle1_epistemic.py",
+   "tools/fsg6f_frontier.py"
+  ],
+  "dataclasses": [
+   "tools/classroom_oracle1_epistemic.py",
+   "tools/fsg3_surface_map.py"
+  ],
+  "datetime": [
+   "tools/classroom_oracle1_render.py"
+  ],
+  "hashlib": [
+   "tools/classroom_oracle1_public.py",
+   "tools/fsg6f_public.py",
+   "tools/fsg_stereo.py"
+  ],
+  "inspect": [
+   "tools/classroom_oracle1_run.py",
+   "tools/dev/check_classroom_oracle1.py"
+  ],
+  "json": [
+   "tools/classroom_oracle1_eval.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_public.py",
+   "tools/classroom_oracle1_render.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/fsg6f_public.py",
+   "tools/fsg_geometry.py",
+   "tools/fsg_stereo.py",
+   "tools/render_foveated.py"
+  ],
+  "math": [
+   "tools/bl_common.py",
+   "tools/classroom_oracle1_epistemic.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_render.py",
+   "tools/fsg6f_frontier.py",
+   "tools/fsg_geometry.py",
+   "tools/render_foveated.py",
+   "tools/warp.py"
+  ],
+  "os": [
+   "tools/classroom_oracle1_render.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/render_foveated.py"
+  ],
+  "pathlib": [
+   "tools/classroom_oracle1_eval.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_render.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/dev/check_classroom_oracle1.py",
+   "tools/fsg3_surface_map.py",
+   "tools/fsg_geometry.py",
+   "tools/fsg_stereo.py"
+  ],
+  "shutil": [
+   "tools/classroom_oracle1_run.py"
+  ],
+  "struct": [
+   "tools/exr_lite.py"
+  ],
+  "subprocess": [
+   "tools/classroom_oracle1_run.py"
+  ],
+  "sys": [
+   "tools/bl_common.py",
+   "tools/classroom_oracle1_eval.py",
+   "tools/classroom_oracle1_render.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/dev/check_classroom_oracle1.py",
+   "tools/fsg_stereo.py",
+   "tools/render_foveated.py",
+   "tools/warp.py"
+  ],
+  "time": [
+   "tools/classroom_oracle1_render.py",
+   "tools/fsg_stereo.py",
+   "tools/render_foveated.py"
+  ],
+  "traceback": [
+   "tools/classroom_oracle1_render.py",
+   "tools/render_foveated.py"
+  ],
+  "typing": [
+   "tools/classroom_oracle1_eval.py",
+   "tools/classroom_oracle1_matcher.py",
+   "tools/classroom_oracle1_run.py",
+   "tools/fsg_geometry.py"
+  ]
+ },
+ "dynamic_references": {
+  "tools/classroom_oracle1_render.py": "launched by classroom_oracle1_run.py as `blender -b <scene> -P tools/classroom_oracle1_render.py` (fixation and seeds modes); inserts its own directory in sys.path",
+  "function-local imports on the Blender side": "bl_common, exr_lite, render_foveated (-> warp, bl_common), fsg6f_public, bpy, mathutils",
+  "scenes/classroom/classroom_eye.blend": "classroom_oracle1_public.SCENE; runtime input, gitignored",
+  "tools/foveated_camera.osl": "NOT on golden path (render_foveated.main only)",
+  "output files": "calibration.json, oracle_observation.npz, raw_L/R.exr, seeds.json, instance_catalog.json, evaluation_only/reachable_samples.npz (written by the run itself)"
+ },
+ "migrated": {
+  "tools/bl_common.py": {
+   "group": "runtime",
+   "sha256": "aa7a56e8cd4988cbe7fc92a57fde68e62740688b6ccfee718e01a8e52ba10370",
+   "bytes": 7819,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/classroom_oracle1_epistemic.py": {
+   "group": "runtime",
+   "sha256": "20d7a4cb6d85109f7c4b165dcccefdd3faf4be600e00113cb2e604d796fca225",
+   "bytes": 11252,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/classroom_oracle1_public.py",
+    "tools/fsg6f_public.py",
+    "tools/fsg_stereo.py"
+   ]
+  },
+  "tools/classroom_oracle1_eval.py": {
+   "group": "runtime",
+   "sha256": "b9f707e6a3a52fb525a9252a581097ced75a6f9d90f3b850d4b0bb783d04053b",
+   "bytes": 7166,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/classroom_oracle1_public.py"
+   ]
+  },
+  "tools/classroom_oracle1_matcher.py": {
+   "group": "runtime",
+   "sha256": "d213c2c7da68a2969b54a095fc7d953d7d16b21f5690cf2fd152197265884afa",
+   "bytes": 10324,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/fsg_geometry.py",
+    "tools/fsg_stereo.py"
+   ]
+  },
+  "tools/classroom_oracle1_public.py": {
+   "group": "runtime",
+   "sha256": "7b85e59a6e397ed69d3eaec8a6b3790639a6c6ffce596fd0d8d1664c738452bb",
+   "bytes": 3929,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/classroom_oracle1_render.py": {
+   "group": "runtime",
+   "sha256": "ebeac7363a54a022c604161a3716a220fcf2aa7feea3792a68568699ed28a55a",
+   "bytes": 15460,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/bl_common.py",
+    "tools/classroom_oracle1_public.py",
+    "tools/exr_lite.py",
+    "tools/fsg6f_public.py",
+    "tools/fsg_geometry.py",
+    "tools/render_foveated.py"
+   ]
+  },
+  "tools/classroom_oracle1_run.py": {
+   "group": "runtime",
+   "sha256": "e6079a2fbac84b0806f692b2d873b06ea9e6d3ad65bdd19130cd394722493f65",
+   "bytes": 26319,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/classroom_oracle1_epistemic.py",
+    "tools/classroom_oracle1_matcher.py",
+    "tools/classroom_oracle1_public.py",
+    "tools/fsg3_surface_map.py",
+    "tools/fsg6f_public.py",
+    "tools/multiobject2c_policy.py"
+   ]
+  },
+  "tools/exr_lite.py": {
+   "group": "runtime",
+   "sha256": "77286773ee52d17f45373a9c0a0358b197b18672c4cff4654e00bc69e828ef20",
+   "bytes": 4108,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/fsg3_surface_map.py": {
+   "group": "runtime",
+   "sha256": "1b9dbeb873105ec9bd9aef9680f67ed18db9a7387d6871d6ed8e6ab58bcb1e01",
+   "bytes": 6610,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/fsg6f_frontier.py": {
+   "group": "runtime",
+   "sha256": "d636c9405d7199164e245ea48618dd7cebb9504074bd98b9136e2bd6f4ff18a1",
+   "bytes": 34491,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/fsg6f_public.py",
+    "tools/fsg_geometry.py",
+    "tools/fsg_stereo.py"
+   ]
+  },
+  "tools/fsg6f_public.py": {
+   "group": "runtime",
+   "sha256": "c79f58c9b51f33d4463f2bcfcaa339d79cf20a962b44de9c6cc721cf157cd2fa",
+   "bytes": 5928,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/fsg_geometry.py": {
+   "group": "runtime",
+   "sha256": "ae3779bc5cbe8f9702227ae9f123c6be1abe394a0a3c617627f38f171c556c54",
+   "bytes": 10749,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/fsg_stereo.py": {
+   "group": "runtime",
+   "sha256": "faebf0f1b3acbfde60b08830a57213bf29c708c3aa274e493ade0042eb0545e9",
+   "bytes": 12748,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/fsg_geometry.py"
+   ]
+  },
+  "tools/multiobject2c_policy.py": {
+   "group": "runtime",
+   "sha256": "f4d4a08b0098146691ca66d7bb10aeab097f357e59e9d19e43c7bda47e246f8d",
+   "bytes": 2027,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/fsg6f_frontier.py",
+    "tools/fsg6f_public.py"
+   ]
+  },
+  "tools/render_foveated.py": {
+   "group": "runtime",
+   "sha256": "6f4d6c20b3fa22a74cbf71552374410545b09aeb07ae0b5867cf95b7a264fedf",
+   "bytes": 10755,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/bl_common.py",
+    "tools/warp.py"
+   ]
+  },
+  "tools/warp.py": {
+   "group": "runtime",
+   "sha256": "94f6583ed8d32fa93323683cd0ed7cc697ff711d71c831be9ff478799346b0ba",
+   "bytes": 7972,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/dev/check_classroom_oracle1.py": {
+   "group": "verification",
+   "sha256": "cd0be6389a10707da5796579dddf9f9ac3eeadd4e0165863f6a3fc20abdb2fd5",
+   "bytes": 4073,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/classroom_oracle1_epistemic.py",
+    "tools/classroom_oracle1_matcher.py",
+    "tools/classroom_oracle1_public.py",
+    "tools/classroom_oracle1_run.py",
+    "tools/fsg6f_public.py",
+    "tools/multiobject2c_policy.py"
+   ]
+  },
+  "tools/dev/check_fsg_tangent_frame.py": {
+   "group": "verification",
+   "sha256": "9002e5fafde3294191f70924ef2616bc19ec505f670bc92804a70cc67638c6db",
+   "bytes": 2594,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/fsg_geometry.py",
+    "tools/fsg_stereo.py"
+   ]
+  },
+  "scenes/manifest.json": {
+   "group": "scene",
+   "sha256": "3d516f9b20102e5650278641a317ef478d40449376e54902df7d3b27ae26aa6a",
+   "bytes": 16239,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "tools/place_eye.py": {
+   "group": "scene",
+   "sha256": "345fc01b4d3b8148b2a63062fc298fac126cd2f93bf550a209060f5c8eb79d99",
+   "bytes": 4972,
+   "staging_identical": true,
+   "imports_local": [
+    "tools/bl_common.py"
+   ]
+  },
+  "requirements.txt": {
+   "group": "environment",
+   "sha256": "294e709647e9ce25c54e7ff54337bc2612f0d2334fac19d4290a44b88206e745",
+   "bytes": 717,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "requirements-fsg.txt": {
+   "group": "environment",
+   "sha256": "fea60f4fdcb78bd79ab39af8fcb8849b2eca12ba302c2861c243ebd3d76b2be5",
+   "bytes": 262,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  ".gitignore": {
+   "group": "environment",
+   "sha256": "59b7b47b7a71df9473f12601bcf82cfd2fcd3f0eee393fc9affc32ee7e2a0919",
+   "bytes": 693,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "LICENSE": {
+   "group": "environment",
+   "sha256": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+   "bytes": 7048,
+   "staging_identical": true,
+   "imports_local": []
+  },
+  "docs/classroom-oracle-1.md": {
+   "group": "docs",
+   "sha256": "45301942a152d280c22b877434e12c1a0a226d7b50e72e597ae2e5686001f2ff",
+   "bytes": 22640,
+   "staging_identical": true,
+   "imports_local": []
+  }
+ },
+ "new_in_staging": {
+  "README.md": "fresh staging README",
+  "docs/legacy-provenance.md": "provenance and inherited contracts",
+  "docs/migration-manifest.md": "human-readable migration manifest",
+  "migration-manifest.json": "this file",
+  "tools/consolidation1_demo.py": "post-hoc migration-baseline demo; not in the golden runtime closure; imports closure modules only"
+ },
+ "excluded_count": 573,
+ "excluded_by_family": {
+  "docs history": 167,
+  "docs/reference": 20,
+  "root docs": 3,
+  "scenes hdri": 1,
+  "tools OSL": 1,
+  "tools classroom_fsg*": 3,
+  "tools classroom_oracle2/3/3b": 12,
+  "tools cyclopean*": 28,
+  "tools demo_classroom*": 5,
+  "tools demo_tabletop*": 5,
+  "tools fsg*": 97,
+  "tools fsg_blend_bridge*": 2,
+  "tools fsg_bridge*": 7,
+  "tools fullscene*": 12,
+  "tools fullscene_real*": 15,
+  "tools multiobject*": 61,
+  "tools phase A-D infrastructure": 24,
+  "tools reality*": 15,
+  "tools scene*": 25,
+  "tools/dev historical checks": 64,
+  "tools/dev oracle-2/3/3b checks": 3,
+  "tools/dev stub": 3
+ },
+ "excluded": {
+  "CLAUDE.md": {
+   "family": "root docs",
+   "reason": "superseded in staging by a fresh README; referenced from docs/legacy-provenance.md",
+   "bytes": 7028
+  },
+  "DECISIONS.md": {
+   "family": "root docs",
+   "reason": "superseded in staging by a fresh README; referenced from docs/legacy-provenance.md",
+   "bytes": 245042
+  },
+  "README.md": {
+   "family": "root docs",
+   "reason": "superseded in staging by a fresh README; referenced from docs/legacy-provenance.md",
+   "bytes": 163332
+  },
+  "docs/a1-scene-gathering.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11385
+  },
+  "docs/a2-reference-and-noise-floor.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 8725
+  },
+  "docs/a3-foveated-camera.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 5067
+  },
+  "docs/a4-fixation-sequence.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11878
+  },
+  "docs/a5-spherical-integration.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19812
+  },
+  "docs/a6-warp-sweep.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 5356
+  },
+  "docs/b1-verged-pairs.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11068
+  },
+  "docs/b2-stereo-truth.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 14405
+  },
+  "docs/b3-stereo-instrument.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17140
+  },
+  "docs/c1-stereo-field.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 28661
+  },
+  "docs/c2-active-loop.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 34396
+  },
+  "docs/c3-closing.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 13988
+  },
+  "docs/classroom-fsg-1-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 5026
+  },
+  "docs/classroom-fsg-1.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16014
+  },
+  "docs/classroom-oracle-1-smoke-gate.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2513
+  },
+  "docs/classroom-oracle-2-result.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 14066
+  },
+  "docs/classroom-oracle-2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 3922
+  },
+  "docs/classroom-oracle-3-results.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11031
+  },
+  "docs/classroom-oracle-3.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 3511
+  },
+  "docs/classroom-oracle-3b-results.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 10823
+  },
+  "docs/classroom-oracle-3b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 3964
+  },
+  "docs/cyclopean1a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1081
+  },
+  "docs/cyclopean1a.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17295
+  },
+  "docs/cyclopean1b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1082
+  },
+  "docs/cyclopean1b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 18250
+  },
+  "docs/cyclopean1c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1187
+  },
+  "docs/cyclopean1c.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 18039
+  },
+  "docs/cyclopean1d-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 969
+  },
+  "docs/cyclopean1d.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19383
+  },
+  "docs/cyclopean1e-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1531
+  },
+  "docs/cyclopean1e.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16279
+  },
+  "docs/cyclopean1f-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 909
+  },
+  "docs/cyclopean1f.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16711
+  },
+  "docs/cyclopean1g-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1638
+  },
+  "docs/cyclopean1g.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16269
+  },
+  "docs/d1-gross-diagnosis.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 25005
+  },
+  "docs/d2-wrong-or-right.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 29933
+  },
+  "docs/d2b-neighbour-test.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 21915
+  },
+  "docs/d4-long-run.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20857
+  },
+  "docs/d5-consensus.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16595
+  },
+  "docs/demo-classroom-1-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2055
+  },
+  "docs/demo-classroom-1.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17575
+  },
+  "docs/demo-tabletop-1-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 919
+  },
+  "docs/demo-tabletop-1.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11733
+  },
+  "docs/fsg-blend-bridge-1-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2088
+  },
+  "docs/fsg-blend-bridge-1.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11799
+  },
+  "docs/fsg-blend-bridge-1r-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1603
+  },
+  "docs/fsg-blend-bridge-1r.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 14510
+  },
+  "docs/fsg-blend-bridge-2-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1101
+  },
+  "docs/fsg-blend-bridge-2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17041
+  },
+  "docs/fsg-blend-bridge-3-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 926
+  },
+  "docs/fsg-blend-bridge-3.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12315
+  },
+  "docs/fsg-blend-bridge-4-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1272
+  },
+  "docs/fsg-blend-bridge-4.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12946
+  },
+  "docs/fsg-blend-bridge-5-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1129
+  },
+  "docs/fsg-blend-bridge-5.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12978
+  },
+  "docs/fsg1-code-prompt.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12208
+  },
+  "docs/fsg1-coverage-audit-validation.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 3741
+  },
+  "docs/fsg1-coverage-audit.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 26389
+  },
+  "docs/fsg1-final-validation-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1882
+  },
+  "docs/fsg1-final-validation.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 18976
+  },
+  "docs/fsg1-full-profile-followup.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12805
+  },
+  "docs/fsg1-hdr-candidate.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 28970
+  },
+  "docs/fsg1-hdr-validation.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 8230
+  },
+  "docs/fsg1-prospective-validation-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 6659
+  },
+  "docs/fsg1-prospective-validation.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 30970
+  },
+  "docs/fsg1-single-patch.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 36414
+  },
+  "docs/fsg1-stage-visibility-audit.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 28498
+  },
+  "docs/fsg1-stage-visibility-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 5670
+  },
+  "docs/fsg1-supported-candidate.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 29392
+  },
+  "docs/fsg1-supported-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 7290
+  },
+  "docs/fsg1h-final-validation-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1169
+  },
+  "docs/fsg1h-final-validation.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19239
+  },
+  "docs/fsg2-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1489
+  },
+  "docs/fsg2-increment2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12917
+  },
+  "docs/fsg3-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2960
+  },
+  "docs/fsg3-increment3.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 22121
+  },
+  "docs/fsg4-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1184
+  },
+  "docs/fsg4-increment4.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19164
+  },
+  "docs/fsg4b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1365
+  },
+  "docs/fsg4b-pairing-reuse.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16803
+  },
+  "docs/fsg4c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 899
+  },
+  "docs/fsg4c-increment4.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20212
+  },
+  "docs/fsg5-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1858
+  },
+  "docs/fsg5-increment5.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 18894
+  },
+  "docs/fsg6-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2054
+  },
+  "docs/fsg6-increment6.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20210
+  },
+  "docs/fsg6b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2216
+  },
+  "docs/fsg6b-increment6.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20010
+  },
+  "docs/fsg6c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1291
+  },
+  "docs/fsg6c-increment6.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 21515
+  },
+  "docs/fsg6d-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1041
+  },
+  "docs/fsg6d-increment6.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19135
+  },
+  "docs/fsg6e-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1630
+  },
+  "docs/fsg6e-increment6.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 23346
+  },
+  "docs/fsg6f-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1683
+  },
+  "docs/fsg6f-increment6.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 23098
+  },
+  "docs/fsg7a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 936
+  },
+  "docs/fsg7a-increment7.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 15589
+  },
+  "docs/fullscene-real-1-budget-round-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 792
+  },
+  "docs/fullscene-real-1-budget-round.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 13485
+  },
+  "docs/fullscene-real-1-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1220
+  },
+  "docs/fullscene-real-1-seed-round-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 757
+  },
+  "docs/fullscene-real-1-seed-round.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11605
+  },
+  "docs/fullscene-real-1.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19550
+  },
+  "docs/fullscene1a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1630
+  },
+  "docs/fullscene1a.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16523
+  },
+  "docs/fullscene1b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1141
+  },
+  "docs/fullscene1b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17190
+  },
+  "docs/fullscene1c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2394
+  },
+  "docs/fullscene1c.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20028
+  },
+  "docs/fullscene1d-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1615
+  },
+  "docs/fullscene1d.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 18456
+  },
+  "docs/log.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 717255
+  },
+  "docs/multiobject1a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 998
+  },
+  "docs/multiobject1a.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 13668
+  },
+  "docs/multiobject1b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1031
+  },
+  "docs/multiobject1b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 14388
+  },
+  "docs/multiobject1b2-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2112
+  },
+  "docs/multiobject1b2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 22196
+  },
+  "docs/multiobject1c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1244
+  },
+  "docs/multiobject1c.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17241
+  },
+  "docs/multiobject2a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 587
+  },
+  "docs/multiobject2a.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12413
+  },
+  "docs/multiobject2b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1531
+  },
+  "docs/multiobject2b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 14653
+  },
+  "docs/multiobject2c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1908
+  },
+  "docs/multiobject2c.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17750
+  },
+  "docs/multiobject2d-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1329
+  },
+  "docs/multiobject2d.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 22508
+  },
+  "docs/multiobject3a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 776
+  },
+  "docs/multiobject3a.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 16962
+  },
+  "docs/multiobject3b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1733
+  },
+  "docs/multiobject3b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17979
+  },
+  "docs/multiobject3c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1902
+  },
+  "docs/multiobject3c.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 21176
+  },
+  "docs/multiobject3d-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1473
+  },
+  "docs/multiobject3d.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 22834
+  },
+  "docs/multiobject3e-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1117
+  },
+  "docs/multiobject3e.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20979
+  },
+  "docs/multiobject3f-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1829
+  },
+  "docs/multiobject3f.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 24379
+  },
+  "docs/multiobject3g-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2035
+  },
+  "docs/multiobject3g.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19878
+  },
+  "docs/multiobject3h-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2110
+  },
+  "docs/multiobject3h.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19682
+  },
+  "docs/phase-a-result.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 7937
+  },
+  "docs/phase-a-summary.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 12136
+  },
+  "docs/phase-b-summary.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 13036
+  },
+  "docs/phase-c-summary.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 14744
+  },
+  "docs/phase-d-plan.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 9895
+  },
+  "docs/phase-d-summary.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 13817
+  },
+  "docs/reality-check-1-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1537
+  },
+  "docs/reality-check-1.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 15113
+  },
+  "docs/reality-check-2-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 785
+  },
+  "docs/reality-check-2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 11947
+  },
+  "docs/reality-check-2b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1686
+  },
+  "docs/reality-check-2b.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17753
+  },
+  "docs/reference/a5_curve_calib_room_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 30570
+  },
+  "docs/reference/a5_curve_calib_room_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 29595
+  },
+  "docs/reference/a5_curve_classroom_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 31072
+  },
+  "docs/reference/a5_curve_classroom_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 32946
+  },
+  "docs/reference/b3_sweep_calib_room_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 25483
+  },
+  "docs/reference/c1_field_calib_room_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 199866
+  },
+  "docs/reference/c2_compare_calib_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 28538
+  },
+  "docs/reference/c2_loop_info_calib_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 300371
+  },
+  "docs/reference/c3_compare_classroom_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 28224
+  },
+  "docs/reference/c3_compare_classroom_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 28776
+  },
+  "docs/reference/c3_loop_info_classroom_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 328365
+  },
+  "docs/reference/c3_loop_info_classroom_small.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 277096
+  },
+  "docs/reference/calib_room_center_34deg.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 552566
+  },
+  "docs/reference/calib_room_sheet.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 1451804
+  },
+  "docs/reference/d1_diagnosis_calib_room_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 16045
+  },
+  "docs/reference/d1_diagnosis_classroom_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 17053
+  },
+  "docs/reference/views_classroom_full.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 1640743
+  },
+  "docs/reference/views_classroom_full_500.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 1755044
+  },
+  "docs/reference/views_classroom_full_500_consensus.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 1755821
+  },
+  "docs/reference/views_classroom_full_fine.png": {
+   "family": "docs/reference",
+   "reason": "CPU baseline images for Phase A; retained in legacy repo",
+   "bytes": 83766
+  },
+  "docs/reviews/2026-09-12-noise-floor.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 8357
+  },
+  "docs/reviews/2026-09-16-phase-c-suggestions.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17398
+  },
+  "docs/reviews/2026-09-18-phase-d-suggestions.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 19451
+  },
+  "docs/scene1a-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1509
+  },
+  "docs/scene1a-stage2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 17321
+  },
+  "docs/scene1b-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 1985
+  },
+  "docs/scene1b-stage2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20447
+  },
+  "docs/scene1c-checks.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 2258
+  },
+  "docs/scene1c-stage2.md": {
+   "family": "docs history",
+   "reason": "historical experiment notes/log/summaries; retained in legacy repo at the freeze tag",
+   "bytes": 20911
+  },
+  "scenes/hdri/workshop/asset.json": {
+   "family": "scenes hdri",
+   "reason": "HDRI descriptor for other scenes; the Classroom blend does not use it",
+   "bytes": 700
+  },
+  "tools/active_eval.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 22471
+  },
+  "tools/active_loop.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 14084
+  },
+  "tools/belief.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 48212
+  },
+  "tools/check_foveated.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 6361
+  },
+  "tools/check_noise_floor_stats.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 6014
+  },
+  "tools/check_pairs.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 14945
+  },
+  "tools/check_sequence.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 19027
+  },
+  "tools/classroom_fsg1_compare.py": {
+   "family": "tools classroom_fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2206
+  },
+  "tools/classroom_fsg1_public.py": {
+   "family": "tools classroom_fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5386
+  },
+  "tools/classroom_fsg1_run.py": {
+   "family": "tools classroom_fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 27925
+  },
+  "tools/classroom_oracle2_demo.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 23049
+  },
+  "tools/classroom_oracle2_domain.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 2674
+  },
+  "tools/classroom_oracle2_eval.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 13573
+  },
+  "tools/classroom_oracle2_public.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 4743
+  },
+  "tools/classroom_oracle2_render.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 9284
+  },
+  "tools/classroom_oracle2_run.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 12657
+  },
+  "tools/classroom_oracle3_audit.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 33514
+  },
+  "tools/classroom_oracle3_demo.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 13536
+  },
+  "tools/classroom_oracle3_public.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 4766
+  },
+  "tools/classroom_oracle3b_audit.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 17223
+  },
+  "tools/classroom_oracle3b_demo.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 9885
+  },
+  "tools/classroom_oracle3b_public.py": {
+   "family": "tools classroom_oracle2/3/3b",
+   "reason": "Oracle-2 is a domain ablation; Oracle-3/3b are read-only diagnostics; not golden",
+   "bytes": 4004
+  },
+  "tools/cyclopean1a_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1404
+  },
+  "tools/cyclopean1a_probe.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8903
+  },
+  "tools/cyclopean1a_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4296
+  },
+  "tools/cyclopean1a_topology.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15659
+  },
+  "tools/cyclopean1b_audit.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7952
+  },
+  "tools/cyclopean1b_boundary.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12789
+  },
+  "tools/cyclopean1b_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1119
+  },
+  "tools/cyclopean1b_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3357
+  },
+  "tools/cyclopean1c_bay.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5786
+  },
+  "tools/cyclopean1c_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1758
+  },
+  "tools/cyclopean1c_probe.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 11372
+  },
+  "tools/cyclopean1c_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3204
+  },
+  "tools/cyclopean1d_audit.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14718
+  },
+  "tools/cyclopean1d_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1701
+  },
+  "tools/cyclopean1d_epistemic.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6182
+  },
+  "tools/cyclopean1d_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4382
+  },
+  "tools/cyclopean1e_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1822
+  },
+  "tools/cyclopean1e_gaze.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6648
+  },
+  "tools/cyclopean1e_probe.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12302
+  },
+  "tools/cyclopean1e_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3260
+  },
+  "tools/cyclopean1f_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1879
+  },
+  "tools/cyclopean1f_loop.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1452
+  },
+  "tools/cyclopean1f_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2419
+  },
+  "tools/cyclopean1f_run.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 13624
+  },
+  "tools/cyclopean1g_compare.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2008
+  },
+  "tools/cyclopean1g_measurement.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6219
+  },
+  "tools/cyclopean1g_probe.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15026
+  },
+  "tools/cyclopean1g_public.py": {
+   "family": "tools cyclopean*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3970
+  },
+  "tools/demo_classroom1_compare.py": {
+   "family": "tools demo_classroom*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1901
+  },
+  "tools/demo_classroom1_public.py": {
+   "family": "tools demo_classroom*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7472
+  },
+  "tools/demo_classroom1_repo.py": {
+   "family": "tools demo_classroom*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 60016
+  },
+  "tools/demo_classroom1_run.py": {
+   "family": "tools demo_classroom*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7886
+  },
+  "tools/demo_classroom1_scene_blender.py": {
+   "family": "tools demo_classroom*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8165
+  },
+  "tools/demo_tabletop1_compare.py": {
+   "family": "tools demo_tabletop*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1007
+  },
+  "tools/demo_tabletop1_public.py": {
+   "family": "tools demo_tabletop*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5036
+  },
+  "tools/demo_tabletop1_reference.py": {
+   "family": "tools demo_tabletop*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10682
+  },
+  "tools/demo_tabletop1_repo.py": {
+   "family": "tools demo_tabletop*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 55714
+  },
+  "tools/demo_tabletop1_run.py": {
+   "family": "tools demo_tabletop*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7403
+  },
+  "tools/dev/check_classroom_fsg1.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2648
+  },
+  "tools/dev/check_classroom_oracle2.py": {
+   "family": "tools/dev oracle-2/3/3b checks",
+   "reason": "check for Oracle-2 (domain ablation) or Oracle-3/3b (read-only diagnostics); not golden",
+   "bytes": 4070
+  },
+  "tools/dev/check_classroom_oracle3.py": {
+   "family": "tools/dev oracle-2/3/3b checks",
+   "reason": "check for Oracle-2 (domain ablation) or Oracle-3/3b (read-only diagnostics); not golden",
+   "bytes": 2166
+  },
+  "tools/dev/check_classroom_oracle3b.py": {
+   "family": "tools/dev oracle-2/3/3b checks",
+   "reason": "check for Oracle-2 (domain ablation) or Oracle-3/3b (read-only diagnostics); not golden",
+   "bytes": 2808
+  },
+  "tools/dev/check_cyclopean1a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3476
+  },
+  "tools/dev/check_cyclopean1b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4006
+  },
+  "tools/dev/check_cyclopean1c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3549
+  },
+  "tools/dev/check_cyclopean1d.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3323
+  },
+  "tools/dev/check_cyclopean1e.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4352
+  },
+  "tools/dev/check_cyclopean1f.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2495
+  },
+  "tools/dev/check_cyclopean1g.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3653
+  },
+  "tools/dev/check_demo_classroom1.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4359
+  },
+  "tools/dev/check_demo_tabletop1.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2823
+  },
+  "tools/dev/check_fsg.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 11026
+  },
+  "tools/dev/check_fsg2.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2476
+  },
+  "tools/dev/check_fsg3.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3512
+  },
+  "tools/dev/check_fsg4.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 8141
+  },
+  "tools/dev/check_fsg4c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 9116
+  },
+  "tools/dev/check_fsg5.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5469
+  },
+  "tools/dev/check_fsg6.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4424
+  },
+  "tools/dev/check_fsg6b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5847
+  },
+  "tools/dev/check_fsg6c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 7150
+  },
+  "tools/dev/check_fsg6d.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 10202
+  },
+  "tools/dev/check_fsg6e.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 12300
+  },
+  "tools/dev/check_fsg6f.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 15252
+  },
+  "tools/dev/check_fsg7a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4881
+  },
+  "tools/dev/check_fsg_blend_bridge.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2895
+  },
+  "tools/dev/check_fsg_bridge2_select.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 1850
+  },
+  "tools/dev/check_fsg_bridge3_fattening.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 1926
+  },
+  "tools/dev/check_fsg_bridge4.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2707
+  },
+  "tools/dev/check_fsg_bridge5.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 1503
+  },
+  "tools/dev/check_fsg_coverage_audit.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 10646
+  },
+  "tools/dev/check_fsg_failure_audit.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 11652
+  },
+  "tools/dev/check_fsg_final_validation.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3276
+  },
+  "tools/dev/check_fsg_finalh_validation.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5779
+  },
+  "tools/dev/check_fsg_hdr.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 10941
+  },
+  "tools/dev/check_fsg_supported.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 13546
+  },
+  "tools/dev/check_fsg_validation.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 13825
+  },
+  "tools/dev/check_fullscene1a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 6216
+  },
+  "tools/dev/check_fullscene1b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5943
+  },
+  "tools/dev/check_fullscene1c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 7494
+  },
+  "tools/dev/check_fullscene1d.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 7054
+  },
+  "tools/dev/check_fullscene_real1.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5617
+  },
+  "tools/dev/check_fullscene_real1_budget_round.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2582
+  },
+  "tools/dev/check_fullscene_real1_seed_round.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 2519
+  },
+  "tools/dev/check_multiobject1a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3649
+  },
+  "tools/dev/check_multiobject1b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4129
+  },
+  "tools/dev/check_multiobject1b2.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 6386
+  },
+  "tools/dev/check_multiobject1c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4544
+  },
+  "tools/dev/check_multiobject2a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4545
+  },
+  "tools/dev/check_multiobject2b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4572
+  },
+  "tools/dev/check_multiobject2c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5396
+  },
+  "tools/dev/check_multiobject2d.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4845
+  },
+  "tools/dev/check_multiobject3a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4695
+  },
+  "tools/dev/check_multiobject3b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 4988
+  },
+  "tools/dev/check_multiobject3c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5888
+  },
+  "tools/dev/check_multiobject3d.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5519
+  },
+  "tools/dev/check_multiobject3e.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5962
+  },
+  "tools/dev/check_multiobject3f.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 7050
+  },
+  "tools/dev/check_multiobject3g.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 6716
+  },
+  "tools/dev/check_multiobject3h.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 6666
+  },
+  "tools/dev/check_reality1.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 3894
+  },
+  "tools/dev/check_reality2.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5000
+  },
+  "tools/dev/check_reality2b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 7971
+  },
+  "tools/dev/check_scene1a.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 5401
+  },
+  "tools/dev/check_scene1b.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 6783
+  },
+  "tools/dev/check_scene1c.py": {
+   "family": "tools/dev historical checks",
+   "reason": "check for a module outside the golden closure, or imports one (e.g. check_fsg3 -> fsg3_scene, check_fsg6f -> fsg6e_*, fsg4_public)",
+   "bytes": 8994
+  },
+  "tools/dev/fake_blender_fsg.py": {
+   "family": "tools/dev stub",
+   "reason": "Blender stub for Chat sandbox; golden run uses real Blender",
+   "bytes": 1666
+  },
+  "tools/dev/fake_blender_loop.py": {
+   "family": "tools/dev stub",
+   "reason": "Blender stub for Chat sandbox; golden run uses real Blender",
+   "bytes": 956
+  },
+  "tools/dev/fake_blender_pairs.py": {
+   "family": "tools/dev stub",
+   "reason": "Blender stub for Chat sandbox; golden run uses real Blender",
+   "bytes": 10252
+  },
+  "tools/fetch_hdris.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 5282
+  },
+  "tools/fixation_pairs.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 21196
+  },
+  "tools/fixation_sequence.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 16995
+  },
+  "tools/foveated_camera.osl": {
+   "family": "tools OSL",
+   "reason": "referenced only by render_foveated.main()/setup_foveated_camera; the golden path uses render_fixation() with a perspective camera",
+   "bytes": 1816
+  },
+  "tools/fsg2_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8027
+  },
+  "tools/fsg2_render.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2929
+  },
+  "tools/fsg2_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4911
+  },
+  "tools/fsg2_surface_map.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5146
+  },
+  "tools/fsg3_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7539
+  },
+  "tools/fsg3_loop.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8042
+  },
+  "tools/fsg3_policy.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4385
+  },
+  "tools/fsg3_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2354
+  },
+  "tools/fsg3_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5410
+  },
+  "tools/fsg3_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4245
+  },
+  "tools/fsg4_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4509
+  },
+  "tools/fsg4_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9002
+  },
+  "tools/fsg4_metrics.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1087
+  },
+  "tools/fsg4_pair.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9676
+  },
+  "tools/fsg4_policy.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4852
+  },
+  "tools/fsg4_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4456
+  },
+  "tools/fsg4_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6131
+  },
+  "tools/fsg4_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 11612
+  },
+  "tools/fsg4_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6582
+  },
+  "tools/fsg4c_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4660
+  },
+  "tools/fsg4c_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8276
+  },
+  "tools/fsg4c_pair.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9713
+  },
+  "tools/fsg4c_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4199
+  },
+  "tools/fsg4c_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6140
+  },
+  "tools/fsg4c_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12050
+  },
+  "tools/fsg4c_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5904
+  },
+  "tools/fsg5_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3560
+  },
+  "tools/fsg5_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8999
+  },
+  "tools/fsg5_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3782
+  },
+  "tools/fsg5_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5885
+  },
+  "tools/fsg5_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 11082
+  },
+  "tools/fsg5_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9223
+  },
+  "tools/fsg6_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3385
+  },
+  "tools/fsg6_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8831
+  },
+  "tools/fsg6_frontier.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 11657
+  },
+  "tools/fsg6_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4824
+  },
+  "tools/fsg6_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5286
+  },
+  "tools/fsg6_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9249
+  },
+  "tools/fsg6_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9615
+  },
+  "tools/fsg6b_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3394
+  },
+  "tools/fsg6b_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8839
+  },
+  "tools/fsg6b_frontier.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14402
+  },
+  "tools/fsg6b_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4477
+  },
+  "tools/fsg6b_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5295
+  },
+  "tools/fsg6b_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9674
+  },
+  "tools/fsg6b_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9897
+  },
+  "tools/fsg6c_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3394
+  },
+  "tools/fsg6c_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8839
+  },
+  "tools/fsg6c_frontier.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 16769
+  },
+  "tools/fsg6c_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4682
+  },
+  "tools/fsg6c_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5295
+  },
+  "tools/fsg6c_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9674
+  },
+  "tools/fsg6c_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14026
+  },
+  "tools/fsg6d_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3394
+  },
+  "tools/fsg6d_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8839
+  },
+  "tools/fsg6d_frontier.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 22539
+  },
+  "tools/fsg6d_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4917
+  },
+  "tools/fsg6d_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5295
+  },
+  "tools/fsg6d_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9678
+  },
+  "tools/fsg6d_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15668
+  },
+  "tools/fsg6e_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3394
+  },
+  "tools/fsg6e_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9273
+  },
+  "tools/fsg6e_frontier.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 32003
+  },
+  "tools/fsg6e_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5899
+  },
+  "tools/fsg6e_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5295
+  },
+  "tools/fsg6e_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10063
+  },
+  "tools/fsg6e_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 20470
+  },
+  "tools/fsg6f_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3394
+  },
+  "tools/fsg6f_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9775
+  },
+  "tools/fsg6f_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5295
+  },
+  "tools/fsg6f_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10078
+  },
+  "tools/fsg6f_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 21098
+  },
+  "tools/fsg7a_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1580
+  },
+  "tools/fsg7a_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7048
+  },
+  "tools/fsg7a_motion.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2057
+  },
+  "tools/fsg7a_public.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4126
+  },
+  "tools/fsg7a_render_fix.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5138
+  },
+  "tools/fsg7a_run.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8314
+  },
+  "tools/fsg7a_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10504
+  },
+  "tools/fsg_blend_bridge.py": {
+   "family": "tools fsg_blend_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 18137
+  },
+  "tools/fsg_blend_bridge_evaluate.py": {
+   "family": "tools fsg_blend_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5329
+  },
+  "tools/fsg_bridge2_analyze.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5366
+  },
+  "tools/fsg_bridge2_select.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10510
+  },
+  "tools/fsg_bridge3_fattening.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 19403
+  },
+  "tools/fsg_bridge4_analyze.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 18301
+  },
+  "tools/fsg_bridge4_synthetic.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 13084
+  },
+  "tools/fsg_bridge5_analyze.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 18519
+  },
+  "tools/fsg_bridge5_factorial.py": {
+   "family": "tools fsg_bridge*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15458
+  },
+  "tools/fsg_coverage_audit.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 21286
+  },
+  "tools/fsg_evaluate.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10019
+  },
+  "tools/fsg_failure_audit.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 28182
+  },
+  "tools/fsg_final_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10494
+  },
+  "tools/fsg_final_render.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3415
+  },
+  "tools/fsg_final_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6427
+  },
+  "tools/fsg_finalh_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10502
+  },
+  "tools/fsg_finalh_render.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3418
+  },
+  "tools/fsg_finalh_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6562
+  },
+  "tools/fsg_hdr_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14837
+  },
+  "tools/fsg_render.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 17608
+  },
+  "tools/fsg_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5814
+  },
+  "tools/fsg_stereo_hdr.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9590
+  },
+  "tools/fsg_stereo_supported.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 17256
+  },
+  "tools/fsg_supported_compare.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15771
+  },
+  "tools/fsg_validation_eval.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15545
+  },
+  "tools/fsg_validation_render.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14934
+  },
+  "tools/fsg_validation_scene.py": {
+   "family": "tools fsg*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5426
+  },
+  "tools/fullscene1a_compare.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3317
+  },
+  "tools/fullscene1a_public.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5018
+  },
+  "tools/fullscene1a_run.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 18550
+  },
+  "tools/fullscene1b_compare.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3795
+  },
+  "tools/fullscene1b_public.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4215
+  },
+  "tools/fullscene1b_run.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 15880
+  },
+  "tools/fullscene1c_compare.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5092
+  },
+  "tools/fullscene1c_public.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5156
+  },
+  "tools/fullscene1c_run.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 24930
+  },
+  "tools/fullscene1d_compare.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4241
+  },
+  "tools/fullscene1d_public.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4466
+  },
+  "tools/fullscene1d_run.py": {
+   "family": "tools fullscene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 19095
+  },
+  "tools/fullscene_real1_budget_round_compare.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 897
+  },
+  "tools/fullscene_real1_budget_round_public.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2541
+  },
+  "tools/fullscene_real1_budget_round_repo.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 29053
+  },
+  "tools/fullscene_real1_budget_round_run.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3834
+  },
+  "tools/fullscene_real1_compare.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3396
+  },
+  "tools/fullscene_real1_export.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4508
+  },
+  "tools/fullscene_real1_oracle_scaffold.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6175
+  },
+  "tools/fullscene_real1_public.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9534
+  },
+  "tools/fullscene_real1_reference.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6900
+  },
+  "tools/fullscene_real1_repo_adapter.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 47930
+  },
+  "tools/fullscene_real1_run.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 13609
+  },
+  "tools/fullscene_real1_seed_round_compare.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1000
+  },
+  "tools/fullscene_real1_seed_round_public.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2885
+  },
+  "tools/fullscene_real1_seed_round_repo.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12664
+  },
+  "tools/fullscene_real1_seed_round_run.py": {
+   "family": "tools fullscene_real*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5374
+  },
+  "tools/gross_diagnosis.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 42478
+  },
+  "tools/inspect_preview.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 6876
+  },
+  "tools/integrate_sphere.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 34885
+  },
+  "tools/make_calib_room.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 12430
+  },
+  "tools/make_hdri_scene.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 2304
+  },
+  "tools/multiobject1a_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1391
+  },
+  "tools/multiobject1a_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3752
+  },
+  "tools/multiobject1a_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 11757
+  },
+  "tools/multiobject1a_seed.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3347
+  },
+  "tools/multiobject1b2_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2957
+  },
+  "tools/multiobject1b2_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5049
+  },
+  "tools/multiobject1b2_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 27968
+  },
+  "tools/multiobject1b_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2168
+  },
+  "tools/multiobject1b_policy.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2059
+  },
+  "tools/multiobject1b_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4280
+  },
+  "tools/multiobject1b_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 18283
+  },
+  "tools/multiobject1c_audit.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 18490
+  },
+  "tools/multiobject1c_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2311
+  },
+  "tools/multiobject1c_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1521
+  },
+  "tools/multiobject1c_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4155
+  },
+  "tools/multiobject2a_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2678
+  },
+  "tools/multiobject2a_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3496
+  },
+  "tools/multiobject2a_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7167
+  },
+  "tools/multiobject2a_select.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3748
+  },
+  "tools/multiobject2b_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3048
+  },
+  "tools/multiobject2b_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4009
+  },
+  "tools/multiobject2b_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 17851
+  },
+  "tools/multiobject2b_seed.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2414
+  },
+  "tools/multiobject2c_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2892
+  },
+  "tools/multiobject2c_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4729
+  },
+  "tools/multiobject2c_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 22281
+  },
+  "tools/multiobject2d_audit.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 19163
+  },
+  "tools/multiobject2d_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2282
+  },
+  "tools/multiobject2d_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1522
+  },
+  "tools/multiobject2d_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4244
+  },
+  "tools/multiobject3a_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2810
+  },
+  "tools/multiobject3a_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3887
+  },
+  "tools/multiobject3a_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10295
+  },
+  "tools/multiobject3a_select.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3660
+  },
+  "tools/multiobject3b_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3327
+  },
+  "tools/multiobject3b_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4347
+  },
+  "tools/multiobject3b_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 17977
+  },
+  "tools/multiobject3b_seed.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2422
+  },
+  "tools/multiobject3c_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3269
+  },
+  "tools/multiobject3c_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4882
+  },
+  "tools/multiobject3c_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 22616
+  },
+  "tools/multiobject3d_audit.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 30178
+  },
+  "tools/multiobject3d_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2939
+  },
+  "tools/multiobject3d_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2152
+  },
+  "tools/multiobject3d_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4791
+  },
+  "tools/multiobject3e_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3341
+  },
+  "tools/multiobject3e_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1249
+  },
+  "tools/multiobject3e_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4961
+  },
+  "tools/multiobject3e_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 28029
+  },
+  "tools/multiobject3f_audit.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 45031
+  },
+  "tools/multiobject3f_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4077
+  },
+  "tools/multiobject3f_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1527
+  },
+  "tools/multiobject3f_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5269
+  },
+  "tools/multiobject3g_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3380
+  },
+  "tools/multiobject3g_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1611
+  },
+  "tools/multiobject3g_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4947
+  },
+  "tools/multiobject3g_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 24810
+  },
+  "tools/multiobject3h_compare.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3646
+  },
+  "tools/multiobject3h_progress.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1656
+  },
+  "tools/multiobject3h_public.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4798
+  },
+  "tools/multiobject3h_run.py": {
+   "family": "tools multiobject*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 26716
+  },
+  "tools/noise_floor.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 23970
+  },
+  "tools/preview360.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 10537
+  },
+  "tools/reality1_compare.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1983
+  },
+  "tools/reality1_eval.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8221
+  },
+  "tools/reality1_public.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2999
+  },
+  "tools/reality1_render_fix.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5511
+  },
+  "tools/reality1_run.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9047
+  },
+  "tools/reality1_scene.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9318
+  },
+  "tools/reality2_compare.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2605
+  },
+  "tools/reality2_eval.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8806
+  },
+  "tools/reality2_public.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 3317
+  },
+  "tools/reality2_render_fix.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5854
+  },
+  "tools/reality2_run.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12961
+  },
+  "tools/reality2b_compare.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2477
+  },
+  "tools/reality2b_eval.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12279
+  },
+  "tools/reality2b_public.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5102
+  },
+  "tools/reality2b_run.py": {
+   "family": "tools reality*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 16683
+  },
+  "tools/rig.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 18243
+  },
+  "tools/scene1a_compare.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2033
+  },
+  "tools/scene1a_eval.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9485
+  },
+  "tools/scene1a_policy.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5576
+  },
+  "tools/scene1a_public.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5002
+  },
+  "tools/scene1a_render_fix.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5334
+  },
+  "tools/scene1a_run.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 13946
+  },
+  "tools/scene1a_scene.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 11957
+  },
+  "tools/scene1b_compare.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2033
+  },
+  "tools/scene1b_eval.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10490
+  },
+  "tools/scene1b_policy.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 8565
+  },
+  "tools/scene1b_public.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 4906
+  },
+  "tools/scene1b_render_fix.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5334
+  },
+  "tools/scene1b_run.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14420
+  },
+  "tools/scene1b_scene.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14148
+  },
+  "tools/scene1c_certify_compare.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2130
+  },
+  "tools/scene1c_certify_eval.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6845
+  },
+  "tools/scene1c_certify_run.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 9866
+  },
+  "tools/scene1c_compare.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 2790
+  },
+  "tools/scene1c_eval.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 10499
+  },
+  "tools/scene1c_policy.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 1469
+  },
+  "tools/scene1c_public.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 6321
+  },
+  "tools/scene1c_render_fix.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 5334
+  },
+  "tools/scene1c_run.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 14594
+  },
+  "tools/scene1c_scene.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 12013
+  },
+  "tools/scene_render_fix.py": {
+   "family": "tools scene*",
+   "reason": "historical experiment family; not in the golden import closure",
+   "bytes": 7193
+  },
+  "tools/second_look.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 14572
+  },
+  "tools/sphere_views.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 22873
+  },
+  "tools/stereo_field.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 47011
+  },
+  "tools/stereo_instrument.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 37913
+  },
+  "tools/stereo_sweep.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 7306
+  },
+  "tools/stereo_truth.py": {
+   "family": "tools phase A-D infrastructure",
+   "reason": "Phase A-D tool (preview, reference, noise, pairs, sequence, stereo instruments); not in the golden import closure",
+   "bytes": 21074
+  }
+ },
+ "scene": {
+  "tracked_inputs": [
+   "scenes/manifest.json",
+   "tools/place_eye.py"
+  ],
+  "untracked_generated": "scenes/classroom/ (gitignored): classroom.blend + assets/ + textures/ from the source zip, classroom_eye.blend made by place_eye.py",
+  "source": "https://download.blender.org/demo/test/classroom.zip (md5 3adbb7114b514bfc6fc724ce20f86b4e, CC0, per scenes/manifest.json)",
+  "reconstruct": [
+   "download and unzip classroom.zip into scenes/classroom/",
+   "blender -b scenes/classroom/classroom.blend -P tools/place_eye.py -- --location -0.6 -1.0 1.2 --yaw 0 --out scenes/classroom/classroom_eye.blend"
+  ],
+  "acceptance_copy": "scenes/classroom/ copied byte-identically from the legacy checkout for the acceptance run",
+  "classroom_eye_blend_sha256": "dca66a3257b909aef00b0331652c55f62a93a8dff0665d070fba7efa436953cc",
+  "classroom_blend_sha256": "5c526ea3f280566e80253673c9955640527cd0f247ea41b1742620b5bc39f7a4",
+  "scene_dir_file_count": 54,
+  "scene_dir_sha256_list_digest": "8d06a44d4e1fd13f4a1e07dd9a1252ede9e7c541277872cc2ec22e3b7e17abe3"
+ },
+ "environment": {
+  "python": "3.12.3 (/usr/bin/python3.12; venv)",
+  "pip_freeze": [
+   "numpy==2.2.6",
+   "opencv-python-headless==4.13.0.92",
+   "OpenEXR==3.4.15",
+   "pillow==12.3.0"
+  ],
+  "blender": "5.2.1 LTS at /usr/local/bin/blender",
+  "device": "OPTIX, NVIDIA GeForce RTX 4090"
+ }
+}
