@@ -1,0 +1,843 @@
+{
+ "behavior": {
+  "evaluation": null,
+  "headline": {
+   "action_sources": {
+    "fsg6f": 1,
+    "oracle_seed": 4
+   },
+   "attention_complete": 2,
+   "control_complete": true,
+   "coverage": null,
+   "covered": null,
+   "fixations": 5,
+   "foreground_background_decomposition": false,
+   "reachable": null,
+   "targets": 4,
+   "terminations": {
+    "attention_complete": 2,
+    "seed_uninitializable": 1,
+    "smoke_budget": 1
+   },
+   "truth_opened_during_control": false,
+   "watchdog_24": 0,
+   "zero_new_surfel_looks": null
+  },
+  "instance_catalog_sha256": "ea8dea5e6d90a57d2667ec65297d7c4691261c72345f7158a8c94e262f7a3ac1",
+  "manifest": {
+   "attempted_instance_count": 4,
+   "control_complete": true,
+   "controller_truth_scope": "one seed per instance + current tangent pair only",
+   "dense_evaluation_truth_opened_during_control": false,
+   "device": "OPTIX",
+   "foreground_background_decomposition": false,
+   "oracle_visible_instance_count": 25,
+   "profile": "small",
+   "public_digest": "de19e51eb72aefec58675408bcc86d8d58c220a35aa6046b0a6fbf7dabe11b88",
+   "scene": "scenes/classroom/classroom_eye.blend",
+   "smoke": true,
+   "smoke_gate": {
+    "all_post_seed_looks_controller_selected": true,
+    "contract": "first two visible instances plus deterministic ascending-ID probe until a controller-selected second look is exercised",
+    "controller_transition_exercised": true,
+    "exhausted_visible_set": false,
+    "objects_examined": 4,
+    "primary_instance_ids": [
+     107,
+     108
+    ],
+    "status": "PASS_CONTROLLER_TRANSITION_EXERCISED"
+   },
+   "spec_id": "Classroom-Oracle-1-v1",
+   "spp_override": null,
+   "termination_counts": {
+    "attention_complete": 2,
+    "seed_uninitializable": 1,
+    "smoke_budget": 1
+   },
+   "total_fixations": 5
+  },
+  "objects": [
+   {
+    "final_map": null,
+    "final_map_surfels": 0,
+    "fixation_count": 1,
+    "incidental_instance_ids": [
+     109,
+     110,
+     112,
+     113,
+     123,
+     166,
+     167,
+     210
+    ],
+    "instance_id": 107,
+    "looks": [
+     {
+      "action_source": "oracle_seed",
+      "calibration_sha256": "eb82e36c199e5093e3f01b16d6c2146dcdb396d3315a1b77f62ee756c55c9ea4",
+      "cyclopean_decision": null,
+      "fsg6f_decision": null,
+      "fusion": {
+       "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "summary": {}
+      },
+      "gaze_deg": [
+       15.0,
+       16.75
+      ],
+      "map": null,
+      "map_size_after": 0,
+      "map_size_before": 0,
+      "matcher": {
+       "sha256": "7aed27a18a06f82d48f0ddb05ab50554983344d47d02d447ed2df5c8cf672685",
+       "summary": {
+        "core_pixels": 16384,
+        "depth_search_bound_applied": false,
+        "half_occlusion_rule": "right reprojection must be in supported core and see same instance",
+        "oracle": "left Blender Position + right supported same-instance reprojection",
+        "point_frame": "H: fixed head; +X right, +Y up, -Z forward; metres",
+        "schema": "ClassroomOracle1-local-perfect-stereo-v1",
+        "sgbm_called": false,
+        "valid_count": 13269,
+        "valid_fraction_core": 0.80987548828125
+       }
+      },
+      "new_surfels": 0,
+      "nonnew_target_points": 0,
+      "observation": {
+       "instance_L": "<i4[320,320]:3c5d020683e5978dd0f3785dd86c4ef7b4a48566bb6c0b3ec9d4b7d5ce636e45",
+       "instance_R": "<i4[320,320]:47a2119cc901949a635d589ea1ce40f6e1794d79561ae046a4533ae0a375b54b",
+       "position_w_L": "<f4[320,320,3]:68dac66d9c46b3592b12521a9e928ce32454378b57645fb7d2e656c7ca69db58",
+       "position_w_R": "<f4[320,320,3]:c141870799003fbc3e80a59cfd9caffbe99e7bafa104df4ec67c257dbbc9d0c2",
+       "rgb_L": "<f4[320,320,3]:excluded-rgb",
+       "rgb_R": "<f4[320,320,3]:excluded-rgb"
+      },
+      "oracle_valid_points_all_instances": 13269,
+      "patch": {
+       "instance_id": "<i4[128,128]:d8522f5cc8c78e579b8f420f18ac37efa0bb267b58ce8f89b682092491677b51",
+       "range_left_m": "<f4[128,128]:4d9fcaa49ac46cf4d0e033dd87450e62fb9a0eae4f811175126e565c664c9dd5",
+       "valid": "|b1[128,128]:846814e87aff9eab97466729c94954db432b53fa6217b983d981974683705c3f",
+       "xyz_h": "<f4[128,128,3]:26eba6d1edf90a245be59191c3c4f5e78a8f945a65e2a6c17c961346668346d0"
+      },
+      "step": 0,
+      "target_points": 65
+     }
+    ],
+    "object_name": "Text",
+    "seed_gaze_deg": [
+     15.0,
+     16.75
+    ],
+    "termination": "seed_uninitializable"
+   },
+   {
+    "final_map": {
+     "instance_id": "<i4[116]:45bebcd98fec9c4b3cfc284f7bc85eae6b572dc550f87f9f0bd9170a7cddeb2e",
+     "provenance_mask": "<u8[116]:9a954bdf9f34e45c1ead3e8b6367f9311e007821efa167689bc51dbd4fcebad7",
+     "rgb": "<f8[116,3]:excluded-rgb",
+     "support_count": "<i2[116]:e5efbd0f9fe0035b6808d6e6f6f7277f3fd1ea9fda1ea144f4e6cb2ad47abde9",
+     "xyz_h": "<f4[116,3]:493fab52423c62b4717f19ab8e89628decfa8c89592335d0797e5e95552f0fed"
+    },
+    "final_map_surfels": 116,
+    "fixation_count": 1,
+    "incidental_instance_ids": [
+     109,
+     110,
+     112,
+     113,
+     123,
+     166,
+     168,
+     210
+    ],
+    "instance_id": 108,
+    "looks": [
+     {
+      "action_source": "oracle_seed",
+      "calibration_sha256": "e9c8a5ed33d72497e5fed274f0a73b73eb4da2afe2c1ae2a3e49cfbde9cb8005",
+      "cyclopean_decision": {
+       "sha256": "f390a9777c4431e3ed41a13538a6ea8e275d4f666f64b7877b1aa990f8a49c1d",
+       "summary": {
+        "next_gaze_deg": null,
+        "reason": "attention_complete",
+        "stop": true
+       }
+      },
+      "fsg6f_decision": {
+       "sha256": "5e984667bf381f09a68695d4089f956d62cf3f292d1b9ceb4012ed5a0c13e987",
+       "summary": {
+        "candidate_state_rule": "strict_open_majority_over_resolved_state",
+        "candidates": [],
+        "candidates_before_consensus_count": 0,
+        "consensus_rejected_candidate_count": 0,
+        "consensus_rejected_candidates": [],
+        "current_gaze_deg": [
+         24.25,
+         16.0
+        ],
+        "frontier_boundary_resolved_count": 35,
+        "frontier_count": 37,
+        "frontier_historical_target_tests": 37,
+        "frontier_map_resolved_count": 2,
+        "frontier_open_count": 0,
+        "frontier_raw_count": 37,
+        "frontier_state_radius_m": 0.012,
+        "frontier_state_rule": "lookahead_target_mapped_or_binocular_history_says_object_absent",
+        "frontier_state_threshold": 0.15,
+        "frontier_voxel_count": 44,
+        "map_pitch_extent_deg": [
+         15.118306040524514,
+         16.36914283450376
+        ],
+        "map_yaw_extent_deg": [
+         24.169127212086728,
+         28.48951500602752
+        ],
+        "next_gaze_deg": null,
+        "reason": "no_frontier",
+        "selected": null,
+        "stop": true
+       }
+      },
+      "fusion": {
+       "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "summary": {}
+      },
+      "gaze_deg": [
+       24.25,
+       16.0
+      ],
+      "map": {
+       "instance_id": "<i4[116]:45bebcd98fec9c4b3cfc284f7bc85eae6b572dc550f87f9f0bd9170a7cddeb2e",
+       "provenance_mask": "<u8[116]:9a954bdf9f34e45c1ead3e8b6367f9311e007821efa167689bc51dbd4fcebad7",
+       "rgb": "<f8[116,3]:excluded-rgb",
+       "support_count": "<i2[116]:e5efbd0f9fe0035b6808d6e6f6f7277f3fd1ea9fda1ea144f4e6cb2ad47abde9",
+       "xyz_h": "<f4[116,3]:493fab52423c62b4717f19ab8e89628decfa8c89592335d0797e5e95552f0fed"
+      },
+      "map_size_after": 116,
+      "map_size_before": 0,
+      "matcher": {
+       "sha256": "6d57a90957eec9fd1ac4bced900c184aebd947f21591879b60de4bc08f3141a8",
+       "summary": {
+        "core_pixels": 16384,
+        "depth_search_bound_applied": false,
+        "half_occlusion_rule": "right reprojection must be in supported core and see same instance",
+        "oracle": "left Blender Position + right supported same-instance reprojection",
+        "point_frame": "H: fixed head; +X right, +Y up, -Z forward; metres",
+        "schema": "ClassroomOracle1-local-perfect-stereo-v1",
+        "sgbm_called": false,
+        "valid_count": 13886,
+        "valid_fraction_core": 0.8475341796875
+       }
+      },
+      "new_surfels": 116,
+      "nonnew_target_points": 0,
+      "observation": {
+       "instance_L": "<i4[320,320]:f1a5ca271844702808a60c70d344e7370a8944edadd40c52282f9e8224a16fab",
+       "instance_R": "<i4[320,320]:32d0b3c5155417597a5b4bfb7fd8eb75975453e9189f111249baf08423ebdfd3",
+       "position_w_L": "<f4[320,320,3]:196b44c0288e0b00123e3e3b5b25bab988d265c012d3bb3bb750386694f06aca",
+       "position_w_R": "<f4[320,320,3]:974d1279cf6fb08e6c9179c6c3cdf16bb78850c45a95d2ba21f045716a20ee4a",
+       "rgb_L": "<f4[320,320,3]:excluded-rgb",
+       "rgb_R": "<f4[320,320,3]:excluded-rgb"
+      },
+      "oracle_valid_points_all_instances": 13886,
+      "patch": {
+       "instance_id": "<i4[128,128]:d8bf78fa5cc1ddfd0965181db7bfe63c4f77e50ac0e07ad7930eaa46ce53ea1c",
+       "range_left_m": "<f4[128,128]:b4ac458bae9a36fbce7bf176fb84a3fef4931edb1b2402ad4abfdf9eabb0df2b",
+       "valid": "|b1[128,128]:4af52a6a9fc99f0af0797470e184d3607619e0a7dd808496e52a09970c8b0cf1",
+       "xyz_h": "<f4[128,128,3]:d14301d0f22a9ba683da616ebb1204d23baf5ce7e1c4c8588e0b23cc659c5eb7"
+      },
+      "step": 0,
+      "target_points": 116
+     }
+    ],
+    "object_name": "Text.001",
+    "seed_gaze_deg": [
+     24.25,
+     16.0
+    ],
+    "termination": "attention_complete"
+   },
+   {
+    "final_map": {
+     "instance_id": "<i4[149]:746fa971021433f95b5131f9b66ecd2a2f51025eaebc912e61f4528a7dae858c",
+     "provenance_mask": "<u8[149]:6f91f6ca0c3f0e1d52072a98a1e9935a682ebdeac35efe7738e9e6334d433eed",
+     "rgb": "<f8[149,3]:excluded-rgb",
+     "support_count": "<i2[149]:85dcf4ee6ed0480e209be94530cd83874ae8331aa6e94d2a57a8f319aa483dcb",
+     "xyz_h": "<f4[149,3]:2093ed32f904b58f25a27a01ef228dad6155a0af3a2206cfc42422968e9f93d8"
+    },
+    "final_map_surfels": 149,
+    "fixation_count": 1,
+    "incidental_instance_ids": [
+     107,
+     111,
+     112,
+     113,
+     114,
+     115,
+     166,
+     167,
+     210
+    ],
+    "instance_id": 109,
+    "looks": [
+     {
+      "action_source": "oracle_seed",
+      "calibration_sha256": "ead703835000ab54f6100c174937d5ce03efdbc18df57ea6bb5740fdef1b72cd",
+      "cyclopean_decision": {
+       "sha256": "becb57e76be6fb41df36184fa38161fb568309a5b2cb4789ac006b0f31a36cfc",
+       "summary": {
+        "next_gaze_deg": null,
+        "reason": "attention_complete",
+        "stop": true
+       }
+      },
+      "fsg6f_decision": {
+       "sha256": "ffbd5bf4c4b0d7055ed086df5b438f3427417c5e5e6953817ead0386c9d456bc",
+       "summary": {
+        "candidate_state_rule": "strict_open_majority_over_resolved_state",
+        "candidates": [],
+        "candidates_before_consensus_count": 0,
+        "consensus_rejected_candidate_count": 0,
+        "consensus_rejected_candidates": [],
+        "current_gaze_deg": [
+         8.5,
+         13.5
+        ],
+        "frontier_boundary_resolved_count": 25,
+        "frontier_count": 35,
+        "frontier_historical_target_tests": 32,
+        "frontier_map_resolved_count": 5,
+        "frontier_open_count": 5,
+        "frontier_raw_count": 35,
+        "frontier_state_radius_m": 0.012,
+        "frontier_state_rule": "lookahead_target_mapped_or_binocular_history_says_object_absent",
+        "frontier_state_threshold": 0.15,
+        "frontier_voxel_count": 65,
+        "map_pitch_extent_deg": [
+         12.544968850941286,
+         14.504393306646445
+        ],
+        "map_yaw_extent_deg": [
+         3.5753400717108286,
+         14.513590407651781
+        ],
+        "next_gaze_deg": null,
+        "reason": "no_frontier",
+        "selected": null,
+        "stop": true
+       }
+      },
+      "fusion": {
+       "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "summary": {}
+      },
+      "gaze_deg": [
+       8.5,
+       13.5
+      ],
+      "map": {
+       "instance_id": "<i4[149]:746fa971021433f95b5131f9b66ecd2a2f51025eaebc912e61f4528a7dae858c",
+       "provenance_mask": "<u8[149]:6f91f6ca0c3f0e1d52072a98a1e9935a682ebdeac35efe7738e9e6334d433eed",
+       "rgb": "<f8[149,3]:excluded-rgb",
+       "support_count": "<i2[149]:85dcf4ee6ed0480e209be94530cd83874ae8331aa6e94d2a57a8f319aa483dcb",
+       "xyz_h": "<f4[149,3]:2093ed32f904b58f25a27a01ef228dad6155a0af3a2206cfc42422968e9f93d8"
+      },
+      "map_size_after": 149,
+      "map_size_before": 0,
+      "matcher": {
+       "sha256": "ddfecef48833c4a941094a7ee56f5f5d0c115dd90f827660f82b6fc7ab1b75cd",
+       "summary": {
+        "core_pixels": 16384,
+        "depth_search_bound_applied": false,
+        "half_occlusion_rule": "right reprojection must be in supported core and see same instance",
+        "oracle": "left Blender Position + right supported same-instance reprojection",
+        "point_frame": "H: fixed head; +X right, +Y up, -Z forward; metres",
+        "schema": "ClassroomOracle1-local-perfect-stereo-v1",
+        "sgbm_called": false,
+        "valid_count": 14374,
+        "valid_fraction_core": 0.8773193359375
+       }
+      },
+      "new_surfels": 149,
+      "nonnew_target_points": 0,
+      "observation": {
+       "instance_L": "<i4[320,320]:8d5afe669d8e5eff8143f8cd20e5c5e7257ee660fa69872d2bfec06c0ce5ffff",
+       "instance_R": "<i4[320,320]:4fdd29869f6959e1db45d13204b03c4273e5b6360cb3f97815ed128195d71b19",
+       "position_w_L": "<f4[320,320,3]:1f1191e04f7457c8b3a9d0ea84bd59308517032734579dc83bbf5abe0d94627a",
+       "position_w_R": "<f4[320,320,3]:bd2651ddadc98a82dc2fbc0098f5c3f501ef4d0dc38dc4623091c02ba5dc56a7",
+       "rgb_L": "<f4[320,320,3]:excluded-rgb",
+       "rgb_R": "<f4[320,320,3]:excluded-rgb"
+      },
+      "oracle_valid_points_all_instances": 14374,
+      "patch": {
+       "instance_id": "<i4[128,128]:c229e1b1adc19eb9141e5d62b7ea7f0fc720ed34ad805d73f0150fc89fdbe8a5",
+       "range_left_m": "<f4[128,128]:f4c09ed85a930d96684b0dbd0cbd475fb49add3a9ae858d5d6320b200e0022fc",
+       "valid": "|b1[128,128]:466cbccb5fe851fe9dee6091b4c426ec19603f37cfbf467da17660a5bf3fb192",
+       "xyz_h": "<f4[128,128,3]:b16a43c3e544fc2c63b43249d1470c953ab39a6eecaa7df2e77bb8865026e348"
+      },
+      "step": 0,
+      "target_points": 149
+     }
+    ],
+    "object_name": "alphabet",
+    "seed_gaze_deg": [
+     8.5,
+     13.5
+    ],
+    "termination": "attention_complete"
+   },
+   {
+    "final_map": {
+     "instance_id": "<i4[5005]:13910c35add1406bb8230fcd11d482218774b8e5b713d1884fff66d4bf03d9b5",
+     "provenance_mask": "<u8[5005]:45bf62393de2b94a4069dee5caaf8bcca3b284b87f3c68f3f46d2f4bd90d75ba",
+     "rgb": "<f8[5005,3]:excluded-rgb",
+     "support_count": "<i2[5005]:19cb52da6c31fa73b53b2e5606a679ae5b59210c0a89637e9fd6deacefb0f015",
+     "xyz_h": "<f4[5005,3]:17350a25d12a6a70dfdf2cba4820b9f7084d70d0e26c383b4d46c2727c811dd6"
+    },
+    "final_map_surfels": 5005,
+    "fixation_count": 2,
+    "incidental_instance_ids": [
+     3,
+     116,
+     123,
+     130,
+     143,
+     145,
+     172,
+     202,
+     210,
+     213,
+     234
+    ],
+    "instance_id": 110,
+    "looks": [
+     {
+      "action_source": "oracle_seed",
+      "calibration_sha256": "0d569886fef87a2bb7932fc311e0726eceb928f8d732f5e8fdeb834146cc76f6",
+      "cyclopean_decision": null,
+      "fsg6f_decision": {
+       "sha256": "c59acf09995321c6ec193047f15bf66283aaf8e1d6c48633402aac924420e2a5",
+       "summary": {
+        "candidate_state_rule": "strict_open_majority_over_resolved_state",
+        "candidates_before_consensus_count": 2,
+        "consensus_rejected_candidate_count": 0,
+        "consensus_rejected_candidates": [],
+        "current_gaze_deg": [
+         -22.0,
+         20.0
+        ],
+        "frontier_boundary_resolved_count": 93,
+        "frontier_count": 222,
+        "frontier_historical_target_tests": 93,
+        "frontier_map_resolved_count": 0,
+        "frontier_open_count": 129,
+        "frontier_raw_count": 222,
+        "frontier_state_radius_m": 0.012,
+        "frontier_state_rule": "lookahead_target_mapped_or_binocular_history_says_object_absent",
+        "frontier_state_threshold": 0.15,
+        "frontier_voxel_count": 874,
+        "map_pitch_extent_deg": [
+         20.294210182672707,
+         25.80287948919563
+        ],
+        "map_yaw_extent_deg": [
+         -27.5272225567503,
+         -18.630616249416914
+        ],
+        "next_gaze_deg": [
+         -17.0,
+         15.0
+        ],
+        "reason": "continue",
+        "stop": false
+       }
+      },
+      "fusion": {
+       "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+       "summary": {}
+      },
+      "gaze_deg": [
+       -22.0,
+       20.0
+      ],
+      "map": {
+       "instance_id": "<i4[4868]:c3befa65dddd4293b3ae2284cc9b1f5ab20796c12e9a2d2698676682a06c2102",
+       "provenance_mask": "<u8[4868]:03ef9f532947a2b73c87cda3e8c7d0e69028779de91ec4009353c5d752655849",
+       "rgb": "<f8[4868,3]:excluded-rgb",
+       "support_count": "<i2[4868]:8de3285ff3848134534ce18d55c0d6a51e37b4de16088fc479443be4fdc7c5d0",
+       "xyz_h": "<f4[4868,3]:57e2e9e5902ca0038e6028e1f3ba755f3228abcce9683ee57b4d0e98609ea809"
+      },
+      "map_size_after": 4868,
+      "map_size_before": 0,
+      "matcher": {
+       "sha256": "2bbb2825609fc649ebf0e6b66a556c12cfb07e78dd525f6d72da9a730961b501",
+       "summary": {
+        "core_pixels": 16384,
+        "depth_search_bound_applied": false,
+        "half_occlusion_rule": "right reprojection must be in supported core and see same instance",
+        "oracle": "left Blender Position + right supported same-instance reprojection",
+        "point_frame": "H: fixed head; +X right, +Y up, -Z forward; metres",
+        "schema": "ClassroomOracle1-local-perfect-stereo-v1",
+        "sgbm_called": false,
+        "valid_count": 14630,
+        "valid_fraction_core": 0.8929443359375
+       }
+      },
+      "new_surfels": 4868,
+      "nonnew_target_points": 0,
+      "observation": {
+       "instance_L": "<i4[320,320]:093e6ca720047306546421267c44b5f7f8b2f932d842818f3bf41ce8d8b14214",
+       "instance_R": "<i4[320,320]:15366232c6343e1addd1d07519b805b5dd2b556b6c1b7f3e70d4c21491772a35",
+       "position_w_L": "<f4[320,320,3]:bcbc8e71ea4bb200bfe86980bbfdcbd2750d77adab19cae26fd932b3dea54308",
+       "position_w_R": "<f4[320,320,3]:9d90d786b32f83eec76b2dc5f860d6b6416535a9e1092d3da79609bb007820fe",
+       "rgb_L": "<f4[320,320,3]:excluded-rgb",
+       "rgb_R": "<f4[320,320,3]:excluded-rgb"
+      },
+      "oracle_valid_points_all_instances": 14630,
+      "patch": {
+       "instance_id": "<i4[128,128]:c79baca1b380ddbca55c401b9289226076897017d71e5e7c703bc1c046e361b0",
+       "range_left_m": "<f4[128,128]:d51fc4f10ca57367d727bdc9d78a0abe7addf0ccc1bf6698a33fa9f24d012b14",
+       "valid": "|b1[128,128]:cc22324355b45ead02e5ad2497c7c0367fcdb4d3ee85d4c00a03147ea080b5af",
+       "xyz_h": "<f4[128,128,3]:19bb45f1297d45b17e38028c89142e522c0186f3360fe5e4c57c5fee1e3ba6a0"
+      },
+      "step": 0,
+      "target_points": 4868
+     },
+     {
+      "action_source": "fsg6f",
+      "calibration_sha256": "01216e0bc9fa63b5a96d30d3f9de97d9980779bd0e29fb08b94ef625cdf1ffaf",
+      "cyclopean_decision": null,
+      "fsg6f_decision": null,
+      "fusion": {
+       "sha256": "8c3b585617488d5086ab66012c39477fcd461c9733cf0caf9a84ab82ab407014",
+       "summary": {
+        "affected_surfels": 84,
+        "base_points": 4868,
+        "duplicate_patch": false,
+        "input_points": 251,
+        "matched": 114,
+        "new": 137
+       }
+      },
+      "gaze_deg": [
+       -17.0,
+       15.0
+      ],
+      "map": {
+       "instance_id": "<i4[5005]:13910c35add1406bb8230fcd11d482218774b8e5b713d1884fff66d4bf03d9b5",
+       "provenance_mask": "<u8[5005]:45bf62393de2b94a4069dee5caaf8bcca3b284b87f3c68f3f46d2f4bd90d75ba",
+       "rgb": "<f8[5005,3]:excluded-rgb",
+       "support_count": "<i2[5005]:19cb52da6c31fa73b53b2e5606a679ae5b59210c0a89637e9fd6deacefb0f015",
+       "xyz_h": "<f4[5005,3]:17350a25d12a6a70dfdf2cba4820b9f7084d70d0e26c383b4d46c2727c811dd6"
+      },
+      "map_size_after": 5005,
+      "map_size_before": 4868,
+      "matcher": {
+       "sha256": "d9f8faebd6d4163957650bb1fa46ab81116479c5faf2d078977bf67fbedf8993",
+       "summary": {
+        "core_pixels": 16384,
+        "depth_search_bound_applied": false,
+        "half_occlusion_rule": "right reprojection must be in supported core and see same instance",
+        "oracle": "left Blender Position + right supported same-instance reprojection",
+        "point_frame": "H: fixed head; +X right, +Y up, -Z forward; metres",
+        "schema": "ClassroomOracle1-local-perfect-stereo-v1",
+        "sgbm_called": false,
+        "valid_count": 14904,
+        "valid_fraction_core": 0.90966796875
+       }
+      },
+      "new_surfels": 137,
+      "nonnew_target_points": 114,
+      "observation": {
+       "instance_L": "<i4[320,320]:01d272fdae5fc009a2eccb95bb1c4c879835c67a06df204c858064e892f6719f",
+       "instance_R": "<i4[320,320]:f1721e5d831d186f84ea626b7f78d4cf965352b9983bfa3b01f7f16b2d0ac321",
+       "position_w_L": "<f4[320,320,3]:463c2d5851fd47e98cb1537ea2d392a86af6c02ae96c21618b10752ca815578f",
+       "position_w_R": "<f4[320,320,3]:75114bb67c38cc4ec500d08818af6d105b777227df90d54da7b5d1b84bcd0a79",
+       "rgb_L": "<f4[320,320,3]:excluded-rgb",
+       "rgb_R": "<f4[320,320,3]:excluded-rgb"
+      },
+      "oracle_valid_points_all_instances": 14904,
+      "patch": {
+       "instance_id": "<i4[128,128]:642b886f23a27eb64afeade33e70d967a5539654ec3a24ee109b0379773a0ae9",
+       "range_left_m": "<f4[128,128]:8abf36a2d64a34b547b69e72467111fc5b1249df6f58bdb6379aafef101a5755",
+       "valid": "|b1[128,128]:491b67f19c14ea6f2ee2d0641fbfc07908b5bf7a5ad1ac4dac6f38f5be1c61aa",
+       "xyz_h": "<f4[128,128,3]:343f2c0d9042104eae35449ae1961b9a6e08337c7c7963150229e8bae52094e3"
+      },
+      "step": 1,
+      "target_points": 251
+     }
+    ],
+    "object_name": "beams",
+    "seed_gaze_deg": [
+     -22.0,
+     20.0
+    ],
+    "termination": "smoke_budget"
+   }
+  ],
+  "reachable_samples": {
+   "direction_h": "<f4[29288,3]:0814e7bcf3e36019e11f153f17c2129b5785bb4461eb92d9d285e1c1ba3e7a8a",
+   "instance_id": "<i4[29288]:4aefc90cba5a441bd6eb68f32a439c60354bf735dac4f1e68a81b7ddbfd2482e",
+   "xyz_h": "<f4[29288,3]:bff7d1942ef561e17753e2d0a50c3d6364b6fa338a7afcc1d56c007bee8c117f",
+   "yaw_pitch_deg": "<f4[29288,2]:4428d31bec9aa8855a3f23ea3bae433df9851998de58d0a85553d39c95d299a0"
+  },
+  "seeds": {
+   "controller_domain_deg": {
+    "pitch": [
+     -20.0,
+     20.0
+    ],
+    "yaw": [
+     -25.0,
+     25.0
+    ]
+   },
+   "head_R_wh": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     3.422854177870249e-08,
+     -0.9999999403953552
+    ],
+    [
+     0.0,
+     0.9999999403953552,
+     3.422854177870249e-08
+    ]
+   ],
+   "head_origin_w_m": [
+    -0.6000000238418579,
+    -1.0,
+    1.2000000476837158
+   ],
+   "instances": [
+    {
+     "instance_id": 107,
+     "object_name": "Text",
+     "seed_gaze_deg": [
+      15.0,
+      16.75
+     ]
+    },
+    {
+     "instance_id": 108,
+     "object_name": "Text.001",
+     "seed_gaze_deg": [
+      24.25,
+      16.0
+     ]
+    },
+    {
+     "instance_id": 109,
+     "object_name": "alphabet",
+     "seed_gaze_deg": [
+      8.5,
+      13.5
+     ]
+    },
+    {
+     "instance_id": 110,
+     "object_name": "beams",
+     "seed_gaze_deg": [
+      -22.0,
+      20.0
+     ]
+    },
+    {
+     "instance_id": 111,
+     "object_name": "blackBoard",
+     "seed_gaze_deg": [
+      15.0,
+      1.75
+     ]
+    },
+    {
+     "instance_id": 112,
+     "object_name": "blackBoardLamp",
+     "seed_gaze_deg": [
+      14.0,
+      10.75
+     ]
+    },
+    {
+     "instance_id": 113,
+     "object_name": "blackBoard_upPart",
+     "seed_gaze_deg": [
+      13.5,
+      11.5
+     ]
+    },
+    {
+     "instance_id": 114,
+     "object_name": "blackboardLamp",
+     "seed_gaze_deg": [
+      13.25,
+      10.5
+     ]
+    },
+    {
+     "instance_id": 115,
+     "object_name": "boardFrame",
+     "seed_gaze_deg": [
+      5.25,
+      1.5
+     ]
+    },
+    {
+     "instance_id": 116,
+     "object_name": "ceiling",
+     "seed_gaze_deg": [
+      -19.5,
+      20.0
+     ]
+    },
+    {
+     "instance_id": 123,
+     "object_name": "ceilingMoulding",
+     "seed_gaze_deg": [
+      -7.75,
+      20.0
+     ]
+    },
+    {
+     "instance_id": 140,
+     "object_name": "coat 1",
+     "seed_gaze_deg": [
+      -1.25,
+      0.0
+     ]
+    },
+    {
+     "instance_id": 166,
+     "object_name": "lettersPlank",
+     "seed_gaze_deg": [
+      8.0,
+      13.75
+     ]
+    },
+    {
+     "instance_id": 167,
+     "object_name": "lettersPlank.001",
+     "seed_gaze_deg": [
+      14.0,
+      16.75
+     ]
+    },
+    {
+     "instance_id": 168,
+     "object_name": "lettersPlank.002",
+     "seed_gaze_deg": [
+      24.5,
+      15.75
+     ]
+    },
+    {
+     "instance_id": 172,
+     "object_name": "pipe",
+     "seed_gaze_deg": [
+      -11.5,
+      19.75
+     ]
+    },
+    {
+     "instance_id": 174,
+     "object_name": "plank",
+     "seed_gaze_deg": [
+      -11.5,
+      -1.0
+     ]
+    },
+    {
+     "instance_id": 178,
+     "object_name": "sol",
+     "seed_gaze_deg": [
+      7.5,
+      -18.0
+     ]
+    },
+    {
+     "instance_id": 201,
+     "object_name": "verticalPipe",
+     "seed_gaze_deg": [
+      -8.75,
+      4.0
+     ]
+    },
+    {
+     "instance_id": 202,
+     "object_name": "wall",
+     "seed_gaze_deg": [
+      -23.5,
+      9.5
+     ]
+    },
+    {
+     "instance_id": 210,
+     "object_name": "wall.008",
+     "seed_gaze_deg": [
+      -0.5,
+      12.5
+     ]
+    },
+    {
+     "instance_id": 216,
+     "object_name": "wallPlug.001",
+     "seed_gaze_deg": [
+      14.0,
+      -9.0
+     ]
+    },
+    {
+     "instance_id": 224,
+     "object_name": "woodBase",
+     "seed_gaze_deg": [
+      -1.25,
+      -8.5
+     ]
+    },
+    {
+     "instance_id": 225,
+     "object_name": "woodBaseboard",
+     "seed_gaze_deg": [
+      3.0,
+      -15.0
+     ]
+    },
+    {
+     "instance_id": 234,
+     "object_name": "worldMap",
+     "seed_gaze_deg": [
+      -15.25,
+      7.0
+     ]
+    }
+   ],
+   "seed_scan_step_deg": 0.25
+  },
+  "target_ids": [
+   107,
+   108,
+   109,
+   110
+  ]
+ },
+ "meta": {
+  "array_rule": "'<dtype>[shape]:sha256' over dtype, shape and canonical little-endian C-order bytes (NaN canonical, -0.0 -> +0.0) == np.array_equal(equal_nan=True) with equal dtype/shape",
+  "compared_exactly": "seeds.json (instances with seed gazes, controller domain, scan step, head pose);\n  instance_catalog.json; the dense evaluation-only reachable samples;\n  manifest fields (digest, spec, profile, device, smoke, counts, control_complete,\n  terminations, truth isolation, fg/bg decomposition, truth scope, smoke gate,\n  spp override, scene); target order; per object: name, seed gaze, fixation count,\n  termination, final surfels, incidental ids, final map arrays; per look: gaze,\n  action source, target/valid points, map sizes, new/non-new surfels, matcher, fusion,\n  FSG6f decision, Cyclopean decision, calibration, map-snapshot arrays, oracle-patch\n  arrays, observation Object Index and Position arrays; evaluation.json counts,\n  coverage and per-object table when the reference has an evaluation.",
+  "dict_rule": "sha256 of canonical JSON (sorted keys, compact separators, shortest-repr floats); 'summary' repeats top-level scalars for readable diffs",
+  "excluded": {
+   "rgb_content": "map/final-map 'rgb' and observation 'rgb_L'/'rgb_R': OptiX Combined pass is not bit-reproducible; key, dtype and shape are still compared",
+   "unstable_metadata": "acquisition.json, logs, raw EXR bytes, benchmark PNGs, stored artifact paths, .npz archive bytes, trajectory.partial.json (duplicate of the trajectory)"
+  },
+  "generated_by": "tools/compare_golden.py signature",
+  "generated_from": "Consolidation-1 accepted smoke run (fov-3d-vision-core-stage/previews/classroom-oracle-1-smoke, --profile small --smoke, repaired gate); 0 behavioral mismatches against the legacy smoke-2 and the Consolidation-2 smoke"
+ },
+ "schema": "fov3d-golden-signature-v1"
+}
