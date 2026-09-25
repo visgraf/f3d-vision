@@ -51,7 +51,7 @@ def main() -> int:
         check("roundtrip-summary", h.summary() == g.summary())
         check("roundtrip-dual", h.dual_edges() == g.dual_edges())
         meta = json.loads((Path(td) / "graph.json").read_text())
-        check("format-version", meta["format"] == "f3d-vision-scene-partition-v1")
+        check("format-version", meta["format"] == "f3d-vision-scene-partition-v2")
 
     # Negative invariant: base must not masquerade as an object.
     from fov3d.scene.model import PartitionRegion

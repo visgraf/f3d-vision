@@ -19,8 +19,8 @@ from fov3d.scene.synthetic import build_synthetic_occlusion_case
 def svg_text(g) -> str:
     # The drawing is intentionally schematic.  It visualizes the key representational
     # fact: one object hypothesis may own disconnected visible regions.
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520">
-<rect width="1100" height="520" fill="white"/>
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="560" viewBox="0 0 1280 560">
+<rect width="1280" height="560" fill="white"/>
 <text x="40" y="45" font-family="sans-serif" font-size="26">Partition-Graph Phase 1 — representation kernel</text>
 <text x="40" y="82" font-family="sans-serif" font-size="17">Scene partition and observation overlay are distinct; A-left and A-right share object hypothesis A.</text>
 <rect x="60" y="140" width="210" height="120" rx="14" fill="#e8eef8" stroke="#333" stroke-width="2"/>
@@ -37,22 +37,27 @@ def svg_text(g) -> str:
 <text x="515" y="185" font-family="sans-serif" font-size="14">occlusion</text>
 <path d="M165,365 C165,410 680,410 680,365" stroke="#275ea8" stroke-width="4" fill="none" stroke-dasharray="10,6"/>
 <text x="333" y="445" font-family="sans-serif" font-size="20" fill="#275ea8">one object hypothesis A groups disconnected regions</text>
-<rect x="835" y="120" width="220" height="190" rx="16" fill="#fafafa" stroke="#555"/>
-<text x="875" y="155" font-family="sans-serif" font-size="20">dual graph</text>
-<circle cx="885" cy="215" r="28" fill="#e8eef8" stroke="#333"/>
-<text x="876" y="223" font-family="sans-serif" font-size="18">A₁</text>
-<circle cx="945" cy="215" r="28" fill="#f6e6df" stroke="#333"/>
-<text x="939" y="223" font-family="sans-serif" font-size="18">B</text>
-<circle cx="1010" cy="215" r="28" fill="#e8eef8" stroke="#333"/>
-<text x="1001" y="223" font-family="sans-serif" font-size="18">A₂</text>
-<line x1="913" y1="215" x2="917" y2="215" stroke="#333" stroke-width="3"/>
-<line x1="973" y1="215" x2="982" y2="215" stroke="#333" stroke-width="3"/>
-<text x="850" y="275" font-family="sans-serif" font-size="15">dual nodes are partition regions;</text>
-<text x="850" y="296" font-family="sans-serif" font-size="15">object grouping is a separate relation.</text>
-<rect x="835" y="345" width="220" height="90" rx="12" fill="none" stroke="#777" stroke-dasharray="8,6"/>
-<text x="858" y="382" font-family="sans-serif" font-size="17">observation footprint</text>
-<text x="858" y="408" font-family="sans-serif" font-size="15">overlay, not a scene region</text>
-<text x="40" y="500" font-family="monospace" font-size="15">summary: {html.escape(json.dumps(g.summary(), sort_keys=True))}</text>
+<rect x="835" y="120" width="390" height="210" rx="16" fill="#fafafa" stroke="#555"/>
+<text x="985" y="155" font-family="sans-serif" font-size="20">dual graph</text>
+<circle cx="900" cy="215" r="28" fill="#e8eef8" stroke="#333"/>
+<text x="891" y="223" font-family="sans-serif" font-size="18">A₁</text>
+<circle cx="990" cy="215" r="28" fill="#f6e6df" stroke="#333"/>
+<text x="984" y="223" font-family="sans-serif" font-size="18">B</text>
+<circle cx="1080" cy="215" r="28" fill="#e8eef8" stroke="#333"/>
+<text x="1071" y="223" font-family="sans-serif" font-size="18">A₂</text>
+<line x1="928" y1="215" x2="962" y2="215" stroke="#333" stroke-width="3"/>
+<line x1="1018" y1="215" x2="1052" y2="215" stroke="#333" stroke-width="3"/>
+
+<circle cx="990" cy="285" r="28" fill="#f2f2f2" stroke="#333"/>
+<text x="972" y="292" font-family="sans-serif" font-size="16">base</text>
+<line x1="915" y1="238" x2="970" y2="270" stroke="#777" stroke-width="2"/>
+<line x1="1065" y1="238" x2="1010" y2="270" stroke="#777" stroke-width="2"/>
+<text x="835" y="345" font-family="sans-serif" font-size="15">dual nodes are partition regions; object grouping is separate.</text>
+
+<rect x="835" y="385" width="390" height="100" rx="12" fill="none" stroke="#777" stroke-dasharray="8,6"/>
+<text x="875" y="425" font-family="sans-serif" font-size="17">observation footprint</text>
+<text x="875" y="453" font-family="sans-serif" font-size="15">overlay, not a scene region</text>
+<text x="40" y="535" font-family="monospace" font-size="15">summary: {html.escape(json.dumps(g.summary(), sort_keys=True))}</text>
 </svg>'''
 
 
@@ -74,7 +79,7 @@ def main() -> int:
         "the observation overlay, and demonstrates that one object hypothesis may own multiple "
         "disconnected visible partition regions across an occluder.\n\n"
         "Regenerate with:\n\n```bash\n"
-        "python tools/partition_graph1_demo.py previews/partition-graph-1-demo\n"
+        "./.venv/bin/python tools/partition_graph1_demo.py previews/partition-graph-1-demo\n"
         "```\n",
         encoding="utf-8",
     )

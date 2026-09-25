@@ -1,29 +1,26 @@
 """Core spherical partition + primal/dual graph data model.
 
-The model deliberately separates two partitions:
+The model keeps two structures separate:
 
 * scene partition: connected object components plus base/complement;
-* observation overlay: which spherical territory has been sampled by each eye.
+* observation overlay: tangent-footprint samples contributed by one or both eyes.
 
-There is no physical ``VOID`` region kind.  A gap may be unobserved, monocular,
-missing depth, occluded, or simply unassigned base.  Those are epistemic or
-visibility states and should not be conflated with scene identity.
+There is no physical ``VOID`` region kind.  Unobserved territory is a derived
+visibility state of the observation overlay, not a scene identity.
 
-The graph is representation-only.  No controller, ranking rule, segmentation
-algorithm, or object-discovery policy is implemented here.
+Phase 2 hardens the representation while retaining its Phase-1 intent.  Array
+fields are validated explicitly and serialization no longer silently renormalizes
+them, so a valid graph round-trips bit-exactly.
 """
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Iterable, Mapping, Optional
+from typing import Any, Dict, Mapping, Optional
 import json
 
 import numpy as np
-
-from .sphere import normalize_rows
 
 
 class RegionKind(str, Enum):
@@ -31,7 +28,21 @@ class RegionKind(str, Enum):
     BASE = "base"
 
 
+class FootprintEye(str, Enum):
+    """Which sensor view produced an observation footprint.
+
+    ``BINOCULAR`` is allowed for synthetic/aggregated footprints.  ``UNOBSERVED``
+    is intentionally absent: unobserved is the complement of all footprints.
+    """
+
+    LEFT = "left"
+    RIGHT = "right"
+    BINOCULAR = "binocular"
+
+
 class EyeVisibility(str, Enum):
+    """Derived visibility state of spherical territory."""
+
     UNOBSERVED = "unobserved"
     LEFT_ONLY = "left_only"
     RIGHT_ONLY = "right_only"
@@ -45,6 +56,9 @@ class BoundaryKind(str, Enum):
     OCCLUSION = "occlusion"
     DEPTH_DISCONTINUITY = "depth_discontinuity"
     SMOOTH_CONTINUATION = "smooth_continuation"
+
+
+UNIT_TOL = 1e-6
 
 
 def _jsonable(v: Any) -> Any:
@@ -61,15 +75,34 @@ def _jsonable(v: Any) -> Any:
     return v
 
 
-@dataclass(frozen=True)
+def _vec3_rows(name: str, value: Any, *, unit: bool = False) -> np.ndarray:
+    a = np.asarray(value, dtype=np.float64)
+    if a.ndim != 2 or a.shape[1] != 3:
+        raise ValueError(f"{name} must have shape (N,3), got {a.shape}")
+    if not np.isfinite(a).all():
+        raise ValueError(f"{name} contains non-finite values")
+    if unit:
+        n = np.linalg.norm(a, axis=1)
+        if np.any(n <= 1e-12) or np.any(np.abs(n - 1.0) > UNIT_TOL):
+            raise ValueError(f"{name} rows must already be unit length within {UNIT_TOL:g}")
+    return a
+
+
+def _unit_vec3(name: str, value: Any) -> np.ndarray:
+    a = np.asarray(value, dtype=np.float64).reshape(-1)
+    if a.shape != (3,) or not np.isfinite(a).all():
+        raise ValueError(f"{name} must be one finite 3-vector")
+    n = float(np.linalg.norm(a))
+    if n <= 1e-12 or abs(n - 1.0) > UNIT_TOL:
+        raise ValueError(f"{name} must already be unit length within {UNIT_TOL:g}")
+    return a
+
+
+@dataclass(frozen=True, eq=False)
 class PartitionRegion:
-    """One connected face of the spherical scene partition.
+    """One connected face of the spherical scene partition."""
 
-    Multiple disconnected regions may share the same ``object_id``.  This is a
-    first-class feature: an object may disappear behind an occluder and reappear
-    elsewhere while remaining one object hypothesis.
-    """
-
+    __hash__ = None
     region_id: str
     kind: RegionKind
     object_id: Optional[str] = None
@@ -83,10 +116,13 @@ class PartitionRegion:
             raise ValueError(f"object component {self.region_id} requires object_id")
         if self.kind is RegionKind.BASE and self.object_id is not None:
             raise ValueError(f"base region {self.region_id} cannot carry object_id")
+        if len(set(self.point_ids)) != len(self.point_ids):
+            raise ValueError(f"region {self.region_id} repeats a point id")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class ObjectHypothesis:
+    __hash__ = None
     object_id: str
     region_ids: tuple[str, ...]
     attributes: Mapping[str, Any] = field(default_factory=dict)
@@ -100,15 +136,16 @@ class ObjectHypothesis:
             raise ValueError(f"object {self.object_id} repeats a region")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class BoundaryChain:
     """One embedded boundary edge.
 
-    ``sphere_xyz`` is always stored as unit directions and is therefore chart
-    independent.  ``world_xyz`` and the two normal fields are optional geometric
-    attributes that permit the same edge to be reasoned about in 3-D.
+    ``sphere_xyz`` contains chart-independent unit directions in the coordinate
+    frame declared by the enclosing graph.  Optional ``world_xyz``, normals and
+    depths couple topology back to geometry.
     """
 
+    __hash__ = None
     boundary_id: str
     region_a: str
     region_b: str
@@ -127,41 +164,50 @@ class BoundaryChain:
             raise ValueError("boundary_id must be non-empty")
         if self.region_a == self.region_b:
             raise ValueError(f"boundary {self.boundary_id} has identical incident regions")
-        s = normalize_rows(self.sphere_xyz)
+        s = _vec3_rows("sphere_xyz", self.sphere_xyz, unit=True)
         if len(s) < 2:
             raise ValueError(f"boundary {self.boundary_id} needs at least two samples")
-        for name, arr in (
-            ("world_xyz", self.world_xyz),
-            ("normal_a", self.normal_a),
-            ("normal_b", self.normal_b),
-        ):
+        if self.world_xyz is not None:
+            a = _vec3_rows("world_xyz", self.world_xyz)
+            if a.shape != s.shape:
+                raise ValueError(f"world_xyz shape {a.shape} != sphere_xyz shape {s.shape}")
+        for name, arr in (("normal_a", self.normal_a), ("normal_b", self.normal_b)):
             if arr is not None:
-                a = np.asarray(arr)
+                a = _vec3_rows(name, arr, unit=True)
                 if a.shape != s.shape:
                     raise ValueError(f"{name} shape {a.shape} != sphere_xyz shape {s.shape}")
         for name, arr in (("depth_a", self.depth_a), ("depth_b", self.depth_b)):
-            if arr is not None and np.asarray(arr).shape != (len(s),):
-                raise ValueError(f"{name} must have shape ({len(s)},)")
+            if arr is not None:
+                a = np.asarray(arr, dtype=np.float64)
+                if a.shape != (len(s),) or not np.isfinite(a).all() or np.any(a <= 0):
+                    raise ValueError(f"{name} must be finite positive shape ({len(s)},)")
+        if self.kind is BoundaryKind.OCCLUSION:
+            front = self.attributes.get("front_region")
+            back = self.attributes.get("back_region")
+            incident = {self.region_a, self.region_b}
+            if front not in incident or back not in incident or front == back:
+                raise ValueError(
+                    f"occlusion {self.boundary_id} must name its two incident regions as front/back"
+                )
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class ObservationFootprint:
     """Projection of one tangent-plane observation onto the viewing sphere."""
 
+    __hash__ = None
     fixation_id: str
-    eye: EyeVisibility
+    eye: FootprintEye
     polygon_sphere_xyz: np.ndarray
     gaze_sphere_xyz: np.ndarray
     sequence_index: int
     attributes: Mapping[str, Any] = field(default_factory=dict)
 
     def validate(self) -> None:
-        p = normalize_rows(self.polygon_sphere_xyz)
+        p = _vec3_rows("polygon_sphere_xyz", self.polygon_sphere_xyz, unit=True)
         if len(p) < 3:
             raise ValueError(f"footprint {self.fixation_id} needs >=3 polygon vertices")
-        g = np.asarray(self.gaze_sphere_xyz, dtype=np.float64).reshape(-1)
-        if g.shape != (3,) or np.linalg.norm(g) <= 1e-12:
-            raise ValueError(f"footprint {self.fixation_id} has invalid gaze direction")
+        _unit_vec3("gaze_sphere_xyz", self.gaze_sphere_xyz)
         if self.sequence_index < 0:
             raise ValueError("sequence_index must be >= 0")
 
@@ -186,14 +232,6 @@ class ObservationOverlay:
 
 @dataclass
 class ScenePartitionGraph:
-    """Coupled scene partition, object grouping, embedded boundaries and overlay.
-
-    The *primal graph* is represented by the embedded boundary chains.  The
-    *dual graph* is derived exactly: each region is a dual node and each boundary
-    produces one adjacency edge between its incident regions.  This avoids two
-    separately-maintained topologies drifting out of agreement.
-    """
-
     regions: Dict[str, PartitionRegion] = field(default_factory=dict)
     objects: Dict[str, ObjectHypothesis] = field(default_factory=dict)
     boundaries: Dict[str, BoundaryChain] = field(default_factory=dict)
@@ -225,6 +263,9 @@ class ScenePartitionGraph:
             b.validate()
             if b.region_a not in self.regions or b.region_b not in self.regions:
                 raise ValueError(f"boundary {bid} references missing region")
+            # Deliberately DO NOT forbid boundaries between regions of the same object.
+            # A self-occlusion, crease, or depth discontinuity can separate two partition
+            # faces without implying two physical objects.
         self.observations.validate()
 
     def dual_edges(self) -> list[dict[str, Any]]:
@@ -259,7 +300,7 @@ class ScenePartitionGraph:
 
     def _metadata_dict(self, array_keys: Mapping[str, Mapping[str, str]]) -> dict[str, Any]:
         return {
-            "format": "f3d-vision-scene-partition-v1",
+            "format": "f3d-vision-scene-partition-v2",
             "regions": [
                 {
                     "region_id": r.region_id,
@@ -305,7 +346,7 @@ class ScenePartitionGraph:
         }
 
     def save(self, directory: str | Path) -> Path:
-        """Write portable metadata JSON + numeric arrays NPZ."""
+        """Write portable metadata JSON + numeric arrays NPZ without changing arrays."""
         self.validate()
         out = Path(directory)
         out.mkdir(parents=True, exist_ok=True)
@@ -315,7 +356,7 @@ class ScenePartitionGraph:
             prefix = f"b{i:04d}"
             keys: dict[str, str] = {}
             fields = {
-                "sphere_xyz": normalize_rows(b.sphere_xyz),
+                "sphere_xyz": b.sphere_xyz,
                 "world_xyz": b.world_xyz,
                 "normal_a": b.normal_a,
                 "normal_b": b.normal_b,
@@ -332,8 +373,8 @@ class ScenePartitionGraph:
             prefix = f"o{i:04d}"
             pkey = f"{prefix}_polygon"
             gkey = f"{prefix}_gaze"
-            arrays[pkey] = normalize_rows(fp.polygon_sphere_xyz)
-            arrays[gkey] = normalize_rows(np.asarray(fp.gaze_sphere_xyz).reshape(1, 3))[0]
+            arrays[pkey] = np.asarray(fp.polygon_sphere_xyz)
+            arrays[gkey] = np.asarray(fp.gaze_sphere_xyz)
             array_keys[f"obs:{i}"] = {"polygon_sphere_xyz": pkey, "gaze_sphere_xyz": gkey}
         np.savez_compressed(out / "arrays.npz", **arrays)
         (out / "graph.json").write_text(
@@ -346,8 +387,9 @@ class ScenePartitionGraph:
     def load(cls, directory: str | Path) -> "ScenePartitionGraph":
         src = Path(directory)
         meta = json.loads((src / "graph.json").read_text(encoding="utf-8"))
-        if meta.get("format") != "f3d-vision-scene-partition-v1":
-            raise ValueError(f"unsupported format {meta.get('format')!r}")
+        fmt = meta.get("format")
+        if fmt not in {"f3d-vision-scene-partition-v1", "f3d-vision-scene-partition-v2"}:
+            raise ValueError(f"unsupported format {fmt!r}")
         with np.load(src / "arrays.npz", allow_pickle=False) as arr:
             regions = {
                 r["region_id"]: PartitionRegion(
@@ -388,10 +430,22 @@ class ScenePartitionGraph:
             observations = ObservationOverlay()
             for o in meta["observations"]:
                 a = o["arrays"]
+                eye_text = str(o["eye"])
+                if fmt.endswith("v1"):
+                    legacy = {
+                        "left_only": FootprintEye.LEFT,
+                        "right_only": FootprintEye.RIGHT,
+                        "binocular": FootprintEye.BINOCULAR,
+                    }
+                    if eye_text not in legacy:
+                        raise ValueError(f"legacy footprint eye {eye_text!r} is not an observation")
+                    eye = legacy[eye_text]
+                else:
+                    eye = FootprintEye(eye_text)
                 observations.append(
                     ObservationFootprint(
                         fixation_id=o["fixation_id"],
-                        eye=EyeVisibility(o["eye"]),
+                        eye=eye,
                         polygon_sphere_xyz=np.array(arr[a["polygon_sphere_xyz"]]),
                         gaze_sphere_xyz=np.array(arr[a["gaze_sphere_xyz"]]),
                         sequence_index=int(o["sequence_index"]),
