@@ -1,0 +1,22 @@
+{
+  "schema": "fov3d-consolidation3-facade-v1",
+  "package": "fov3d",
+  "mappings": [
+    {"legacy": "tools.bl_common", "new": "fov3d.rendering.blender", "cli": false},
+    {"legacy": "tools.exr_lite", "new": "fov3d.rendering.exr", "cli": false},
+    {"legacy": "tools.render_foveated", "new": "fov3d.rendering.foveated", "cli": true},
+    {"legacy": "tools.warp", "new": "fov3d.rendering.warp", "cli": false},
+    {"legacy": "tools.fsg_geometry", "new": "fov3d.geometry.core", "cli": false},
+    {"legacy": "tools.fsg3_surface_map", "new": "fov3d.reconstruction.surface_map", "cli": false},
+    {"legacy": "tools.fsg_stereo", "new": "fov3d.stereo.core", "cli": false},
+    {"legacy": "tools.fsg6f_frontier", "new": "fov3d.control.frontier", "cli": false},
+    {"legacy": "tools.fsg6f_public", "new": "fov3d.control.frontier_config", "cli": false},
+    {"legacy": "tools.multiobject2c_policy", "new": "fov3d.control.object_policy", "cli": false},
+    {"legacy": "tools.classroom_oracle1_public", "new": "fov3d.experiments.classroom_oracle.config", "cli": false},
+    {"legacy": "tools.classroom_oracle1_matcher", "new": "fov3d.experiments.classroom_oracle.matcher", "cli": false},
+    {"legacy": "tools.classroom_oracle1_epistemic", "new": "fov3d.experiments.classroom_oracle.epistemic", "cli": false},
+    {"legacy": "tools.classroom_oracle1_render", "new": "fov3d.experiments.classroom_oracle.render", "cli": true},
+    {"legacy": "tools.classroom_oracle1_run", "new": "fov3d.experiments.classroom_oracle.run", "cli": true},
+    {"legacy": "tools.classroom_oracle1_eval", "new": "fov3d.experiments.classroom_oracle.eval", "cli": true}
+  ]
+}
