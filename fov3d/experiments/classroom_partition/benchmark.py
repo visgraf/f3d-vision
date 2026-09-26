@@ -23,7 +23,8 @@ import math
 import cv2
 import numpy as np
 
-from fov3d.experiments.classroom_partition.lift import _cells, _grid
+from fov3d.geometry.head_chart import chart_cells, chart_grid
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 
 
 REGION_KIND = {
@@ -35,7 +36,12 @@ REGION_KIND = {
 }
 REGION_KIND_BY_CODE = {v: k for k, v in REGION_KIND.items()}
 CANDIDATE_KINDS = {"OTHER_SURFACE", "UNKNOWN"}
-FUSION_RADIUS_M = 0.012
+
+# Backward-compatible aliases for historical checks/tools. Production code imports
+# the conceptual modules directly.
+FUSION_RADIUS_M = SURFACE_ASSOCIATION_RADIUS_M
+_cells = chart_cells
+_grid = chart_grid
 
 
 def _json(path: Path) -> Any:
@@ -90,7 +96,7 @@ def _centroid_angles(mask: np.ndarray, domain: dict[str, Any], grid_deg: float) 
     ys, xs = np.nonzero(mask)
     if not len(ys):
         return float("nan"), float("nan")
-    y0, _y1, p0, _p1, _h, _w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, _h, _w = chart_grid(domain, grid_deg)
     return float(y0 + xs.mean() * grid_deg), float(p0 + ys.mean() * grid_deg)
 
 
@@ -495,7 +501,7 @@ def evaluate_phase6(
     if int(prop_summary.get("target_count", -1)) != len(manifest["objects"]):
         raise RuntimeError("proposal/source target-count mismatch")
 
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
     run_by_id = {int(o["instance_id"]): o for o in manifest["objects"]}
     region_eval_rows: list[dict[str, Any]] = []
     target_rows: list[dict[str, Any]] = []
@@ -515,7 +521,7 @@ def evaluate_phase6(
         with np.load(map_path, allow_pickle=False) as z:
             sm = np.asarray(z["xyz_h"], np.float64)
         sm = sm[np.isfinite(sm).all(axis=1)]
-        cov = _covered(ref, sm, FUSION_RADIUS_M)
+        cov = _covered(ref, sm, SURFACE_ASSOCIATION_RADIUS_M)
         missed_ang = ang[~cov]
         nref, ncov, nmiss = int(len(ref)), int(cov.sum()), int((~cov).sum())
         total_ref += nref
@@ -527,7 +533,7 @@ def evaluate_phase6(
         by_code = {int(r["region_code"]): r for r in regions}
         with np.load(td / "partition.npz", allow_pickle=False) as z:
             region_code = np.asarray(z["region_code"], np.int32)
-        yy, xx, ok = _cells(missed_ang[:, 0] if len(missed_ang) else np.empty(0),
+        yy, xx, ok = chart_cells(missed_ang[:, 0] if len(missed_ang) else np.empty(0),
                             missed_ang[:, 1] if len(missed_ang) else np.empty(0),
                             y0, p0, grid_deg, h, w)
         miss_codes = np.zeros(len(missed_ang), np.int32)
@@ -536,7 +542,7 @@ def evaluate_phase6(
 
         # All dense first-hit samples provide a denominator for evaluator-only
         # region purity/precision diagnostics.
-        ayy, axx, aok = _cells(truth_angles[:, 0], truth_angles[:, 1], y0, p0, grid_deg, h, w)
+        ayy, axx, aok = chart_cells(truth_angles[:, 0], truth_angles[:, 1], y0, p0, grid_deg, h, w)
         all_codes = np.zeros(len(truth_angles), np.int32)
         all_codes[aok] = region_code[ayy[aok], axx[aok]]
         all_by_code = Counter(int(v) for v in all_codes.tolist() if int(v) > 0)
