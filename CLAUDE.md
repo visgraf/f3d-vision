@@ -111,6 +111,9 @@ unavailable or where an external package must be transferred exactly.
 No result needs to be pasted between Chat and Code when it is already committed in
 the repository.
 
+After every Chat-authored GitHub handoff, Chat provides Luiz with a self-contained
+Claude Code prompt in a fenced code block, ready to copy/paste.
+
 ## Branch policy
 
 Development occurs on the explicitly active project branch.
@@ -149,10 +152,12 @@ Only an actual run may convert them into measured outputs.
 
 ## Two hard rules
 
-1. **Measured or assumed, never in between.**
+1. **Measured, proposed, or assumed — never ambiguous.**
 
-   Every numerical claim is either something that was run—say where—or an estimate
-   or assumption—say so.
+   Every numerical claim is explicitly one of:
+   - measured from an identified run — say where;
+   - proposed or expected but not yet workstation-validated — say so;
+   - assumed or estimated — say so.
 
 2. **Every tool ships a check that can fail.**
 
@@ -223,6 +228,23 @@ would compromise the experiment.
 Checks must not be modified merely to make a failing implementation pass.
 
 If the implementation and the check disagree, diagnose the cause first.
+
+## Standing defaults and precedence
+
+Unless a step contract explicitly says otherwise:
+
+- Claude Code has standing permission to commit and push step results and delegated
+  fixes to the active branch. Work outside that scope requires Luiz.
+- If the contract does not state a scope of permitted fixes, the default is **no
+  fixes**: diagnose, report, and stop.
+- Phase contracts and reports follow the existing convention
+  `docs/<phase>.md` and `docs/<phase>-report.md`.
+- If the active branch is not named by the instruction or contract, ask rather than
+  infer it from the current checkout.
+- An overnight command runs only when the step contract explicitly authorizes it and
+  gives its justification; otherwise ask Luiz first.
+- `CLAUDE.md` supplies the standing project rules. A step contract specializes
+  those rules but may not contradict them. If a conflict exists, stop and report it.
 
 ## Workstation fixes
 
