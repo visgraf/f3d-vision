@@ -20,9 +20,23 @@ from fov3d.scene import (
     ObservationFootprint, ObservationOverlay, PartitionRegion, RegionKind,
     ScenePartitionGraph,
 )
+from fov3d.geometry.head_chart import (
+    chart_cells,
+    chart_grid,
+    head_angles_from_unit,
+    head_unit_from_angles,
+)
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 
 TRUTH_BASENAMES = {"reachable_samples.npz", "evaluation.json"}
-FUSION_RADIUS_M = 0.012
+
+# Backward-compatible historical names. New production code imports the conceptual
+# modules directly; these aliases preserve older checks/tools without owning behavior.
+FUSION_RADIUS_M = SURFACE_ASSOCIATION_RADIUS_M
+_cells = chart_cells
+_grid = chart_grid
+_head_angles_from_unit = head_angles_from_unit
+_head_unit_from_angles = head_unit_from_angles
 
 
 class ReadLog:
@@ -51,45 +65,13 @@ class ReadLog:
             return {k: np.array(z[k]) for k in z.files}
 
 
-def _head_angles_from_unit(d: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    u = np.asarray(d, dtype=np.float64).reshape(-1, 3)
-    n = np.linalg.norm(u, axis=1, keepdims=True)
-    u = u / np.maximum(n, 1e-15)
-    yaw = np.degrees(np.arctan2(u[:, 0], -u[:, 2]))
-    pitch = np.degrees(np.arctan2(u[:, 1], np.hypot(u[:, 0], u[:, 2])))
-    return yaw, pitch
-
-
-def _head_unit_from_angles(yaw_deg: np.ndarray, pitch_deg: np.ndarray) -> np.ndarray:
-    y = np.deg2rad(np.asarray(yaw_deg, dtype=np.float64))
-    p = np.deg2rad(np.asarray(pitch_deg, dtype=np.float64))
-    y, p = np.broadcast_arrays(y, p)
-    out = np.stack((np.sin(y) * np.cos(p), np.sin(p), -np.cos(y) * np.cos(p)), axis=-1)
-    return out.reshape(-1, 3)
-
-
-def _grid(domain: dict[str, Any], grid_deg: float):
-    y0, y1 = map(float, domain["yaw"])
-    p0, p1 = map(float, domain["pitch"])
-    w = int(round((y1 - y0) / grid_deg)) + 1
-    h = int(round((p1 - p0) / grid_deg)) + 1
-    return y0, y1, p0, p1, h, w
-
-
-def _cells(yaw: np.ndarray, pitch: np.ndarray, y0: float, p0: float, grid_deg: float, h: int, w: int):
-    x = np.rint((np.asarray(yaw) - y0) / grid_deg).astype(np.int64)
-    y = np.rint((np.asarray(pitch) - p0) / grid_deg).astype(np.int64)
-    ok = np.isfinite(yaw) & np.isfinite(pitch) & (x >= 0) & (x < w) & (y >= 0) & (y < h)
-    return y, x, ok
-
-
 def _disk(radius: int) -> np.ndarray:
     yy, xx = np.mgrid[-radius:radius + 1, -radius:radius + 1]
     return ((xx * xx + yy * yy) <= radius * radius).astype(np.uint8)
 
 
 def _support_from_map(xyz_h: np.ndarray, domain: dict[str, Any], grid_deg: float):
-    y0, y1, p0, p1, h, w = _grid(domain, grid_deg)
+    y0, y1, p0, p1, h, w = chart_grid(domain, grid_deg)
     p = np.asarray(xyz_h, dtype=np.float64).reshape(-1, 3)
     finite = np.isfinite(p).all(axis=1)
     ids = np.flatnonzero(finite)
@@ -98,10 +80,10 @@ def _support_from_map(xyz_h: np.ndarray, domain: dict[str, Any], grid_deg: float
     point_yx = np.full((len(xyz_h), 2), -1, np.int32)
     if len(p) == 0:
         return mask.astype(bool), point_yx
-    yaw, pitch = _head_angles_from_unit(p)
-    yy, xx, ok = _cells(yaw, pitch, y0, p0, grid_deg, h, w)
+    yaw, pitch = head_angles_from_unit(p)
+    yy, xx, ok = chart_cells(yaw, pitch, y0, p0, grid_deg, h, w)
     ranges = np.linalg.norm(p, axis=1)
-    rad_deg = np.degrees(np.arctan(FUSION_RADIUS_M / np.maximum(ranges, 1e-12)))
+    rad_deg = np.degrees(np.arctan(SURFACE_ASSOCIATION_RADIUS_M / np.maximum(ranges, 1e-12)))
     rad_cells = np.maximum(1, np.ceil(rad_deg / grid_deg).astype(np.int32))
     point_yx[ids[ok], 0] = yy[ok]
     point_yx[ids[ok], 1] = xx[ok]
@@ -145,8 +127,8 @@ def _overlay_until(log: ReadLog, odir: Path, step: int) -> ObservationOverlay:
 
 
 def _fill_polygon(mask: np.ndarray, polygon: np.ndarray, domain: dict[str, Any], grid_deg: float) -> None:
-    y0, y1, p0, p1, h, w = _grid(domain, grid_deg)
-    yaw, pitch = _head_angles_from_unit(polygon)
+    y0, y1, p0, p1, h, w = chart_grid(domain, grid_deg)
+    yaw, pitch = head_angles_from_unit(polygon)
     x = np.rint((yaw - y0) / grid_deg).astype(np.int32)
     y = np.rint((pitch - p0) / grid_deg).astype(np.int32)
     pts = np.stack((x, y), axis=1).reshape(-1, 1, 2)
@@ -154,7 +136,7 @@ def _fill_polygon(mask: np.ndarray, polygon: np.ndarray, domain: dict[str, Any],
 
 
 def _visibility_raster(overlay: ObservationOverlay, domain: dict[str, Any], grid_deg: float) -> np.ndarray:
-    *_, h, w = _grid(domain, grid_deg)
+    *_, h, w = chart_grid(domain, grid_deg)
     left = np.zeros((h, w), np.uint8)
     right = np.zeros((h, w), np.uint8)
     for fp in overlay.footprints:
@@ -224,7 +206,7 @@ def _build_graph(
     obj_rid = {lab: f"obj:{target_id}:c{lab:03d}" for lab in range(1, n_obj)}
     base_rid = {lab: f"base:c{lab:03d}" for lab in range(1, n_base)}
     boundaries: dict[str, BoundaryChain] = {}
-    y0, y1, p0, p1, h, w = _grid(domain, grid_deg)
+    y0, y1, p0, p1, h, w = chart_grid(domain, grid_deg)
     bid_counter = 0
     for lab in range(1, n_obj):
         cmask = (obj_labels == lab).astype(np.uint8)
@@ -252,7 +234,7 @@ def _build_graph(
             xy = xy[::stride]
             yaw = y0 + xy[:, 0].astype(np.float64) * grid_deg
             pitch = p0 + xy[:, 1].astype(np.float64) * grid_deg
-            sphere = _head_unit_from_angles(yaw, pitch)
+            sphere = head_unit_from_angles(yaw, pitch)
             bid = f"b{bid_counter:04d}"
             bid_counter += 1
             boundaries[bid] = BoundaryChain(
