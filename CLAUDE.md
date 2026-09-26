@@ -114,6 +114,11 @@ the repository.
 After every Chat-authored GitHub handoff, Chat provides Luiz with a self-contained
 Claude Code prompt in a fenced code block, ready to copy/paste.
 
+For substantial project work, the step contract is committed before workstation
+execution, normally as `docs/<phase>.md`. The paste-ready Code prompt points to that
+committed contract and supplies only the handoff context needed to execute it; it
+does not replace the durable specification.
+
 ## Branch policy
 
 Development occurs on the explicitly active project branch.
@@ -243,8 +248,10 @@ Unless a step contract explicitly says otherwise:
   infer it from the current checkout.
 - An overnight command runs only when the step contract explicitly authorizes it and
   gives its justification; otherwise ask Luiz first.
-- `CLAUDE.md` supplies the standing project rules. A step contract specializes
-  those rules but may not contradict them. If a conflict exists, stop and report it.
+
+`CLAUDE.md` supplies the standing project rules. A step contract may specialize
+those rules but may not contradict them. Only an explicit decision by Luiz may
+override `CLAUDE.md`. If a conflict exists, stop and report it.
 
 ## Workstation fixes
 
