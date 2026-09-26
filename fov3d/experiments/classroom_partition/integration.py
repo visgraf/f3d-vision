@@ -29,11 +29,10 @@ import json
 
 import numpy as np
 
+from fov3d.geometry.head_chart import chart_cells, chart_grid
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.benchmark import (
-    FUSION_RADIUS_M,
-    _cells,
     _covered,
-    _grid,
     build_epistemic_partition,
 )
 from fov3d.experiments.classroom_partition.incidental import (
@@ -109,7 +108,7 @@ def cross_target_novelty(map_xyz_h: np.ndarray, cross_target_xyz_h: np.ndarray) 
             "novel_beyond_12mm": 0,
             "novel_fraction": None,
         }
-    represented = _covered(cross, base, FUSION_RADIUS_M)
+    represented = _covered(cross, base, SURFACE_ASSOCIATION_RADIUS_M)
     nrep = int(represented.sum())
     return {
         "cross_target_points": int(len(cross)),
@@ -175,7 +174,7 @@ def propose_phase8(
     if abs(float(grid_deg) - 0.10) > 1e-12:
         raise ValueError("Phase 8 uses the frozen 0.10-degree chart")
     domain = seeds["controller_domain_deg"]
-    _y0, _y1, _p0, _p1, h, w = _grid(domain, grid_deg)
+    _y0, _y1, _p0, _p1, h, w = chart_grid(domain, grid_deg)
     chart_cells = int(h * w)
     all_target_ids = {int(o["instance_id"]) for o in manifest["objects"]}
 
@@ -522,7 +521,7 @@ def evaluate_phase8(
     if int(prop_summary.get("integrated_target_evidence_unmapped_cells_total", -1)) != 0:
         raise RuntimeError("Phase-8 proposer did not eliminate TARGET_EVIDENCE_UNMAPPED")
     chart_cells = int(prop_summary["chart_cells"])
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
 
     p7_summary = _json(p7e / "summary.json")
     p7_states = _json(p7e / "state-evaluation.json")
@@ -566,9 +565,9 @@ def evaluate_phase8(
             cross_xyz = effective_target_geometry(hist_xyz, cross_evidence)
             integrated_xyz = effective_target_geometry(hist_xyz, causal_evidence)
 
-            hist_cov = _covered(ref, hist_xyz, FUSION_RADIUS_M)
-            cross_cov = _covered(ref, cross_xyz, FUSION_RADIUS_M)
-            int_cov = _covered(ref, integrated_xyz, FUSION_RADIUS_M)
+            hist_cov = _covered(ref, hist_xyz, SURFACE_ASSOCIATION_RADIUS_M)
+            cross_cov = _covered(ref, cross_xyz, SURFACE_ASSOCIATION_RADIUS_M)
+            int_cov = _covered(ref, integrated_xyz, SURFACE_ASSOCIATION_RADIUS_M)
             if np.any(hist_cov & ~cross_cov) or np.any(cross_cov & ~int_cov):
                 raise RuntimeError(f"integration coverage is not monotone at state {global_index}")
             hist_miss = ~hist_cov
@@ -594,7 +593,7 @@ def evaluate_phase8(
                 ns = _load_npz(npth)
                 next_evidence = all_evidence_xyz[evidence_global <= (global_index + 1)]
                 next_xyz = effective_target_geometry(_finite_xyz(ns["xyz_h"]), next_evidence)
-                next_cov = _covered(ref, next_xyz, FUSION_RADIUS_M)
+                next_cov = _covered(ref, next_xyz, SURFACE_ASSOCIATION_RADIUS_M)
                 next_gain_ang = ang[(~int_cov) & next_cov]
                 if local_step + 1 < len(trajectory) and "gaze_deg" in trajectory[local_step + 1]:
                     next_gaze = tuple(map(float, trajectory[local_step + 1]["gaze_deg"]))
@@ -648,7 +647,7 @@ def evaluate_phase8(
                 a = np.asarray(arr, np.float64).reshape(-1, 2)
                 if not len(a):
                     continue
-                yy, xx, ok = _cells(a[:, 0], a[:, 1], y0, p0, grid_deg, h, w)
+                yy, xx, ok = chart_cells(a[:, 0], a[:, 1], y0, p0, grid_deg, h, w)
                 if np.any(ok):
                     np.add.at(dst, (yy[ok], xx[ok]), 1)
             ed = out / "states" / f"global_{global_index:03d}"
