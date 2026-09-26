@@ -17,7 +17,9 @@ import cv2
 import numpy as np
 
 from fov3d.scene import BoundaryKind, RegionKind, ScenePartitionGraph
-from fov3d.experiments.classroom_partition.lift import FUSION_RADIUS_M, ReadLog, _cells, _grid, _head_angles_from_unit
+from fov3d.geometry.head_chart import chart_cells, chart_grid, head_angles_from_unit
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
+from fov3d.experiments.classroom_partition.lift import ReadLog
 from fov3d.experiments.classroom_partition.joint import (
     StereoOps,
     _default_stereo_ops,
@@ -59,9 +61,9 @@ def _mark(mask: np.ndarray, directions_h: np.ndarray, dst: np.ndarray,
     d = directions_h[m]
     if len(d) == 0:
         return
-    yaw, pitch = _head_angles_from_unit(d)
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
-    yy, xx, ok = _cells(yaw, pitch, y0, p0, grid_deg, h, w)
+    yaw, pitch = head_angles_from_unit(d)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
+    yy, xx, ok = chart_cells(yaw, pitch, y0, p0, grid_deg, h, w)
     dst[yy[ok], xx[ok]] = True
 
 
@@ -212,8 +214,8 @@ def ownership_margin_descriptor(state: dict[str, np.ndarray], target_layer, targ
         "min_m": s["min"],
         "median_m": s["median"],
         "p90_m": s["p90"],
-        "median_over_fusion_radius": float(s["median"] / FUSION_RADIUS_M),
-        "fraction_gt_fusion_radius": float(np.mean(margins > FUSION_RADIUS_M)),
+        "median_over_fusion_radius": float(s["median"] / SURFACE_ASSOCIATION_RADIUS_M),
+        "fraction_gt_fusion_radius": float(np.mean(margins > SURFACE_ASSOCIATION_RADIUS_M)),
     }
 
 
@@ -390,7 +392,7 @@ def analyze_phase4(
     manifest = log.json(source / "manifest.json")
     seeds = log.json(source / "bootstrap" / "seeds.json")
     domain = seeds["controller_domain_deg"]
-    _y0, _y1, _p0, _p1, h, w = _grid(domain, grid_deg)
+    _y0, _y1, _p0, _p1, h, w = chart_grid(domain, grid_deg)
     ops = stereo_ops or _default_stereo_ops()
     lift_summary = json.loads((lift / "summary.json").read_text(encoding="utf-8"))
     if len(lift_summary.get("global_states", [])) != int(manifest.get("total_fixations", -1)):
