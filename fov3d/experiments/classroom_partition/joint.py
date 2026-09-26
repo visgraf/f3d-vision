@@ -31,14 +31,16 @@ from fov3d.scene import (
     RegionKind,
     ScenePartitionGraph,
 )
+from fov3d.geometry.head_chart import (
+    chart_cells,
+    chart_grid,
+    head_angles_from_unit,
+    head_unit_from_angles,
+)
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.lift import (
-    FUSION_RADIUS_M,
     ReadLog,
     _camera_polygon,
-    _cells,
-    _grid,
-    _head_angles_from_unit,
-    _head_unit_from_angles,
 )
 
 
@@ -85,7 +87,7 @@ def support_depth_from_map(
     covers each chart cell. It is used only to resolve overlap among already
     reconstructed object maps in the joint retrospective partition.
     """
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
     xyz = np.asarray(xyz_h, dtype=np.float64).reshape(-1, 3)
     finite = np.isfinite(xyz).all(axis=1)
     ids = np.flatnonzero(finite)
@@ -95,10 +97,10 @@ def support_depth_from_map(
     if len(pts) == 0:
         return SupportLayer(instance_id, object_name, np.zeros((h, w), bool), depth, point_yx, 0)
 
-    yaw, pitch = _head_angles_from_unit(pts)
-    yy, xx, ok = _cells(yaw, pitch, y0, p0, grid_deg, h, w)
+    yaw, pitch = head_angles_from_unit(pts)
+    yy, xx, ok = chart_cells(yaw, pitch, y0, p0, grid_deg, h, w)
     ranges = np.linalg.norm(pts, axis=1)
-    rad_deg = np.degrees(np.arctan(FUSION_RADIUS_M / np.maximum(ranges, 1e-12)))
+    rad_deg = np.degrees(np.arctan(SURFACE_ASSOCIATION_RADIUS_M / np.maximum(ranges, 1e-12)))
     rad_cells = np.maximum(1, np.ceil(rad_deg / grid_deg).astype(np.int32))
     point_yx[ids[ok], 0] = yy[ok]
     point_yx[ids[ok], 1] = xx[ok]
@@ -332,7 +334,7 @@ def extract_boundaries(
 ) -> tuple[dict[str, BoundaryChain], dict[str, int]]:
     interfaces = _interface_edges(region_code)
     boundaries: dict[str, BoundaryChain] = {}
-    y0, _y1, p0, _p1, _h, _w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, _h, _w = chart_grid(domain, grid_deg)
     encoded_edges = 0
     branch_vertices = 0
     bid_counter = 0
@@ -354,7 +356,7 @@ def extract_boundaries(
             rid_a, rid_b = code_to_rid[code_a], code_to_rid[code_b]
             xa = np.asarray([p[0] for p in pts2], np.float64) / 2.0
             ya = np.asarray([p[1] for p in pts2], np.float64) / 2.0
-            sphere = _head_unit_from_angles(y0 + xa * grid_deg, p0 + ya * grid_deg)
+            sphere = head_unit_from_angles(y0 + xa * grid_deg, p0 + ya * grid_deg)
             ra, rb = regions[rid_a], regions[rid_b]
             kind = (
                 BoundaryKind.OBJECT_OBJECT
@@ -492,7 +494,7 @@ def update_controller_seen_any(
     ops = stereo_ops or _default_stereo_ops()
     r = ops.rectification(calibration)
     x0, y0, w, h = map(int, r["crop_xywh"])
-    y_min, _ymax, p_min, _pmax, gh, gw = _grid(domain, grid_deg)
+    y_min, _ymax, p_min, _pmax, gh, gw = chart_grid(domain, grid_deg)
     before = int(seen_any.sum())
     marked_pixels = 0
     for side in ("L", "R"):
@@ -504,8 +506,8 @@ def update_controller_seen_any(
         d = directions[core]
         marked_pixels += int(len(d))
         if len(d):
-            yaw, pitch = _head_angles_from_unit(d)
-            yy, xx, ok = _cells(yaw, pitch, y_min, p_min, grid_deg, gh, gw)
+            yaw, pitch = head_angles_from_unit(d)
+            yy, xx, ok = chart_cells(yaw, pitch, y_min, p_min, grid_deg, gh, gw)
             seen_any[yy[ok], xx[ok]] = True
     return {
         "supported_core_pixels_both_eyes": int(marked_pixels),
@@ -546,7 +548,7 @@ def _component_boundary(mask: np.ndarray) -> np.ndarray:
     return (m.astype(bool) & ~er.astype(bool))
 
 
-def _line_cells(y0: int, x0: int, y1: int, x1: int) -> np.ndarray:
+def _linechart_cells(y0: int, x0: int, y1: int, x1: int) -> np.ndarray:
     n = max(abs(int(y1) - int(y0)), abs(int(x1) - int(x0))) + 1
     ys = np.rint(np.linspace(y0, y1, n)).astype(np.int32)
     xs = np.rint(np.linspace(x0, x1, n)).astype(np.int32)
@@ -613,11 +615,11 @@ def gap_corridor(
     j = int(idx[i, 0])
     y0c, x0c = map(int, ba[i])
     y1c, x1c = map(int, bb[j])
-    line = _line_cells(y0c, x0c, y1c, x1c)
+    line = _linechart_cells(y0c, x0c, y1c, x1c)
     interior = line[1:-1] if len(line) > 2 else np.empty((0, 2), np.int32)
 
-    y_min, _ym, p_min, _pm, _h, _w = _grid(domain, grid_deg)
-    dirs = _head_unit_from_angles(
+    y_min, _ym, p_min, _pm, _h, _w = chart_grid(domain, grid_deg)
+    dirs = head_unit_from_angles(
         y_min + np.array([x0c, x1c], np.float64) * grid_deg,
         p_min + np.array([y0c, y1c], np.float64) * grid_deg,
     )
@@ -770,7 +772,7 @@ def lift_joint_run(
     domain = seeds["controller_domain_deg"]
     if abs(float(grid_deg) - 0.10) > 1e-12:
         raise ValueError("Phase 3 exact controller-evidence replay requires the frozen 0.10 degree chart")
-    _y0, _y1, _p0, _p1, h, w = _grid(domain, grid_deg)
+    _y0, _y1, _p0, _p1, h, w = chart_grid(domain, grid_deg)
 
     object_names = {int(o["instance_id"]): str(o["object_name"]) for o in manifest["objects"]}
     layers: dict[int, SupportLayer] = {}
