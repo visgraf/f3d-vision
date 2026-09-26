@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import ast
 import sys
 
 import numpy as np
@@ -18,6 +19,35 @@ from fov3d.geometry.head_chart import (
     head_unit_from_angles,
 )
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
+
+
+def _shadowed_imported_calls(source: str) -> list[str]:
+    """Return `function:name` where a function calls an imported name it also assigns.
+
+    Python then treats the name as local in the whole function, so the call reaches the
+    local value (e.g. an int cell count) instead of the imported chart function.
+    """
+    tree = ast.parse(source)
+    imported = {
+        a.asname or a.name
+        for n in tree.body
+        if isinstance(n, ast.ImportFrom)
+        for a in n.names
+    }
+    found: list[str] = []
+    for fn in ast.walk(tree):
+        if not isinstance(fn, ast.FunctionDef):
+            continue
+        stores = {
+            n.id for n in ast.walk(fn)
+            if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store)
+        }
+        calls = {
+            n.func.id for n in ast.walk(fn)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)
+        }
+        found += [f"{fn.name}:{name}" for name in sorted(stores & calls & imported)]
+    return found
 
 
 def main() -> int:
@@ -75,12 +105,31 @@ def main() -> int:
     check("center and corners", cy[:3].tolist() == [200, 0, 400] and cx[:3].tolist() == [250, 0, 500] and ok[:3].all())
     check("outside rejected", ok[3:].tolist() == [False, False])
 
+    # Exact half cells need binary-exact inputs: on a 0.25-degree grid the normalized
+    # coordinates 0.5, 1.5, 2.5 are exact, and np.rint rounds half to even -> 0, 2, 2.
+    q0, _q1, r0, _r1, qh, qw = chart_grid(domain, 0.25)
+    halves = np.array([0.5, 1.5, 2.5])
     hy, hx, hok = chart_cells(
+        q0 + halves * 0.25,
+        r0 + halves * 0.25,
+        q0, r0, 0.25, qh, qw,
+    )
+    check(
+        "exact half-cell rint (half to even)",
+        hx.tolist() == [0, 2, 2] and hy.tolist() == [0, 2, 2] and hok.all(),
+    )
+
+    # On the accepted 0.10-degree chart these nominal half cells are not exact in
+    # float64 ((-24.95 + 25) / 0.10 = 0.5000000000000071); historical main gives [1, 1].
+    ry, rx, rok = chart_cells(
         np.array([-24.95, -24.85]),
         np.array([-19.95, -19.85]),
         y0, p0, 0.10, h, w,
     )
-    check("half-cell rint", hx.tolist() == [0, 2] and hy.tolist() == [0, 2] and hok.all())
+    check(
+        "accepted-grid near-half regression",
+        rx.tolist() == [1, 1] and ry.tolist() == [1, 1] and rok.all(),
+    )
 
     with np.errstate(invalid="ignore"):
         _ny, _nx, nok = chart_cells(
@@ -108,9 +157,23 @@ def main() -> int:
         and benchmark.FUSION_RADIUS_M == SURFACE_ASSOCIATION_RADIUS_M,
     )
 
+    package = ROOT / "fov3d" / "experiments" / "classroom_partition"
+    shadowed = [
+        f"{p.name}:{s}"
+        for p in sorted(package.glob("*.py"))
+        for s in _shadowed_imported_calls(p.read_text(encoding="utf-8"))
+    ]
+    check("no shadowed imported chart/association calls", not shadowed)
+    for s in shadowed:
+        print(f"[conceptual-core2-check]   shadowed {s}")
+
     wrong_forward_yaw, _ = head_angles_from_unit(np.array([[0.0, 0.0, 1.0]]))
     check("negative frame-sign invariant", float(wrong_forward_yaw[0]) != 0.0)
     check("negative association invariant", SURFACE_ASSOCIATION_RADIUS_M != 0.010)
+    check(
+        "negative shadowing invariant",
+        _shadowed_imported_calls("from m import f\ndef g():\n    y = f(1)\n    f = 2\n") == ["g:f"],
+    )
 
     print(f"[conceptual-core2-check] SUMMARY checked={checked} failed={failed}")
     return 0 if failed == 0 else 1
