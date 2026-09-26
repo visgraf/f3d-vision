@@ -22,6 +22,9 @@ import json
 import numpy as np
 
 from fov3d.scene import ScenePartitionGraph
+from fov3d.reconstruction.measurement_memory import (
+    valid_patch_measurements as _valid_patch_samples,
+)
 from fov3d.experiments.classroom_partition.lift import ReadLog, _cells, _grid, _head_angles_from_unit
 from fov3d.experiments.classroom_partition.joint import support_depth_from_map
 
@@ -60,16 +63,6 @@ class HeadEvidence:
             ambiguous_instance=np.zeros(shape, bool),
             sample_count=np.zeros(shape, np.uint16),
         )
-
-
-def _valid_patch_samples(patch: dict[str, np.ndarray]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    xyz = np.asarray(patch["xyz_h"], np.float64)
-    ids = np.asarray(patch["instance_id"], np.int32)
-    valid = np.asarray(patch["valid"], bool)
-    if xyz.ndim != 3 or xyz.shape[2] != 3 or ids.shape != xyz.shape[:2] or valid.shape != ids.shape:
-        raise ValueError(f"bad saved patch shapes xyz={xyz.shape} ids={ids.shape} valid={valid.shape}")
-    m = valid & (ids > 0) & np.isfinite(xyz).all(axis=-1)
-    return xyz[m], ids[m], m
 
 
 def add_head_patch(
