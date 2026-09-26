@@ -47,10 +47,12 @@ from fov3d.experiments.classroom_partition.benchmark import (
 )
 from fov3d.experiments.classroom_partition.incidental import (
     HeadEvidence,
-    _valid_patch_samples,
     add_head_patch,
 )
-from fov3d.experiments.classroom_partition.integration import effective_target_geometry
+from fov3d.reconstruction.measurement_memory import (
+    InstanceMeasurementMemory,
+    effective_target_geometry,
+)
 from fov3d.experiments.classroom_partition.joint import build_joint_graph, support_depth_from_map
 
 
@@ -93,20 +95,6 @@ def _guard_source(root: Path, path: Path, *, truth_allowed: bool) -> str:
     if forbidden and not truth_allowed:
         raise RuntimeError(f"truth/renderer path forbidden to Phase-8b proposer: {rel.as_posix()}")
     return rel.as_posix()
-
-
-def _concat_xyz(chunks: list[np.ndarray]) -> np.ndarray:
-    if not chunks:
-        return np.empty((0, 3), np.float32)
-    return np.vstack([np.asarray(x, np.float32).reshape(-1, 3) for x in chunks])
-
-
-def _route_patch(pool: dict[int, list[np.ndarray]], patch: dict[str, np.ndarray]) -> None:
-    pts, ids, _ = _valid_patch_samples(patch)
-    for observed in sorted(int(v) for v in np.unique(ids) if int(v) > 0):
-        q = pts[ids == observed].astype(np.float32, copy=True)
-        if len(q):
-            pool[observed].append(q)
 
 
 def _phase8_exact_parity(
@@ -333,7 +321,7 @@ def propose_phase8b(
     for budget in BUDGETS:
         sname = budget_name(budget)
         global_mem = HeadEvidence.empty((h, w))
-        pool: dict[int, list[np.ndarray]] = defaultdict(list)
+        measurement_memory = InstanceMeasurementMemory()
         mapped_layers: dict[int, Any] = {}
         object_names: dict[int, str] = {}
 
@@ -349,7 +337,11 @@ def propose_phase8b(
                 reads.append(_guard_source(source, pp, truth_allowed=False))
                 patch = _load_npz(pp)
                 add_head_patch(global_mem, patch, iid, domain, grid_deg)
-                _route_patch(pool, patch)
+                measurement_memory.append_patch(
+                    patch,
+                    source_global_index=int(target_start[iid] + local_step),
+                    source_active_target_id=iid,
+                )
 
             local_step = keep - 1
             original_gi = int(target_start[iid] + local_step)
@@ -369,7 +361,7 @@ def propose_phase8b(
                 global_index=original_gi, current_target=iid, current_local_step=local_step,
             )
 
-            measured_xyz = _concat_xyz(pool.get(iid, []))
+            measured_xyz = measurement_memory.snapshot(iid).xyz_h
             effective_xyz = effective_target_geometry(hist_xyz, measured_xyz)
             integrated_layer = support_depth_from_map(effective_xyz, domain, grid_deg, instance_id=iid, object_name=name)
 
@@ -553,6 +545,12 @@ def evaluate_phase8b(
         raise RuntimeError("Phase-8b proposal tree is not the expected truth-free benchmark")
     p8sum = _json(p8e / "summary.json")
 
+    target_start: dict[int, int] = {}
+    g = 0
+    for obj in manifest["objects"]:
+        target_start[int(obj["instance_id"])] = g
+        g += int(obj["fixation_count"])
+
     scenario_rows: list[dict[str, Any]] = []
     state_rows: list[dict[str, Any]] = []
     total_by_target: dict[str, Counter] = defaultdict(Counter)
@@ -560,7 +558,7 @@ def evaluate_phase8b(
 
     for budget in BUDGETS:
         sname = budget_name(budget)
-        pool: dict[int, list[np.ndarray]] = defaultdict(list)
+        measurement_memory = InstanceMeasurementMemory()
         agg_raw = Counter(); agg_eligible = Counter(); scenario_total = Counter()
 
         for obj in manifest["objects"]:
@@ -568,10 +566,16 @@ def evaluate_phase8b(
             odir = source / "objects" / f"instance_{iid:04d}"
             for local_step in range(keep):
                 patch = _load_npz(odir / "patches" / f"fix_{local_step:02d}.npz")
-                _route_patch(pool, patch)
+                measurement_memory.append_patch(
+                    patch,
+                    source_global_index=int(target_start[iid] + local_step),
+                    source_active_target_id=iid,
+                )
             snap = _load_npz(odir / "maps" / f"fix_{keep-1:02d}.npz")
             hist_xyz = np.asarray(snap["xyz_h"], np.float64).reshape(-1,3); hist_xyz = hist_xyz[np.isfinite(hist_xyz).all(axis=1)]
-            effective_xyz = effective_target_geometry(hist_xyz, _concat_xyz(pool.get(iid, [])))
+            effective_xyz = effective_target_geometry(
+                hist_xyz, measurement_memory.snapshot(iid).xyz_h
+            )
             mask = truth_ids == iid; ref = truth_xyz[mask]; ang = truth_angles[mask]
             cov = _covered(ref, effective_xyz, FUSION_RADIUS_M); residual_ang = ang[~cov]
 
