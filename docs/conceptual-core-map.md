@@ -1,9 +1,8 @@
 # Conceptual core migration map
 
-Status: proposed by Chat for Migration Conceptual Core 1; verified against the live code
-by Claude Code at `bef2d0c` (post-refactor) while executing
-`docs/migration-conceptual-core-1.md`. Corrections are listed in
-`docs/migration-conceptual-core-1-report.md`.
+Status: Conceptual Core 1 was verified and accepted. Conceptual Core 2 is now proposed on
+`migration/conceptual-core-2`; its measured acceptance status belongs in
+`docs/migration-conceptual-core-2-report.md`.
 
 The purpose of this map is to distinguish stable system concepts from the
 Classroom/Partition-Graph experiment lineage. It is intentionally architectural, not
@@ -57,15 +56,17 @@ attention behavior is added.
 Subject to the measured results of this refactor, the likely next conceptual refactors
 are:
 
-1. **Spherical chart / observation state** — separate generic chart and observation
-   operations from saved Classroom replay in `lift.py` and `incidental.py`. This includes
-   the private chart helpers that later phases import (`_grid`, `_cells`,
-   `_head_angles_from_unit`) and the single source of the 12-mm `FUSION_RADIUS_M`.
-2. **Scene partition construction** — move generic support/ownership/region construction
+1. **Head-centered spherical chart + association constant (Conceptual Core 2, proposed)** —
+   promote the fixed-head yaw/pitch mapping and chart indexing to
+   `fov3d.geometry.head_chart`, and make `fov3d.reconstruction.association` the single
+   source of the frozen 12-mm radius. Observation/epistemic state is deliberately deferred.
+2. **Observation / epistemic state** — separate reusable observation-state operations from
+   historical Phase-4/5 replay without changing chart or partition semantics.
+3. **Scene partition construction** — move generic support/ownership/region construction
    out of `joint.py` behind the scene representation API.
-3. **Topology / relations** — make relation extraction operate on the generic scene graph
+4. **Topology / relations** — make relation extraction operate on the generic scene graph
    rather than Phase-numbered state products.
-4. **Epistemic partition versus benchmark policy** — separate reusable uncertainty/state
+5. **Epistemic partition versus benchmark policy** — separate reusable uncertainty/state
    representation from candidate/evaluation machinery in `benchmark.py` and
    `prefix_benchmark.py`.
 
