@@ -20,7 +20,9 @@ import json
 
 import numpy as np
 
-from fov3d.geometry.head_chart import chart_cells, chart_grid
+# Module-qualified chart_cells: functions here keep a local `chart_cells` cell count.
+from fov3d.geometry import head_chart
+from fov3d.geometry.head_chart import chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.benchmark import (
     CANDIDATE_KINDS,
@@ -87,11 +89,11 @@ def _memory_state(local_state: dict[str, np.ndarray], mem: HeadEvidence) -> dict
     return out
 
 
-def _candidatechart_cells(regions: list[dict[str, Any]]) -> int:
+def _candidate_cells(regions: list[dict[str, Any]]) -> int:
     return int(sum(int(r["cell_count"]) for r in regions if bool(r.get("candidate"))))
 
 
-def _largest_kindchart_cells(regions: list[dict[str, Any]], kind: str) -> int:
+def _largest_kind_cells(regions: list[dict[str, Any]], kind: str) -> int:
     vals = [int(r["cell_count"]) for r in regions if str(r["kind"]) == kind]
     return max(vals) if vals else 0
 
@@ -103,11 +105,11 @@ def _partition_signature(arrays: dict[str, np.ndarray], regions: list[dict[str, 
         "region_count": len(regions),
         "edge_count": len(edges),
         "candidate_count": int(sum(bool(r.get("candidate")) for r in regions)),
-        "candidate_cells": _candidatechart_cells(regions),
+        "candidate_cells": _candidate_cells(regions),
         "unknown_regions": int(sum(str(r["kind"]) == "UNKNOWN" for r in regions)),
         "other_surface_regions": int(sum(str(r["kind"]) == "OTHER_SURFACE" for r in regions)),
         "target_evidence_unmapped_regions": int(sum(str(r["kind"]) == "TARGET_EVIDENCE_UNMAPPED" for r in regions)),
-        "largest_unknown_cells": _largest_kindchart_cells(regions, "UNKNOWN"),
+        "largest_unknown_cells": _largest_kind_cells(regions, "UNKNOWN"),
     }
 
 
@@ -241,10 +243,10 @@ def propose_phase7(
                     "object_name": name,
                     "local_step": int(local_step),
                     "is_target_final": bool(local_step + 1 == nfix),
-                    "candidate_cell_count": _candidatechart_cells(regions),
-                    "candidate_chart_fraction": float(_candidatechart_cells(regions) / chart_cells),
-                    "largest_unknown_cell_count": _largest_kindchart_cells(regions, "UNKNOWN"),
-                    "largest_unknown_chart_fraction": float(_largest_kindchart_cells(regions, "UNKNOWN") / chart_cells),
+                    "candidate_cell_count": _candidate_cells(regions),
+                    "candidate_chart_fraction": float(_candidate_cells(regions) / chart_cells),
+                    "largest_unknown_cell_count": _largest_kind_cells(regions, "UNKNOWN"),
+                    "largest_unknown_chart_fraction": float(_largest_kind_cells(regions, "UNKNOWN") / chart_cells),
                 })
                 _write_json(ad / "summary.json", ddiag)
                 for r in regions:
@@ -343,7 +345,7 @@ def _angles_to_codes(
 ) -> tuple[np.ndarray, np.ndarray]:
     a = np.asarray(angles, np.float64).reshape(-1, 2)
     y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
-    yy, xx, ok = chart_cells(a[:, 0] if len(a) else np.empty(0), a[:, 1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
+    yy, xx, ok = head_chart.chart_cells(a[:, 0] if len(a) else np.empty(0), a[:, 1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
     codes = np.zeros(len(a), np.int32)
     codes[ok] = np.asarray(region_code, np.int32)[yy[ok], xx[ok]]
     return codes, ok
@@ -617,11 +619,11 @@ def evaluate_phase7(
 
             # Evaluation-only truth raster for the demo.
             miss_count = np.zeros((h, w), np.uint16)
-            yy, xx, ok = chart_cells(missed_ang[:, 0] if len(missed_ang) else np.empty(0), missed_ang[:, 1] if len(missed_ang) else np.empty(0), y0, p0, grid_deg, h, w)
+            yy, xx, ok = head_chart.chart_cells(missed_ang[:, 0] if len(missed_ang) else np.empty(0), missed_ang[:, 1] if len(missed_ang) else np.empty(0), y0, p0, grid_deg, h, w)
             if len(yy):
                 np.add.at(miss_count, (yy[ok], xx[ok]), 1)
             gain_count = np.zeros((h, w), np.uint16)
-            gy, gx, gok = chart_cells(newly_ang[:, 0] if len(newly_ang) else np.empty(0), newly_ang[:, 1] if len(newly_ang) else np.empty(0), y0, p0, grid_deg, h, w)
+            gy, gx, gok = head_chart.chart_cells(newly_ang[:, 0] if len(newly_ang) else np.empty(0), newly_ang[:, 1] if len(newly_ang) else np.empty(0), y0, p0, grid_deg, h, w)
             if len(gy):
                 np.add.at(gain_count, (gy[gok], gx[gok]), 1)
             ed = out / "states" / f"global_{global_index:03d}"

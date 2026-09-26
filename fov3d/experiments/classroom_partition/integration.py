@@ -29,7 +29,9 @@ import json
 
 import numpy as np
 
-from fov3d.geometry.head_chart import chart_cells, chart_grid
+# Module-qualified chart_cells: functions here keep a local `chart_cells` cell count.
+from fov3d.geometry import head_chart
+from fov3d.geometry.head_chart import chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.benchmark import (
     _covered,
@@ -647,7 +649,7 @@ def evaluate_phase8(
                 a = np.asarray(arr, np.float64).reshape(-1, 2)
                 if not len(a):
                     continue
-                yy, xx, ok = chart_cells(a[:, 0], a[:, 1], y0, p0, grid_deg, h, w)
+                yy, xx, ok = head_chart.chart_cells(a[:, 0], a[:, 1], y0, p0, grid_deg, h, w)
                 if np.any(ok):
                     np.add.at(dst, (yy[ok], xx[ok]), 1)
             ed = out / "states" / f"global_{global_index:03d}"

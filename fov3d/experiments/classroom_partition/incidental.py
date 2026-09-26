@@ -152,7 +152,7 @@ def reconstruction_status(instance_id: int, graph: ScenePartitionGraph, all_targ
     return "never_targeted"
 
 
-def _relation_true_gapchart_cells(relation: dict[str, Any], target_support: np.ndarray) -> np.ndarray:
+def _relation_true_gap_cells(relation: dict[str, Any], target_support: np.ndarray) -> np.ndarray:
     line = np.asarray(relation.get("corridor_yx", []), np.int32)
     interior = line[1:-1] if len(line) > 2 else np.empty((0, 2), np.int32)
     if not len(interior):
@@ -180,7 +180,7 @@ def annotate_head_relation(
     Neither class is automatically an occlusion verdict.
     """
     out = dict(relation)
-    cells = _relation_true_gapchart_cells(relation, target_support)
+    cells = _relation_true_gap_cells(relation, target_support)
     counts = Counter({name: 0 for name in HEAD_CLASS_NAMES})
     observed_instances = Counter()
     status_counts: dict[str, Counter] = defaultdict(Counter)

@@ -36,7 +36,9 @@ import cv2
 import numpy as np
 
 from fov3d.scene import ObservationOverlay
-from fov3d.geometry.head_chart import chart_cells, chart_grid
+# Module-qualified chart_cells: functions here keep a local `chart_cells` cell count.
+from fov3d.geometry import head_chart
+from fov3d.geometry.head_chart import chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.benchmark import (
     REGION_KIND,
@@ -491,7 +493,7 @@ def _region_metrics(
 ) -> tuple[dict[str, Any], np.ndarray]:
     y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
     a = np.asarray(residual_angles, np.float64).reshape(-1, 2)
-    yy, xx, ok = chart_cells(a[:,0] if len(a) else np.empty(0), a[:,1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
+    yy, xx, ok = head_chart.chart_cells(a[:,0] if len(a) else np.empty(0), a[:,1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
     codes = np.zeros(len(a), np.int32); codes[ok] = np.asarray(region_code, np.int32)[yy[ok], xx[ok]]
     by = {int(r["region_code"]): r for r in regions}
     miss_by = Counter(int(c) for c in codes.tolist() if int(c) > 0)

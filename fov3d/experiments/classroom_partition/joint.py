@@ -548,7 +548,7 @@ def _component_boundary(mask: np.ndarray) -> np.ndarray:
     return (m.astype(bool) & ~er.astype(bool))
 
 
-def _linechart_cells(y0: int, x0: int, y1: int, x1: int) -> np.ndarray:
+def _line_cells(y0: int, x0: int, y1: int, x1: int) -> np.ndarray:
     n = max(abs(int(y1) - int(y0)), abs(int(x1) - int(x0))) + 1
     ys = np.rint(np.linspace(y0, y1, n)).astype(np.int32)
     xs = np.rint(np.linspace(x0, x1, n)).astype(np.int32)
@@ -615,7 +615,7 @@ def gap_corridor(
     j = int(idx[i, 0])
     y0c, x0c = map(int, ba[i])
     y1c, x1c = map(int, bb[j])
-    line = _linechart_cells(y0c, x0c, y1c, x1c)
+    line = _line_cells(y0c, x0c, y1c, x1c)
     interior = line[1:-1] if len(line) > 2 else np.empty((0, 2), np.int32)
 
     y_min, _ym, p_min, _pm, _h, _w = chart_grid(domain, grid_deg)
