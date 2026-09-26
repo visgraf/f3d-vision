@@ -20,14 +20,13 @@ import json
 
 import numpy as np
 
+from fov3d.geometry.head_chart import chart_cells, chart_grid
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.benchmark import (
     CANDIDATE_KINDS,
-    FUSION_RADIUS_M,
     REGION_KIND,
     REGION_KIND_BY_CODE,
-    _cells,
     _covered,
-    _grid,
     build_epistemic_partition,
 )
 from fov3d.experiments.classroom_partition.incidental import HeadEvidence, add_head_patch
@@ -88,11 +87,11 @@ def _memory_state(local_state: dict[str, np.ndarray], mem: HeadEvidence) -> dict
     return out
 
 
-def _candidate_cells(regions: list[dict[str, Any]]) -> int:
+def _candidatechart_cells(regions: list[dict[str, Any]]) -> int:
     return int(sum(int(r["cell_count"]) for r in regions if bool(r.get("candidate"))))
 
 
-def _largest_kind_cells(regions: list[dict[str, Any]], kind: str) -> int:
+def _largest_kindchart_cells(regions: list[dict[str, Any]], kind: str) -> int:
     vals = [int(r["cell_count"]) for r in regions if str(r["kind"]) == kind]
     return max(vals) if vals else 0
 
@@ -104,11 +103,11 @@ def _partition_signature(arrays: dict[str, np.ndarray], regions: list[dict[str, 
         "region_count": len(regions),
         "edge_count": len(edges),
         "candidate_count": int(sum(bool(r.get("candidate")) for r in regions)),
-        "candidate_cells": _candidate_cells(regions),
+        "candidate_cells": _candidatechart_cells(regions),
         "unknown_regions": int(sum(str(r["kind"]) == "UNKNOWN" for r in regions)),
         "other_surface_regions": int(sum(str(r["kind"]) == "OTHER_SURFACE" for r in regions)),
         "target_evidence_unmapped_regions": int(sum(str(r["kind"]) == "TARGET_EVIDENCE_UNMAPPED" for r in regions)),
-        "largest_unknown_cells": _largest_kind_cells(regions, "UNKNOWN"),
+        "largest_unknown_cells": _largest_kindchart_cells(regions, "UNKNOWN"),
     }
 
 
@@ -164,7 +163,7 @@ def propose_phase7(
     if abs(float(grid_deg) - 0.10) > 1e-12:
         raise ValueError("Phase 7 uses the frozen 0.10-degree chart")
     domain = seeds["controller_domain_deg"]
-    _y0, _y1, _p0, _p1, h, w = _grid(domain, grid_deg)
+    _y0, _y1, _p0, _p1, h, w = chart_grid(domain, grid_deg)
     chart_cells = int(h * w)
     all_target_ids = {int(o["instance_id"]) for o in manifest["objects"]}
     p5_summary = _json(p5 / "summary.json")
@@ -242,10 +241,10 @@ def propose_phase7(
                     "object_name": name,
                     "local_step": int(local_step),
                     "is_target_final": bool(local_step + 1 == nfix),
-                    "candidate_cell_count": _candidate_cells(regions),
-                    "candidate_chart_fraction": float(_candidate_cells(regions) / chart_cells),
-                    "largest_unknown_cell_count": _largest_kind_cells(regions, "UNKNOWN"),
-                    "largest_unknown_chart_fraction": float(_largest_kind_cells(regions, "UNKNOWN") / chart_cells),
+                    "candidate_cell_count": _candidatechart_cells(regions),
+                    "candidate_chart_fraction": float(_candidatechart_cells(regions) / chart_cells),
+                    "largest_unknown_cell_count": _largest_kindchart_cells(regions, "UNKNOWN"),
+                    "largest_unknown_chart_fraction": float(_largest_kindchart_cells(regions, "UNKNOWN") / chart_cells),
                 })
                 _write_json(ad / "summary.json", ddiag)
                 for r in regions:
@@ -343,8 +342,8 @@ def _angles_to_codes(
     grid_deg: float,
 ) -> tuple[np.ndarray, np.ndarray]:
     a = np.asarray(angles, np.float64).reshape(-1, 2)
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
-    yy, xx, ok = _cells(a[:, 0] if len(a) else np.empty(0), a[:, 1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
+    yy, xx, ok = chart_cells(a[:, 0] if len(a) else np.empty(0), a[:, 1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
     codes = np.zeros(len(a), np.int32)
     codes[ok] = np.asarray(region_code, np.int32)[yy[ok], xx[ok]]
     return codes, ok
@@ -515,7 +514,7 @@ def evaluate_phase7(
     if prop_summary.get("truth_used") is not False or int(prop_summary.get("state_count", -1)) != int(manifest.get("total_fixations", -2)):
         raise RuntimeError("Phase-7 proposal tree is not the expected truth-free 104-state tree")
     chart_cells = int(prop_summary["chart_cells"])
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
 
     by_id = {int(o["instance_id"]): o for o in manifest["objects"]}
     state_eval: list[dict[str, Any]] = []
@@ -543,7 +542,7 @@ def evaluate_phase7(
             with np.load(map_path, allow_pickle=False) as z:
                 sm = np.asarray(z["xyz_h"], np.float64)
             sm = sm[np.isfinite(sm).all(axis=1)]
-            cov = _covered(ref, sm, FUSION_RADIUS_M)
+            cov = _covered(ref, sm, SURFACE_ASSOCIATION_RADIUS_M)
             miss = ~cov
             missed_ang = ang[miss]
             newly_ang = np.empty((0, 2), np.float64)
@@ -554,7 +553,7 @@ def evaluate_phase7(
                 with np.load(next_path, allow_pickle=False) as z:
                     sm2 = np.asarray(z["xyz_h"], np.float64)
                 sm2 = sm2[np.isfinite(sm2).all(axis=1)]
-                cov2 = _covered(ref, sm2, FUSION_RADIUS_M)
+                cov2 = _covered(ref, sm2, SURFACE_ASSOCIATION_RADIUS_M)
                 newly_ang = ang[(~cov) & cov2]
                 if local_step + 1 < len(trajectory) and "gaze_deg" in trajectory[local_step + 1]:
                     next_gaze = tuple(map(float, trajectory[local_step + 1]["gaze_deg"]))
@@ -618,11 +617,11 @@ def evaluate_phase7(
 
             # Evaluation-only truth raster for the demo.
             miss_count = np.zeros((h, w), np.uint16)
-            yy, xx, ok = _cells(missed_ang[:, 0] if len(missed_ang) else np.empty(0), missed_ang[:, 1] if len(missed_ang) else np.empty(0), y0, p0, grid_deg, h, w)
+            yy, xx, ok = chart_cells(missed_ang[:, 0] if len(missed_ang) else np.empty(0), missed_ang[:, 1] if len(missed_ang) else np.empty(0), y0, p0, grid_deg, h, w)
             if len(yy):
                 np.add.at(miss_count, (yy[ok], xx[ok]), 1)
             gain_count = np.zeros((h, w), np.uint16)
-            gy, gx, gok = _cells(newly_ang[:, 0] if len(newly_ang) else np.empty(0), newly_ang[:, 1] if len(newly_ang) else np.empty(0), y0, p0, grid_deg, h, w)
+            gy, gx, gok = chart_cells(newly_ang[:, 0] if len(newly_ang) else np.empty(0), newly_ang[:, 1] if len(newly_ang) else np.empty(0), y0, p0, grid_deg, h, w)
             if len(gy):
                 np.add.at(gain_count, (gy[gok], gx[gok]), 1)
             ed = out / "states" / f"global_{global_index:03d}"
