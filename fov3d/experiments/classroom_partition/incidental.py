@@ -22,10 +22,11 @@ import json
 import numpy as np
 
 from fov3d.scene import ScenePartitionGraph
+from fov3d.geometry.head_chart import chart_cells, chart_grid, head_angles_from_unit
 from fov3d.reconstruction.measurement_memory import (
     valid_patch_measurements as _valid_patch_samples,
 )
-from fov3d.experiments.classroom_partition.lift import ReadLog, _cells, _grid, _head_angles_from_unit
+from fov3d.experiments.classroom_partition.lift import ReadLog
 from fov3d.experiments.classroom_partition.joint import support_depth_from_map
 
 
@@ -83,9 +84,9 @@ def add_head_patch(
     if len(pts) == 0:
         return {"valid_points": 0, "new_depth_cells": 0, "depth_cells": before}
 
-    yaw, pitch = _head_angles_from_unit(pts)
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
-    yy, xx, ok = _cells(yaw, pitch, y0, p0, grid_deg, h, w)
+    yaw, pitch = head_angles_from_unit(pts)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
+    yy, xx, ok = chart_cells(yaw, pitch, y0, p0, grid_deg, h, w)
     pts = pts[ok]
     ids = ids[ok]
     yy = yy[ok].astype(np.int64)
@@ -151,7 +152,7 @@ def reconstruction_status(instance_id: int, graph: ScenePartitionGraph, all_targ
     return "never_targeted"
 
 
-def _relation_true_gap_cells(relation: dict[str, Any], target_support: np.ndarray) -> np.ndarray:
+def _relation_true_gapchart_cells(relation: dict[str, Any], target_support: np.ndarray) -> np.ndarray:
     line = np.asarray(relation.get("corridor_yx", []), np.int32)
     interior = line[1:-1] if len(line) > 2 else np.empty((0, 2), np.int32)
     if not len(interior):
@@ -179,7 +180,7 @@ def annotate_head_relation(
     Neither class is automatically an occlusion verdict.
     """
     out = dict(relation)
-    cells = _relation_true_gap_cells(relation, target_support)
+    cells = _relation_true_gapchart_cells(relation, target_support)
     counts = Counter({name: 0 for name in HEAD_CLASS_NAMES})
     observed_instances = Counter()
     status_counts: dict[str, Counter] = defaultdict(Counter)
@@ -267,7 +268,7 @@ def analyze_phase5(
     manifest = log.json(source / "manifest.json")
     seeds = log.json(source / "bootstrap" / "seeds.json")
     domain = seeds["controller_domain_deg"]
-    _y0, _y1, _p0, _p1, h, w = _grid(domain, grid_deg)
+    _y0, _y1, _p0, _p1, h, w = chart_grid(domain, grid_deg)
     all_target_ids = {int(o["instance_id"]) for o in manifest["objects"]}
     lift_summary = json.loads((lift / "summary.json").read_text(encoding="utf-8"))
     p4_summary = json.loads((p4 / "summary.json").read_text(encoding="utf-8"))
