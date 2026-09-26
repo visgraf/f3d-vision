@@ -38,8 +38,11 @@ from fov3d.experiments.classroom_partition.benchmark import (
 )
 from fov3d.experiments.classroom_partition.incidental import (
     HeadEvidence,
-    _valid_patch_samples,
     add_head_patch,
+)
+from fov3d.reconstruction.measurement_memory import (
+    InstanceMeasurementMemory,
+    effective_target_geometry,
 )
 from fov3d.experiments.classroom_partition.joint import support_depth_from_map
 from fov3d.experiments.classroom_partition.prefix_benchmark import (
@@ -91,22 +94,6 @@ def _finite_xyz(x: np.ndarray) -> np.ndarray:
     return a[np.isfinite(a).all(axis=1)]
 
 
-def effective_target_geometry(map_xyz_h: np.ndarray, cross_target_xyz_h: np.ndarray) -> np.ndarray:
-    """Return the shadow integrated geometry without mutating either input.
-
-    Duplicates are intentionally retained.  Coverage/support queries are set-like
-    under the frozen 12-mm rule, while retaining raw measurements preserves a
-    clean no-new-fusion interpretation and exact provenance.
-    """
-    a = _finite_xyz(map_xyz_h)
-    b = _finite_xyz(cross_target_xyz_h)
-    if not len(a):
-        return b.copy()
-    if not len(b):
-        return a.copy()
-    return np.vstack((a, b))
-
-
 def cross_target_novelty(map_xyz_h: np.ndarray, cross_target_xyz_h: np.ndarray) -> dict[str, Any]:
     """Describe how much deferred target evidence is outside the historical map.
 
@@ -149,18 +136,6 @@ def _partition_exact_parity(
         raise RuntimeError("Phase-8 historical-global regions differ from Phase 7")
     if edges != _json(phase7_state_dir / "global" / "edges.json"):
         raise RuntimeError("Phase-8 historical-global edges differ from Phase 7")
-
-
-def _concat_chunks(chunks: list[np.ndarray]) -> np.ndarray:
-    if not chunks:
-        return np.empty((0, 3), np.float32)
-    return np.vstack([np.asarray(x, np.float32).reshape(-1, 3) for x in chunks])
-
-
-def _concat_int_chunks(chunks: list[np.ndarray]) -> np.ndarray:
-    if not chunks:
-        return np.empty((0,), np.int32)
-    return np.concatenate([np.asarray(x, np.int32).reshape(-1) for x in chunks])
 
 
 def propose_phase8(
@@ -212,11 +187,9 @@ def propose_phase8(
         raise RuntimeError("Phase-7 proposal tree is not the expected truth-free prefix tree")
 
     global_mem = HeadEvidence.empty((h, w))
-    # Per instance, retain every valid controller-time XYZ measurement, with
-    # source-target provenance so cross-target and own-target contributions remain separable.
-    pool_xyz: dict[int, list[np.ndarray]] = defaultdict(list)
-    pool_global: dict[int, list[np.ndarray]] = defaultdict(list)
-    pool_source_target: dict[int, list[np.ndarray]] = defaultdict(list)
+    # Reusable append-only memory for every valid controller-time measurement.
+    # Routing is by observed instance identity, independent of the active target.
+    measurement_memory = InstanceMeasurementMemory()
 
     state_rows: list[dict[str, Any]] = []
     candidate_rows: list[dict[str, Any]] = []
@@ -245,23 +218,16 @@ def propose_phase8(
             # Global memory includes the current completed look, matching Phase 7.
             add_head_patch(global_mem, patch, iid, domain, grid_deg)
 
-            # Route every valid measured instance into a causal per-instance
-            # geometry reservoir.  This is the architecture under test: measured
-            # target geometry is retained regardless of which target was active.
-            pts, ids, _valid = _valid_patch_samples(patch)
-            for observed in sorted(int(v) for v in np.unique(ids) if int(v) > 0):
-                q = pts[ids == observed].astype(np.float32, copy=True)
-                if not len(q):
-                    continue
-                pool_xyz[observed].append(q)
-                pool_global[observed].append(np.full(len(q), global_index, np.int32))
-                pool_source_target[observed].append(np.full(len(q), iid, np.int32))
-
-            measured_xyz = _concat_chunks(pool_xyz.get(iid, []))
-            measured_global = _concat_int_chunks(pool_global.get(iid, []))
-            measured_source_target = _concat_int_chunks(pool_source_target.get(iid, []))
-            if not (len(measured_xyz) == len(measured_global) == len(measured_source_target)):
-                raise RuntimeError(f"target-evidence provenance length mismatch for {iid}")
+            # Route every valid measured instance into the shared conceptual memory.
+            measurement_memory.append_patch(
+                patch,
+                source_global_index=global_index,
+                source_active_target_id=iid,
+            )
+            measured = measurement_memory.snapshot(iid)
+            measured_xyz = measured.xyz_h
+            measured_global = measured.source_global_index
+            measured_source_target = measured.source_active_target_id
             if len(measured_global) and int(measured_global.max()) > global_index:
                 raise RuntimeError(f"future target evidence reached state {global_index}")
             cross_mask = measured_source_target != iid
@@ -374,9 +340,10 @@ def propose_phase8(
         # Persist all causal target measurements available through this target's
         # final prefix.  The evaluator filters by source_global_index for earlier
         # prefixes, so no future measurement is credited retroactively.
-        all_xyz = _concat_chunks(pool_xyz.get(iid, []))
-        all_global = _concat_int_chunks(pool_global.get(iid, []))
-        all_source_target = _concat_int_chunks(pool_source_target.get(iid, []))
+        final_memory = measurement_memory.snapshot(iid)
+        all_xyz = final_memory.xyz_h
+        all_global = final_memory.source_global_index
+        all_source_target = final_memory.source_active_target_id
         if len(all_global) and int(all_global.max()) >= global_index:
             raise RuntimeError(f"target evidence extends beyond target-final prefix for {iid}")
         np.savez_compressed(
