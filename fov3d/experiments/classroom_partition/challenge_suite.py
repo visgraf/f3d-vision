@@ -36,12 +36,11 @@ import cv2
 import numpy as np
 
 from fov3d.scene import ObservationOverlay
+from fov3d.geometry.head_chart import chart_cells, chart_grid
+from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.benchmark import (
-    FUSION_RADIUS_M,
     REGION_KIND,
-    _cells,
     _covered,
-    _grid,
     _region_interfaces,
     build_epistemic_partition,
 )
@@ -300,7 +299,7 @@ def propose_phase8b(
     domain = seeds["controller_domain_deg"]
     if abs(float(grid_deg) - GRID_DEG) > 1e-12:
         raise ValueError("Phase 8b uses the frozen 0.10-degree chart")
-    _y0, _y1, _p0, _p1, h, w = _grid(domain, grid_deg)
+    _y0, _y1, _p0, _p1, h, w = chart_grid(domain, grid_deg)
     all_target_ids = {int(o["instance_id"]) for o in manifest["objects"]}
     p8s = _json(p8 / "summary.json")
     if p8s.get("truth_used") is not False or int(p8s.get("integrated_target_evidence_unmapped_cells_total", -1)) != 0:
@@ -490,9 +489,9 @@ def _region_metrics(
     *,
     candidate_field: str,
 ) -> tuple[dict[str, Any], np.ndarray]:
-    y0, _y1, p0, _p1, h, w = _grid(domain, grid_deg)
+    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
     a = np.asarray(residual_angles, np.float64).reshape(-1, 2)
-    yy, xx, ok = _cells(a[:,0] if len(a) else np.empty(0), a[:,1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
+    yy, xx, ok = chart_cells(a[:,0] if len(a) else np.empty(0), a[:,1] if len(a) else np.empty(0), y0, p0, grid_deg, h, w)
     codes = np.zeros(len(a), np.int32); codes[ok] = np.asarray(region_code, np.int32)[yy[ok], xx[ok]]
     by = {int(r["region_code"]): r for r in regions}
     miss_by = Counter(int(c) for c in codes.tolist() if int(c) > 0)
@@ -577,7 +576,7 @@ def evaluate_phase8b(
                 hist_xyz, measurement_memory.snapshot(iid).xyz_h
             )
             mask = truth_ids == iid; ref = truth_xyz[mask]; ang = truth_angles[mask]
-            cov = _covered(ref, effective_xyz, FUSION_RADIUS_M); residual_ang = ang[~cov]
+            cov = _covered(ref, effective_xyz, SURFACE_ASSOCIATION_RADIUS_M); residual_ang = ang[~cov]
 
             pd = prop / "scenarios" / sname / "targets" / f"instance_{iid:04d}"
             pa = _load_npz(pd / "partition.npz"); regions = _json(pd / "regions.json"); ss = _json(pd / "summary.json")
