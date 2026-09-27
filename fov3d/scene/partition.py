@@ -120,3 +120,47 @@ def _component_attrs(mask: np.ndarray, depth: np.ndarray | None = None) -> dict[
                 max_depth_m=float(np.max(vals)),
             )
     return attrs
+
+
+def label_joint_regions(
+    owner: np.ndarray,
+    owner_depth: np.ndarray,
+    object_names: dict[int, str],
+):
+    owner = np.asarray(owner, np.int32)
+    h, w = owner.shape
+    region_code = np.zeros((h, w), np.int32)
+    regions: dict[str, PartitionRegion] = {}
+    objects: dict[str, ObjectHypothesis] = {}
+    code_to_rid: dict[int, str] = {}
+    rid_to_code: dict[str, int] = {}
+    next_code = 1
+
+    for iid in sorted(int(v) for v in np.unique(owner) if int(v) > 0):
+        n, labs = cv2.connectedComponents((owner == iid).astype(np.uint8), connectivity=8)
+        rids: list[str] = []
+        for lab in range(1, n):
+            mask = labs == lab
+            rid = f"obj:{iid}:c{lab:03d}"
+            attrs = _component_attrs(mask, owner_depth)
+            attrs.update({"source": "joint_frontmost_partition", "instance_id": iid, "state_region_code": int(next_code)})
+            regions[rid] = PartitionRegion(
+                region_id=rid,
+                kind=RegionKind.OBJECT_COMPONENT,
+                object_id=str(iid),
+                attributes=attrs,
+            )
+            region_code[mask] = next_code
+            code_to_rid[next_code] = rid
+            rid_to_code[rid] = next_code
+            next_code += 1
+            rids.append(rid)
+        if rids:
+            objects[str(iid)] = ObjectHypothesis(
+                object_id=str(iid),
+                region_ids=tuple(rids),
+                attributes={
+                    "object_name": object_names.get(iid, str(iid)),
+                    "identity_source": "inherited_from_classroom_oracle1",
+                },
+            )
