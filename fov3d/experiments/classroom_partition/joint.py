@@ -35,6 +35,7 @@ from fov3d.scene import (
 from fov3d.scene.boundaries import _interface_edges, _trace_edge_components, extract_boundaries
 from fov3d.scene.corridors import _component_boundary, _line_cells, corridors_for_object, gap_corridor
 from fov3d.scene.lineage import _lineage, _target_component_raster
+from fov3d.scene.state_validation import attach_state_region_codes
 from fov3d.geometry.head_chart import (
     chart_cells,
     chart_grid,
@@ -182,16 +183,6 @@ def _append_raw_footprints(
                 },
             )
         )
-
-
-def attach_state_region_codes(graph: ScenePartitionGraph, region_code: np.ndarray) -> ScenePartitionGraph:
-    """Validate the construction-time raster code carried by every region."""
-    codes = {int(c) for c in np.unique(region_code)}
-    graph_codes = {int(r.attributes.get("state_region_code", -1)) for r in graph.regions.values()}
-    if -1 in graph_codes or graph_codes != codes:
-        raise RuntimeError(f"graph/raster region-code mismatch: graph={sorted(graph_codes)} raster={sorted(codes)}")
-    graph.validate()
-    return graph
 
 
 def _controller_expected_never(row: dict[str, Any]) -> int | None:
