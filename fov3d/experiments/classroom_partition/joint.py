@@ -30,6 +30,10 @@ from fov3d.scene import (
     PartitionRegion,
     RegionKind,
     ScenePartitionGraph,
+    SupportLayer,
+    joint_owner,
+    label_joint_regions,
+    support_depth_from_map,
 )
 from fov3d.geometry.head_chart import (
     chart_cells,
@@ -37,21 +41,10 @@ from fov3d.geometry.head_chart import (
     head_angles_from_unit,
     head_unit_from_angles,
 )
-from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.lift import (
     ReadLog,
     _camera_polygon,
 )
-
-
-@dataclass(frozen=True)
-class SupportLayer:
-    instance_id: int
-    object_name: str
-    support: np.ndarray
-    depth_m: np.ndarray
-    point_yx: np.ndarray
-    surfel_count: int
 
 
 @dataclass(frozen=True)
@@ -66,181 +59,6 @@ def _default_stereo_ops() -> StereoOps:
     # geometry exactly. This imports no matcher or controller.
     from fov3d.stereo.core import rectification, support_mask
     return StereoOps(rectification=rectification, support_mask=support_mask)
-
-
-def _disk(radius: int) -> np.ndarray:
-    yy, xx = np.mgrid[-radius:radius + 1, -radius:radius + 1]
-    return ((xx * xx + yy * yy) <= radius * radius).astype(np.uint8)
-
-
-def support_depth_from_map(
-    xyz_h: np.ndarray,
-    domain: dict[str, Any],
-    grid_deg: float,
-    *,
-    instance_id: int,
-    object_name: str,
-) -> SupportLayer:
-    """Rasterize a metric map using the frozen 12 mm association footprint.
-
-    ``depth_m`` is the nearest surfel range whose projected association disk
-    covers each chart cell. It is used only to resolve overlap among already
-    reconstructed object maps in the joint retrospective partition.
-    """
-    y0, _y1, p0, _p1, h, w = chart_grid(domain, grid_deg)
-    xyz = np.asarray(xyz_h, dtype=np.float64).reshape(-1, 3)
-    finite = np.isfinite(xyz).all(axis=1)
-    ids = np.flatnonzero(finite)
-    pts = xyz[finite]
-    point_yx = np.full((len(xyz), 2), -1, np.int32)
-    depth = np.full((h, w), np.inf, np.float32)
-    if len(pts) == 0:
-        return SupportLayer(instance_id, object_name, np.zeros((h, w), bool), depth, point_yx, 0)
-
-    yaw, pitch = head_angles_from_unit(pts)
-    yy, xx, ok = chart_cells(yaw, pitch, y0, p0, grid_deg, h, w)
-    ranges = np.linalg.norm(pts, axis=1)
-    rad_deg = np.degrees(np.arctan(SURFACE_ASSOCIATION_RADIUS_M / np.maximum(ranges, 1e-12)))
-    rad_cells = np.maximum(1, np.ceil(rad_deg / grid_deg).astype(np.int32))
-    point_yx[ids[ok], 0] = yy[ok]
-    point_yx[ids[ok], 1] = xx[ok]
-
-    for r in sorted(set(int(v) for v in rad_cells[ok])):
-        sel = ok & (rad_cells == r)
-        raw = np.full((h, w), np.inf, np.float32)
-        np.minimum.at(raw, (yy[sel], xx[sel]), ranges[sel].astype(np.float32))
-        expanded = cv2.erode(
-            raw,
-            _disk(r),
-            borderType=cv2.BORDER_CONSTANT,
-            borderValue=float("inf"),
-        )
-        depth = np.minimum(depth, expanded)
-    return SupportLayer(
-        instance_id=instance_id,
-        object_name=object_name,
-        support=np.isfinite(depth),
-        depth_m=depth,
-        point_yx=point_yx,
-        surfel_count=int(finite.sum()),
-    )
-
-
-def joint_owner(layers: dict[int, SupportLayer]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Return frontmost reconstructed owner, depth, and overlap count per cell."""
-    if not layers:
-        raise ValueError("joint_owner requires at least one support layer")
-    shape = next(iter(layers.values())).support.shape
-    owner = np.zeros(shape, np.int32)
-    depth = np.full(shape, np.inf, np.float32)
-    overlap = np.zeros(shape, np.uint16)
-    for iid in sorted(layers):
-        layer = layers[iid]
-        if layer.support.shape != shape:
-            raise ValueError("support-layer shape mismatch")
-        overlap += layer.support.astype(np.uint16)
-        d = layer.depth_m
-        better = d < depth
-        # Exact equal-depth ties are only a deterministic raster convention.
-        tie = np.isfinite(d) & np.isfinite(depth) & (d == depth) & ((owner == 0) | (iid < owner))
-        take = better | tie
-        owner[take] = int(iid)
-        depth[take] = d[take]
-    return owner, depth, overlap
-
-
-def _component_attrs(mask: np.ndarray, depth: np.ndarray | None = None) -> dict[str, Any]:
-    ys, xs = np.nonzero(mask)
-    attrs: dict[str, Any] = {
-        "cell_count": int(mask.sum()),
-        "touches_domain_edge": bool(
-            len(ys)
-            and (
-                np.any(ys == 0)
-                or np.any(xs == 0)
-                or np.any(ys == mask.shape[0] - 1)
-                or np.any(xs == mask.shape[1] - 1)
-            )
-        ),
-    }
-    if depth is not None:
-        vals = np.asarray(depth)[mask]
-        vals = vals[np.isfinite(vals)]
-        if len(vals):
-            attrs.update(
-                median_depth_m=float(np.median(vals)),
-                min_depth_m=float(np.min(vals)),
-                max_depth_m=float(np.max(vals)),
-            )
-    return attrs
-
-
-def label_joint_regions(
-    owner: np.ndarray,
-    owner_depth: np.ndarray,
-    object_names: dict[int, str],
-) -> tuple[
-    dict[str, PartitionRegion],
-    dict[str, ObjectHypothesis],
-    np.ndarray,
-    dict[int, str],
-    dict[str, int],
-]:
-    """Label object faces with 8-connectivity and BASE with dual 4-connectivity."""
-    owner = np.asarray(owner, np.int32)
-    h, w = owner.shape
-    region_code = np.zeros((h, w), np.int32)
-    regions: dict[str, PartitionRegion] = {}
-    objects: dict[str, ObjectHypothesis] = {}
-    code_to_rid: dict[int, str] = {}
-    rid_to_code: dict[str, int] = {}
-    next_code = 1
-
-    for iid in sorted(int(v) for v in np.unique(owner) if int(v) > 0):
-        n, labs = cv2.connectedComponents((owner == iid).astype(np.uint8), connectivity=8)
-        rids: list[str] = []
-        for lab in range(1, n):
-            mask = labs == lab
-            rid = f"obj:{iid}:c{lab:03d}"
-            attrs = _component_attrs(mask, owner_depth)
-            attrs.update({"source": "joint_frontmost_partition", "instance_id": iid, "state_region_code": int(next_code)})
-            regions[rid] = PartitionRegion(
-                region_id=rid,
-                kind=RegionKind.OBJECT_COMPONENT,
-                object_id=str(iid),
-                attributes=attrs,
-            )
-            region_code[mask] = next_code
-            code_to_rid[next_code] = rid
-            rid_to_code[rid] = next_code
-            next_code += 1
-            rids.append(rid)
-        if rids:
-            objects[str(iid)] = ObjectHypothesis(
-                object_id=str(iid),
-                region_ids=tuple(rids),
-                attributes={
-                    "object_name": object_names.get(iid, str(iid)),
-                    "identity_source": "inherited_from_classroom_oracle1",
-                },
-            )
-
-    # Digital-topology duality: if foreground uses 8-connectivity, complement uses 4.
-    n_base, base_labs = cv2.connectedComponents((owner == 0).astype(np.uint8), connectivity=4)
-    for lab in range(1, n_base):
-        mask = base_labs == lab
-        rid = f"base:c{lab:03d}"
-        attrs = _component_attrs(mask)
-        attrs.update({"source": "joint_frontmost_complement", "state_region_code": int(next_code)})
-        regions[rid] = PartitionRegion(rid, RegionKind.BASE, attributes=attrs)
-        region_code[mask] = next_code
-        code_to_rid[next_code] = rid
-        rid_to_code[rid] = next_code
-        next_code += 1
-
-    if np.any(region_code == 0):
-        raise RuntimeError("joint region labelling left unlabeled cells")
-    return regions, objects, region_code, code_to_rid, rid_to_code
 
 
 def _interface_edges(region_code: np.ndarray) -> dict[tuple[int, int], list[dict[str, Any]]]:
