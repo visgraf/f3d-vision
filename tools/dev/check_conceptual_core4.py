@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from fov3d.geometry.head_chart import head_unit_from_angles
 from fov3d.scene import (
     RegionKind,
     SupportLayer,
@@ -100,6 +101,31 @@ def main() -> int:
         and bool(one.support[3, 2]),
     )
 
+    # Two association-radius classes on a 1-degree grid: 0.3 m -> atan(0.04) = 2.29 deg
+    # -> 3 cells; 1.0 m -> 0.69 deg -> 1 cell.  The disks overlap; one finite point is
+    # outside the chart and one is NaN.
+    wide = {"yaw": [-5.0, 5.0], "pitch": [-5.0, 5.0]}
+    pts = np.vstack([
+        head_unit_from_angles([0.0, 3.0, 20.0], [0.0, 0.0, 0.0])
+        * np.array([[0.3], [1.0], [1.0]]),
+        [[np.nan, 0.0, -1.0]],
+    ])
+    multi = support_depth_from_map(pts, wide, 1.0, instance_id=9, object_name="B")
+    near = np.float32(np.linalg.norm(pts[0]))
+    far = np.float32(np.linalg.norm(pts[1]))
+    check(
+        "support radius classes, overlap minimum and surfel count",
+        multi.point_yx.tolist() == [[5, 5], [5, 8], [-1, -1], [-1, -1]]
+        and multi.surfel_count == 3
+        and int(multi.support.sum()) == 32
+        and multi.depth_m[5, 5] == near
+        and multi.depth_m[2, 5] == near
+        and not bool(multi.support[1, 5])
+        and multi.depth_m[5, 8] == near
+        and multi.depth_m[4, 8] == far
+        and multi.depth_m[5, 9] == far,
+    )
+
     s = np.zeros((2, 2), bool)
     s[0, 0] = True
     d7 = np.full((2, 2), np.inf, np.float32)
@@ -112,6 +138,13 @@ def main() -> int:
     })
     check("nearest depth wins", int(owner[0, 0]) == 8 and float(depth[0, 0]) == 1.0)
     check("overlap count", overlap.dtype == np.uint16 and int(overlap[0, 0]) == 2)
+    check(
+        "owner dtypes and unowned depth",
+        owner.dtype == np.int32
+        and depth.dtype == np.float32
+        and int(owner[1, 1]) == 0
+        and np.isposinf(depth[1, 1]),
+    )
 
     d7[0, 0] = 1.0
     owner_tie, _depth_tie, _overlap_tie = joint_owner({
@@ -129,6 +162,24 @@ def main() -> int:
     except ValueError:
         mismatch_ok = True
     check("shape mismatch fails", mismatch_ok)
+
+    def _raises_value_error(layers: dict[int, SupportLayer]) -> bool:
+        try:
+            joint_owner(layers)
+        except ValueError:
+            return True
+        except Exception:
+            return False
+        return False
+
+    check(
+        "broadcastable shape mismatch and empty input raise ValueError",
+        _raises_value_error({
+            7: _layer(7, np.zeros((2, 2), bool), np.full((2, 2), np.inf, np.float32)),
+            8: _layer(8, np.zeros((1, 2), bool), np.full((1, 2), np.inf, np.float32)),
+        })
+        and _raises_value_error({}),
+    )
 
     diagonal_object = np.zeros((3, 3), np.int32)
     diagonal_object[0, 0] = 7
@@ -178,6 +229,53 @@ def main() -> int:
         and attrs["state_region_code"] == 1,
     )
 
+    # Two objects (ids 5 and 3, only 3 named) and one BASE component on a 5x5 chart.
+    # Object 3 touches only the last row; object 5 spans two rows and touches no edge.
+    grid5 = np.zeros((5, 5), np.int32)
+    grid5[1, 1] = grid5[1, 2] = grid5[2, 1] = 5
+    grid5[3, 3] = grid5[4, 3] = 3
+    d5 = np.full((5, 5), np.inf, np.float32)
+    d5[1, 1], d5[1, 2], d5[2, 1] = 1.0, 2.0, 4.0
+    d5[3, 3] = d5[4, 3] = 1.5
+    regions4, objects4, rc4, c2r4, r2c4 = label_joint_regions(grid5, d5, {3: "C"})
+    expected_rc = np.full((5, 5), 3, np.int32)
+    expected_rc[grid5 == 3] = 1
+    expected_rc[grid5 == 5] = 2
+    check(
+        "multi-object region ids, codes and order",
+        list(regions4) == ["obj:3:c001", "obj:5:c001", "base:c001"]
+        and rc4.dtype == np.int32
+        and np.array_equal(rc4, expected_rc)
+        and c2r4 == {1: "obj:3:c001", 2: "obj:5:c001", 3: "base:c001"}
+        and r2c4 == {"obj:3:c001": 1, "obj:5:c001": 2, "base:c001": 3}
+        and list(objects4) == ["3", "5"]
+        and objects4["3"].region_ids == ("obj:3:c001",)
+        and dict(objects4["3"].attributes) == {
+            "object_name": "C",
+            "identity_source": "inherited_from_classroom_oracle1",
+        }
+        and objects4["5"].attributes["object_name"] == "5",
+    )
+    check(
+        "exact component attributes",
+        dict(regions4["obj:3:c001"].attributes) == {
+            "cell_count": 2, "touches_domain_edge": True,
+            "median_depth_m": 1.5, "min_depth_m": 1.5, "max_depth_m": 1.5,
+            "source": "joint_frontmost_partition", "instance_id": 3, "state_region_code": 1,
+        }
+        and dict(regions4["obj:5:c001"].attributes) == {
+            "cell_count": 3, "touches_domain_edge": False,
+            "median_depth_m": 2.0, "min_depth_m": 1.0, "max_depth_m": 4.0,
+            "source": "joint_frontmost_partition", "instance_id": 5, "state_region_code": 2,
+        }
+        and dict(regions4["base:c001"].attributes) == {
+            "cell_count": 20, "touches_domain_edge": True,
+            "source": "joint_frontmost_complement", "state_region_code": 3,
+        }
+        and regions4["base:c001"].kind is RegionKind.BASE
+        and regions4["obj:5:c001"].object_id == "5",
+    )
+
     from fov3d.experiments.classroom_partition import joint
     check(
         "joint compatibility identities",
@@ -209,6 +307,10 @@ def main() -> int:
     check(
         "scene partition has no experiment dependency",
         not _imports_experiment(ROOT / "fov3d" / "scene" / "partition.py"),
+    )
+    check(
+        "fov3d.scene package has no experiment dependency",
+        not [p.name for p in (ROOT / "fov3d" / "scene").glob("*.py") if _imports_experiment(p)],
     )
 
     check("negative larger-id tie convention rejected", int(owner_tie[0, 0]) != 8)
