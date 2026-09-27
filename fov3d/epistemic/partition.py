@@ -8,8 +8,10 @@ Conceptual Core 11 moved the accepted representation here from the Classroom Pha
 benchmark module. Conceptual Core 12 removed the candidate annotation (``candidate`` and
 ``candidate_region_count``): calling a region a candidate is an interpretation of this
 representation, not part of it, and the historical rule lives with the Classroom
-experiment adapters. The reconstruction status and the historical-gaze descriptor are
-still carried here; their separation is deferred.
+experiment adapters. Conceptual Core 13 removed the reconstruction status and with it the
+experiment's target schedule (``all_target_ids``): whether a surface will be targeted later
+is historical run context, not evidence. The evidence provenance ``surface_source`` stays
+here. The historical-gaze descriptor is still carried here; its separation is deferred.
 """
 from __future__ import annotations
 
@@ -104,7 +106,6 @@ def build_epistemic_partition(
     *,
     target_id: int,
     target_name: str,
-    all_target_ids: set[int],
     domain: dict[str, Any],
     grid_deg: float,
     gazes_deg: list[tuple[float, float]],
@@ -201,11 +202,6 @@ def build_epistemic_partition(
                 else:
                     source = "unknown"
                 row["surface_source"] = source
-                row["reconstruction_status"] = (
-                    "mapped_now" if mapped_n
-                    else "targeted_later" if int(instance_id) in all_target_ids
-                    else "never_targeted"
-                )
             region_rows.append(row)
 
     # Target support remains its own-support topology (8-connected).

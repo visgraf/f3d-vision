@@ -8,6 +8,9 @@ interpretation that calls ``OTHER_SURFACE`` and ``UNKNOWN`` regions candidates.
 The rule is experiment-side on purpose: it is the accepted Phase-6/7/8 benchmark
 convention, not a general attention policy. Phase 8b keeps its own, distinct
 ``candidate_raw`` / ``eligible_candidate`` interpretation of refined regions.
+
+Since Conceptual Core 13 the candidate view is composed on the historical run-context
+partition (``run_context``), which adds ``reconstruction_status`` to the intrinsic one.
 """
 from __future__ import annotations
 
@@ -15,7 +18,7 @@ from typing import Any
 
 import numpy as np
 
-from fov3d.epistemic.partition import build_epistemic_partition
+from fov3d.experiments.classroom_partition.run_context import build_run_context_partition
 
 
 CANDIDATE_KINDS = {"OTHER_SURFACE", "UNKNOWN"}
@@ -65,8 +68,8 @@ def build_candidate_partition(
     grid_deg: float,
     gazes_deg: list[tuple[float, float]],
 ) -> tuple[dict[str, np.ndarray], list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
-    """Build the pure epistemic partition and apply the historical candidate annotation."""
-    arrays, region_rows, edge_rows, diag = build_epistemic_partition(
+    """Build the historical run-context partition and apply the historical candidate annotation."""
+    arrays, region_rows, edge_rows, diag = build_run_context_partition(
         state,
         target_id=target_id,
         target_name=target_name,
