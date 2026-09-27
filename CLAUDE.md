@@ -335,6 +335,21 @@ committed phase reports, not rely solely on conversational memory.
 
 Conversation summaries are useful handoffs but are secondary sources.
 
+### Chat Handoff at accepted main milestones
+
+At every accepted `main` milestone, maintain a compact **Chat Handoff** section or
+canonical handoff file. It should be short enough to scan at the start of a fresh
+conversation and record at least:
+
+- the accepted `main` commit;
+- the accepted scientific/architectural state;
+- the active next step;
+- decision-critical open items.
+
+The Chat Handoff is a recovery index, not a competing source of truth. Repository code,
+contracts, committed reports, and measured artifacts remain authoritative; the handoff
+points a new conversation to that durable state.
+
 Important scientific or architectural information learned only in chat should be
 promoted into an appropriate committed document when it becomes part of the project
 state.
