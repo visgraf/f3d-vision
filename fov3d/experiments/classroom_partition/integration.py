@@ -33,7 +33,7 @@ import numpy as np
 from fov3d.geometry import head_chart
 from fov3d.geometry.head_chart import chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
-from fov3d.epistemic.partition import build_epistemic_partition
+from fov3d.experiments.classroom_partition.candidate_policy import build_candidate_partition
 from fov3d.experiments.classroom_partition.benchmark import _covered
 from fov3d.epistemic.head_memory import (
     HeadEvidence,
@@ -242,7 +242,7 @@ def propose_phase8(
             ]
 
             # Reconstruct Phase-7 global exactly before changing target support.
-            ha, hr, he, hd = build_epistemic_partition(
+            ha, hr, he, hd = build_candidate_partition(
                 historical_global_state,
                 target_id=iid,
                 target_name=name,
@@ -268,7 +268,7 @@ def propose_phase8(
             )
             integrated_state = dict(historical_global_state)
             integrated_state["target_support"] = layer.support.astype(bool)
-            ia, ir, ie, idiag = build_epistemic_partition(
+            ia, ir, ie, idiag = build_candidate_partition(
                 integrated_state,
                 target_id=iid,
                 target_name=name,

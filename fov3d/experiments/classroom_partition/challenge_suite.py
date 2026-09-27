@@ -40,11 +40,8 @@ from fov3d.scene import ObservationOverlay, support_depth_from_map
 from fov3d.geometry import head_chart
 from fov3d.geometry.head_chart import chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
-from fov3d.epistemic.partition import (
-    REGION_KIND,
-    _region_interfaces,
-    build_epistemic_partition,
-)
+from fov3d.epistemic.partition import REGION_KIND, _region_interfaces
+from fov3d.experiments.classroom_partition.candidate_policy import build_candidate_partition
 from fov3d.experiments.classroom_partition.benchmark import _covered
 from fov3d.epistemic.head_memory import (
     HeadEvidence,
@@ -382,7 +379,7 @@ def propose_phase8b(
                 for r in list(obj.get("trajectory", []))[:keep]
                 if "gaze_deg" in r
             ]
-            arrays8b_base, regions8b_base, edges8b_base, diag8b_base = build_epistemic_partition(
+            arrays8b_base, regions8b_base, edges8b_base, diag8b_base = build_candidate_partition(
                 state,
                 target_id=iid,
                 target_name=name,

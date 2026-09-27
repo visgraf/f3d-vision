@@ -22,7 +22,6 @@ import json
 import numpy as np
 
 from fov3d.epistemic.partition import (
-    CANDIDATE_KINDS,
     REGION_KIND,
     REGION_KIND_BY_CODE,
     _angular_distance_deg,
@@ -31,8 +30,8 @@ from fov3d.epistemic.partition import (
     _distance_to_target,
     _region_interfaces,
     _touches_edge,
-    build_epistemic_partition,
 )
+from fov3d.experiments.classroom_partition.candidate_policy import CANDIDATE_KINDS, build_candidate_partition
 from fov3d.geometry.head_chart import chart_cells, chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 
@@ -42,6 +41,7 @@ from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 FUSION_RADIUS_M = SURFACE_ASSOCIATION_RADIUS_M
 _cells = chart_cells
 _grid = chart_grid
+build_epistemic_partition = build_candidate_partition
 
 
 def _json(path: Path) -> Any:
@@ -117,7 +117,7 @@ def propose_phase6(
         with np.load(st_path, allow_pickle=False) as z:
             state = {k: np.array(z[k]) for k in z.files}
         gazes = [tuple(map(float, r["gaze_deg"])) for r in obj.get("trajectory", []) if "gaze_deg" in r]
-        arrays, regions, edges, diag = build_epistemic_partition(
+        arrays, regions, edges, diag = build_candidate_partition(
             state,
             target_id=iid,
             target_name=str(obj["object_name"]),

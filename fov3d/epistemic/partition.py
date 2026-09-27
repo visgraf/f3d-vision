@@ -1,13 +1,15 @@
 """Epistemic-region partition of a head-centred evidence state.
 
-Conceptual Core 11 moves the accepted epistemic-region vocabulary and partition
-constructor (``build_epistemic_partition`` with its component, distance, geometry and
-interface helpers) out of the Classroom Phase-6 benchmark module into the epistemic
-layer without changing behavior.
+The partition assigns every chart cell one epistemic kind (target support, other surface,
+unknown, ambiguous boundary or unmapped target evidence) and describes each connected
+region: identity, geometry, evidence fractions, distances and interfaces.
 
-The accepted representation is migrated intact, including the candidate annotation
-(``CANDIDATE_KINDS``), the reconstruction status and the historical-gaze descriptors.
-Separating representation from candidate/attention policy is deferred to a later Core.
+Conceptual Core 11 moved the accepted representation here from the Classroom Phase-6
+benchmark module. Conceptual Core 12 removed the candidate annotation (``candidate`` and
+``candidate_region_count``): calling a region a candidate is an interpretation of this
+representation, not part of it, and the historical rule lives with the Classroom
+experiment adapters. The reconstruction status and the historical-gaze descriptor are
+still carried here; their separation is deferred.
 """
 from __future__ import annotations
 
@@ -29,7 +31,6 @@ REGION_KIND = {
     "TARGET_EVIDENCE_UNMAPPED": 5,
 }
 REGION_KIND_BY_CODE = {v: k for k, v in REGION_KIND.items()}
-CANDIDATE_KINDS = {"OTHER_SURFACE", "UNKNOWN"}
 
 
 def _component_labels(mask: np.ndarray, connectivity: int) -> tuple[int, np.ndarray]:
@@ -177,7 +178,6 @@ def build_epistemic_partition(
                 "region_code": int(code),
                 "region_id": f"{kind.lower()}:{code:04d}",
                 "kind": kind,
-                "candidate": bool(kind in CANDIDATE_KINDS),
                 "instance_id": None if instance_id is None else int(instance_id),
                 "cell_count": int(m.sum()),
                 "touches_domain_edge": _touches_edge(m),
@@ -239,7 +239,6 @@ def build_epistemic_partition(
         "target_name": str(target_name),
         "chart_shape_hw": [int(v) for v in target_support.shape],
         "region_count": len(region_rows),
-        "candidate_region_count": sum(bool(r["candidate"]) for r in region_rows),
         "kind_region_counts": dict(sorted(Counter(r["kind"] for r in region_rows).items())),
         "kind_cell_counts": {
             name: int((class_code == code).sum()) for name, code in REGION_KIND.items()
