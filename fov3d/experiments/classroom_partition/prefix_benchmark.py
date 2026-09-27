@@ -31,7 +31,7 @@ from fov3d.experiments.classroom_partition.benchmark import (
     _covered,
     build_epistemic_partition,
 )
-from fov3d.experiments.classroom_partition.incidental import HeadEvidence, add_head_patch
+from fov3d.epistemic.head_memory import HeadEvidence, add_head_patch
 
 
 ARMS = ("local", "global")
