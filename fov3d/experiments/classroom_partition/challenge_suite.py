@@ -35,7 +35,7 @@ import json
 import cv2
 import numpy as np
 
-from fov3d.scene import ObservationOverlay
+from fov3d.scene import ObservationOverlay, support_depth_from_map
 # Module-qualified chart_cells: functions here keep a local `chart_cells` cell count.
 from fov3d.geometry import head_chart
 from fov3d.geometry.head_chart import chart_grid
@@ -54,7 +54,7 @@ from fov3d.reconstruction.measurement_memory import (
     InstanceMeasurementMemory,
     effective_target_geometry,
 )
-from fov3d.experiments.classroom_partition.joint import build_joint_graph, support_depth_from_map
+from fov3d.experiments.classroom_partition.joint import build_joint_graph
 
 
 BUDGETS: tuple[int | None, ...] = (1, 2, 4, 8, None)
