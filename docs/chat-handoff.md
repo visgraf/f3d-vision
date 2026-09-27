@@ -2,13 +2,13 @@
 
 ## Accepted main
 
-    main @ 3603266b299236359f0539a778ac98f65cd11887
+    main @ 3877857c3a355851413cdfaa55c5dd05ad8bdab4
 
-Accepted milestone: Conceptual Core 7.
+Accepted milestone: Conceptual Core 8.
 
 ## Working arrangement
 
-Chat reads, designs and reviews only; it no longer mutates GitHub or the workstation
+Chat reads, designs and reviews only; it does not mutate GitHub or the workstation
 checkout. Claude Code performs every repository mutation and every measured execution in
 dedicated isolated git worktrees, never by switching branches in the shared
 `/home/lvelho/rd/f3d-vision` checkout. Each measurement runs under a guard that
@@ -16,7 +16,7 @@ invalidates it if the branch, HEAD or tracked tree changes. GitHub is the source
 
 ## Accepted scientific / architectural state
 
-The sealed scientific behavior is unchanged through Conceptual Cores 1–7.
+The sealed scientific behavior is unchanged through Conceptual Cores 1–8.
 
 Conceptual ownership established so far:
 
@@ -49,70 +49,61 @@ Conceptual ownership established so far:
 - `fov3d.scene.lineage` (Core 7)
   - `_lineage`
   - `_target_component_raster`
+- `fov3d.scene.state_validation` (Core 8)
+  - `attach_state_region_codes`, which keeps its compatibility name. It validates the
+    graph/raster state-code sets and attaches nothing; a rename is deferred.
 
 `fov3d.scene` lazily re-exports the four scene-partition names, so a bare
-`import fov3d.scene` stays OpenCV-free. Accessing the construction API loads
-`fov3d.scene.partition` on demand. `fov3d.scene.boundaries`, `fov3d.scene.corridors` and
-`fov3d.scene.lineage` are imported explicitly and are not in `fov3d.scene.__all__`.
-`boundaries` and `lineage` are NumPy-only; `corridors` needs `cv2`.
+`import fov3d.scene` stays OpenCV-free. The modules `boundaries`, `corridors`, `lineage`
+and `state_validation` are imported explicitly and are not in `fov3d.scene.__all__`.
+`boundaries`, `lineage` and `state_validation` are NumPy-only; `corridors` needs `cv2`.
 
-Conceptual Core 7 was accepted at `3603266b299236359f0539a778ac98f65cd11887` with:
+Conceptual Core 8 was accepted at `3877857c3a355851413cdfaa55c5dd05ad8bdab4` with:
 
-    CONCEPTUAL_CORE7_LINEAGE_PRESERVES_BEHAVIOR
+    CONCEPTUAL_CORE8_STATE_VALIDATION_PRESERVES_BEHAVIOR
 
-The measured acceptance evidence, from `docs/migration-conceptual-core-7-report.md`,
+The measured acceptance evidence, from `docs/migration-conceptual-core-8-report.md`,
 includes:
-- `_lineage` and `_target_component_raster` are source-text identical to their previous
+- `attach_state_region_codes` is source-text and AST identical to its previous
   implementation, with identical global bindings;
-- the checkers pass: Core-7 22/22, Core-6 35/35, Core-5 38/38, Core-4 32/32, Core-3 27/27,
-  Core-2 20/20, Core-1 13/13, and Partition-Graph 1–8b;
+- the checkers pass: Core-8 20/20 and Core-7 to Core-1, plus the unmodified
+  Partition-Graph checkers 1–8b;
 - the sealed baseline is 31/31 and the golden comparison reports `MISMATCHES 0`;
-- the Phase 3, 4, 5 and 8b producer scopes and the Phase-8b evaluator scope are
+- the Phase 3, 4 and 8b producer scopes and the Phase-8b evaluator scope are
   byte-identical;
-- the 104 Phase-3 lineage records and the accepted totals
-  `{births 10, merges 3, splits 0, deaths 1}` are reproduced exactly;
-- the mutation checks caught 29/29 non-equivalent behavioral mutants and 11/11
-  static/package/tool mutants;
-- a bare `import fov3d.scene` stays lightweight and OpenCV-free.
-
-The historical one-shot tool `tools/dev/apply_partition_graph4_lineage_fix.py` is
-**retired**. It is now a non-mutating tombstone that prints
-`[partition-graph4-lineage-fix] RETIRED` and exits 0. The original repair script remains
-in Git history (`52c9395`).
-
-The following stay outside Core 7:
-- `relations.component_lineage` and the Phase-4 relation classification;
-- `FineEvidence`;
-- the controller `seen_any` replay;
-- benchmark and evaluator policy;
-- the target-relative `HeadEvidence` placement.
+- the validator ran on all 104 map-present Phase-3 states (instrumented);
+- the mutation checks caught 26/26 non-equivalent behavioral mutants and 6/6
+  static/package mutants;
+- the accepted duplicate-graph-code set semantics are locked;
+- the import audit showed that Phases 5, 2, 6, 7 and 8 are not reached, so they were not
+  run.
 
 ## Active next step
 
-Conceptual Core 8: graph/raster state-code consistency (`docs/migration-conceptual-core-8.md`).
+Conceptual Core 9: generic boundary depth-order relation primitive
+(`docs/migration-conceptual-core-9.md`).
 
-Bounded target:
+Bounded target, moved literally from `fov3d/experiments/classroom_partition/relations.py`
+to `fov3d/scene/relations.py`:
 
-    attach_state_region_codes(graph, region_code) -> ScenePartitionGraph
+    _region_object
+    _weighted_quantile
+    boundary_depth_order
 
-The function moves literally from `fov3d/experiments/classroom_partition/joint.py` to
-`fov3d/scene/state_validation.py`. The historical name is misleading, because the
-function validates rather than attaches, but it is kept unchanged in Core 8; a rename is
-deferred to a later compatibility cleanup.
+The rest of `relations.py` stays experiment-side, including `FineEvidence`, the stereo
+replay, `add_patch_observation`, evidence classification, `relation_origin`,
+`ownership_margin_descriptor`, `annotate_corridor` and `component_lineage`.
 
 ## Decision-critical open items
 
-1. Core 8 is structural only. Keep the exact set semantics, the `-1` sentinel, the error
-   text, the ordering of the `graph.validate()` call and identity return. Duplicate
-   graph codes stay accepted when the code sets match; do not "fix" that in Core 8.
-2. Do not modify `fov3d/scene/__init__.py`; keep the bare `fov3d.scene` import
-   lightweight.
-3. Phase 5 and Phases 2, 6, 7 and 8 are conditional only, and run only if the import
-   audit shows that the final Core-8 diff reaches them.
-4. Topology/relations remains the next larger conceptual boundary and needs a
-   Chat-designed contract.
-5. The following remain deferred:
+1. Core 9 is structural only. Do not rename, re-annotate, validate or redesign; keep the
+   quantile and relation semantics exactly.
+2. Do not modify `fov3d/scene/__init__.py`. The new module must stay NumPy/scene-model
+   only.
+3. Later phases are replayed only if the import audit shows the Core-9 diff reaches them.
+4. The following remain deferred:
+   - the `attach_state_region_codes` rename;
    - the consumerless compatibility aliases (Cores 2, 5 and 6);
    - the separate Phase-2 and Phase-3 boundary lineages;
    - the target-relative `HeadEvidence` placement;
-   - the carried Core-2 cleanup items.
+   - whether stricter one-region-per-code validation is scientifically wanted.
