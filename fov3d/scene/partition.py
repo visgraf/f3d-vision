@@ -72,3 +72,51 @@ def support_depth_from_map(
         point_yx=point_yx,
         surfel_count=int(finite.sum()),
     )
+
+
+def joint_owner(layers: dict[int, SupportLayer]) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return frontmost reconstructed owner, depth, and overlap count per cell."""
+    if not layers:
+        raise ValueError("joint_owner requires at least one support layer")
+    shape = next(iter(layers.values())).support.shape
+    owner = np.zeros(shape, np.int32)
+    depth = np.full(shape, np.inf, np.float32)
+    overlap = np.zeros(shape, np.uint16)
+    for iid in sorted(layers):
+        layer = layers[iid]
+        if layer.support.shape != shape:
+            raise ValueError("support-layer shape mismatch")
+        overlap += layer.support.astype(np.uint16)
+        d = layer.depth_m
+        better = d < depth
+        tie = np.isfinite(d) & np.isfinite(depth) & (d == depth) & ((owner == 0) | (iid < owner))
+        take = better | tie
+        owner[take] = int(iid)
+        depth[take] = d[take]
+    return owner, depth, overlap
+
+
+def _component_attrs(mask: np.ndarray, depth: np.ndarray | None = None) -> dict[str, Any]:
+    ys, xs = np.nonzero(mask)
+    attrs: dict[str, Any] = {
+        "cell_count": int(mask.sum()),
+        "touches_domain_edge": bool(
+            len(ys)
+            and (
+                np.any(ys == 0)
+                or np.any(xs == 0)
+                or np.any(ys == mask.shape[0] - 1)
+                or np.any(xs == mask.shape[1] - 1)
+            )
+        ),
+    }
+    if depth is not None:
+        vals = np.asarray(depth)[mask]
+        vals = vals[np.isfinite(vals)]
+        if len(vals):
+            attrs.update(
+                median_depth_m=float(np.median(vals)),
+                min_depth_m=float(np.min(vals)),
+                max_depth_m=float(np.max(vals)),
+            )
+    return attrs
