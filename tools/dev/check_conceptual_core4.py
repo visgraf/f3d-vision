@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import ast
+import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -52,6 +54,23 @@ def _imports_experiment(path: Path) -> bool:
             if any(a.name.startswith("fov3d.experiments") for a in node.names):
                 return True
     return False
+
+
+PARTITION_NAMES = ("SupportLayer", "joint_owner", "label_joint_regions", "support_depth_from_map")
+
+
+def _fresh(body: str) -> dict:
+    """Run ``body`` in a fresh isolated interpreter; it must print one JSON object."""
+    code = f"import json, sys\nsys.path.insert(0, {str(ROOT)!r})\n{body}"
+    proc = subprocess.run(
+        [sys.executable, "-I", "-c", code], cwd=ROOT, capture_output=True, text=True
+    )
+    if proc.returncode != 0:
+        return {}
+    try:
+        return json.loads(proc.stdout.strip().splitlines()[-1])
+    except (IndexError, json.JSONDecodeError):
+        return {}
 
 
 def main() -> int:
@@ -312,6 +331,47 @@ def main() -> int:
         "fov3d.scene package has no experiment dependency",
         not [p.name for p in (ROOT / "fov3d" / "scene").glob("*.py") if _imports_experiment(p)],
     )
+
+    # Fresh processes: `import fov3d.scene` must stay OpenCV-free; the partition API is
+    # resolved lazily from fov3d.scene.partition on first access.
+    bare = _fresh(
+        "import fov3d.scene as s\n"
+        "r = {'cv2': 'cv2' in sys.modules, 'partition': 'fov3d.scene.partition' in sys.modules}\n"
+        f"r['all_names'] = all(n in s.__all__ for n in {PARTITION_NAMES!r})\n"
+        "try:\n"
+        "    s.no_such_scene_name\n"
+        "    r['unknown_raises'] = False\n"
+        "except AttributeError:\n"
+        "    r['unknown_raises'] = True\n"
+        "r['partition_after_unknown'] = 'fov3d.scene.partition' in sys.modules\n"
+        "r['all_resolve'] = all(hasattr(s, n) for n in s.__all__)\n"
+        "print(json.dumps(r))\n"
+    )
+    check(
+        "fresh import fov3d.scene loads neither cv2 nor fov3d.scene.partition",
+        bare.get("cv2") is False and bare.get("partition") is False,
+    )
+    check(
+        "__all__ exposes the partition names and every __all__ name resolves",
+        bare.get("all_names") is True and bare.get("all_resolve") is True,
+    )
+    check(
+        "unknown scene attribute raises AttributeError without loading partition",
+        bare.get("unknown_raises") is True and bare.get("partition_after_unknown") is False,
+    )
+    for name in PARTITION_NAMES:
+        lazy = _fresh(
+            "before = 'fov3d.scene.partition' in sys.modules\n"
+            f"from fov3d.scene import {name} as obj\n"
+            "import fov3d.scene.partition as p\n"
+            "print(json.dumps({'before': before,\n"
+            "                  'loaded': 'fov3d.scene.partition' in sys.modules,\n"
+            f"                  'same': obj is p.{name}}}))\n"
+        )
+        check(
+            f"fresh from fov3d.scene import {name} is fov3d.scene.partition.{name}",
+            lazy.get("before") is False and lazy.get("loaded") is True and lazy.get("same") is True,
+        )
 
     check("negative larger-id tie convention rejected", int(owner_tie[0, 0]) != 8)
     check("negative foreground-4-connectivity convention rejected", len(obj_regions) != 2)
