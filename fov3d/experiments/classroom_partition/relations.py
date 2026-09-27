@@ -18,6 +18,7 @@ import numpy as np
 
 from fov3d.scene import ScenePartitionGraph, support_depth_from_map
 from fov3d.scene.relations import _region_object, _weighted_quantile, boundary_depth_order
+from fov3d.scene.corridors import _joint_region_own_component, _own_labels, _region_code, relation_origin
 from fov3d.geometry.head_chart import chart_cells, chart_grid, head_angles_from_unit
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.lift import ReadLog
@@ -145,34 +146,6 @@ def evidence_class_counts(raster: np.ndarray, mask: np.ndarray | None = None) ->
         a = a[np.asarray(mask, bool)]
     c = Counter(int(v) for v in a.reshape(-1).tolist())
     return {name: int(c.get(code, 0)) for name, code in EVIDENCE_CLASS_CODE.items()}
-
-
-def _region_code(graph: ScenePartitionGraph, rid: str) -> int:
-    return int(graph.regions[rid].attributes["state_region_code"])
-
-
-def _own_labels(layer_support: np.ndarray) -> np.ndarray:
-    _n, labs = cv2.connectedComponents(np.asarray(layer_support, np.uint8), connectivity=8)
-    return labs.astype(np.int32)
-
-
-def _joint_region_own_component(graph: ScenePartitionGraph, state: dict[str, np.ndarray], rid: str,
-                                own_labels: np.ndarray) -> int:
-    code = _region_code(graph, rid)
-    m = np.asarray(state["region_code"], np.int32) == code
-    vals = np.unique(own_labels[m])
-    vals = vals[vals > 0]
-    if len(vals) != 1:
-        raise RuntimeError(f"joint region {rid} does not map to exactly one own-support component: {vals.tolist()}")
-    return int(vals[0])
-
-
-def relation_origin(graph: ScenePartitionGraph, state: dict[str, np.ndarray], corridor: dict[str, Any],
-                    own_support: np.ndarray) -> tuple[str, int, int]:
-    labs = _own_labels(own_support)
-    a = _joint_region_own_component(graph, state, corridor["region_a"], labs)
-    b = _joint_region_own_component(graph, state, corridor["region_b"], labs)
-    return ("ownership_cut" if a == b else "own_support_gap", a, b)
 
 
 def _stats(values: np.ndarray) -> dict[str, Any]:

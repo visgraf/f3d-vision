@@ -145,3 +145,34 @@ def corridors_for_object(
         for j in range(i + 1, len(rids)):
             out.append(gap_corridor(graph, state, rids[i], rids[j], target_id, seen_any, domain, grid_deg))
     return out
+
+
+# Relation origin of a gap corridor (Conceptual Core 10): moved literally from the
+# Phase-4 Classroom relations adapter; ownership_cut vs own_support_gap is descriptive.
+
+def _region_code(graph: ScenePartitionGraph, rid: str) -> int:
+    return int(graph.regions[rid].attributes["state_region_code"])
+
+
+def _own_labels(layer_support: np.ndarray) -> np.ndarray:
+    _n, labs = cv2.connectedComponents(np.asarray(layer_support, np.uint8), connectivity=8)
+    return labs.astype(np.int32)
+
+
+def _joint_region_own_component(graph: ScenePartitionGraph, state: dict[str, np.ndarray], rid: str,
+                                own_labels: np.ndarray) -> int:
+    code = _region_code(graph, rid)
+    m = np.asarray(state["region_code"], np.int32) == code
+    vals = np.unique(own_labels[m])
+    vals = vals[vals > 0]
+    if len(vals) != 1:
+        raise RuntimeError(f"joint region {rid} does not map to exactly one own-support component: {vals.tolist()}")
+    return int(vals[0])
+
+
+def relation_origin(graph: ScenePartitionGraph, state: dict[str, np.ndarray], corridor: dict[str, Any],
+                    own_support: np.ndarray) -> tuple[str, int, int]:
+    labs = _own_labels(own_support)
+    a = _joint_region_own_component(graph, state, corridor["region_a"], labs)
+    b = _joint_region_own_component(graph, state, corridor["region_b"], labs)
+    return ("ownership_cut" if a == b else "own_support_gap", a, b)
