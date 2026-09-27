@@ -181,6 +181,34 @@ def main() -> int:
     )
     check("sample count saturates uint16", int(sat.sample_count[a]) == 65535)
 
+    # One patch: an exact range tie listed larger-id first, a farther smaller id,
+    # a target-only cell and a non-target-only cell.
+    tie = HeadEvidence.empty(shape)
+    d = cell(-1.0, 0.0)
+    d_tie = add_head_patch(
+        tie,
+        _patch(
+            yaw=[0.0, 0.0, 0.0, 1.0, -1.0],
+            pitch=[0.0, 0.0, 0.0, 0.0, 0.0],
+            ranges=[1.0, 1.0, 2.0, 1.0, 1.0],
+            ids=[9, 4, 2, 9, 5],
+        ),
+        9, domain, 1.0,
+    )
+    check("within-patch delta",
+          d_tie == {"valid_points": 5, "new_depth_cells": 3, "depth_cells": 3})
+    check(
+        "within-patch exact tie prefers smaller instance",
+        int(tie.nearest_instance[a]) == 4
+        and np.isclose(float(tie.nearest_range_m[a]), 1.0, atol=0.0, rtol=0.0),
+    )
+    check(
+        "target-relative flags are conditioned on target_id",
+        bool(tie.depth_seen[d])
+        and not bool(tie.target_depth_seen[d]) and bool(tie.other_depth_seen[d])
+        and bool(tie.target_depth_seen[b]) and not bool(tie.other_depth_seen[b]),
+    )
+
     from fov3d.experiments.classroom_partition import incidental
     check(
         "incidental compatibility identity",
