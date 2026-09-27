@@ -12,9 +12,10 @@ command shown, unless it is marked otherwise.
 | parent accepted milestone | `main` @ `989127cafa784bf9e95cf9b3880fb6085ea283e6` (merge base verified; `origin/main` is the same commit) |
 | scientific parent | Conceptual Core 3 @ `502439f` |
 | proposal head | `03ff33810c83b8efda19f963acb31e708448ff64`, verified as the pulled head: 14 Chat-authored commits `4639503`…`03ff338` |
-| Code commits | `44269cb` Core-4 checker strengthened · `e49f58b` stale map rows corrected · the commit that adds this report |
+| Code commits | `44269cb` Core-4 checker strengthened · `e49f58b` stale map rows corrected · `dcaa79b` this report · **closure:** `ba96122` lazy scene-partition export and fresh-process checks, plus the commit that adds the closure section |
 | gates measured at | Gate A at `03ff338` (proposal checker, 19 checks), then the whole of Gate A again at `e49f58b` (final checker, 25 checks); Gates B–H and supplementary replays at `44269cb` |
-| final head | the commit that adds this report |
+| closure measured at | `ba96122`: the whole of Gate A and all twelve Phase 2–8b replays (see **Closure** below) |
+| final head | the commit that adds the closure section |
 
 `fov3d/` is byte-identical at `03ff338`, `44269cb` and `e49f58b`. Code changed only the
 dev checker and the map, so every gate ran against the proposed production code.
@@ -24,10 +25,10 @@ dev checker and the map, so every gate ran against the proposed production code.
 | file | change |
 |---|---|
 | `fov3d/scene/partition.py` | new (proposal): `SupportLayer`, `_disk`, `support_depth_from_map`, `joint_owner`, `_component_attrs`, `label_joint_regions` |
-| `fov3d/scene/__init__.py` | exports the four public names (proposal) |
+| `fov3d/scene/__init__.py` | exports the four public names (proposal); made a lazy PEP 562 re-export by Code in the closure (`ba96122`) |
 | `fov3d/experiments/classroom_partition/joint.py` | six definitions removed; imports the four public names from `fov3d.scene`; `SURFACE_ASSOCIATION_RADIUS_M` import dropped (proposal) |
 | `fov3d/experiments/classroom_partition/{relations,incidental,integration,challenge_suite}.py` | `support_depth_from_map` imported from `fov3d.scene` instead of `joint` (proposal) |
-| `tools/dev/check_conceptual_core4.py` | new (proposal); strengthened by Code (`44269cb`) |
+| `tools/dev/check_conceptual_core4.py` | new (proposal); strengthened by Code (`44269cb`); fresh-process package-boundary checks added in the closure (`ba96122`) |
 | `docs/migration-conceptual-core-4.md` | contract (proposal) |
 | `docs/conceptual-core-map.md` | Core-4 status and rows (proposal); four stale rows corrected by Code (`e49f58b`) |
 | `docs/migration-conceptual-core-4-report.md` | this report |
@@ -56,7 +57,8 @@ The following are untouched (`git diff 989127c..HEAD` is empty for each):
                    joint_owner(layers) -> (owner int32, depth float32, overlap uint16)
                    label_joint_regions(owner, owner_depth, object_names)
                        -> (regions, objects, region_code int32, code_to_rid, rid_to_code)
-            -> fov3d.scene (re-export of the four public names)
+            -> fov3d.scene (re-export of the four public names; lazy since the closure, so
+                            `import fov3d.scene` alone does not load partition or cv2)
             -> fov3d.experiments.classroom_partition
                    joint (Phase-3 composition), relations (4), incidental (5),
                    integration (8), challenge_suite (8b)
@@ -287,8 +289,9 @@ Every scope manifest equals the Core-2/Core-3 value for the same producer or eva
 
 ### Supplementary replays (beyond the contract)
 
-`fov3d/scene/__init__.py` now imports `.partition` eagerly. An import probe shows that
-**all 12 Partition-Graph producer/evaluator entry points load `fov3d.scene.partition`**,
+`fov3d/scene/__init__.py` now imports `.partition` eagerly. An import probe at `44269cb` shows that
+**all 12 Partition-Graph producer/evaluator entry points load `fov3d.scene.partition`**
+(after the closure, only Phases 3, 4, 5, 8 and 8b load it; see **Closure**),
 Phases 2 through 8b. That includes Phases 2, 6 and 7, which have no contract gate. Each of
 those was replayed with accepted inputs to a fresh `conceptual-core-4-extra-*` directory.
 Phase 6 used the inputs recorded in the accepted `partition-graph-6-proposals/summary.json`.
@@ -350,7 +353,7 @@ Line numbers refer to the final head.
 
 | changed path | kind | exercised by | execution evidence |
 |---|---|---|---|
-| `fov3d/scene/__init__.py`, eager `.partition` import and 4 exports | changed package init; `import fov3d.scene` now also loads `partition`, `cv2`, `head_chart` and `association` | A (every checker importing `fov3d.scene`), B–H, supplementary 2, 6P, 6E, 7P and 7E | import probe: all 12 entry points load `fov3d.scene.partition`; every run byte-identical |
+| `fov3d/scene/__init__.py`, eager `.partition` import and 4 exports (superseded by the lazy export; see **Closure**) | changed package init; `import fov3d.scene` now also loads `partition`, `cv2`, `head_chart` and `association` | A (every checker importing `fov3d.scene`), B–H, supplementary 2, 6P, 6E, 7P and 7E | import probe: all 12 entry points load `fov3d.scene.partition`; every run byte-identical |
 | `fov3d/scene/partition.py` module imports | new module dependencies | same as above | same |
 | `SupportLayer`, `_disk`, `support_depth_from_map` | moved | A (Core-4; checkers 3 and 8), B, C, D, E, G | B: `lift_joint_run` → `joint.py:647`; C: `analyze_phase4` → `relations.py:451`; D: `analyze_phase5` → `incidental.py:193`; E: `propose_phase8b` → `challenge_suite.py:354`, `:367`; G: `propose_phase8` → `integration.py:264` |
 | `joint_owner`, `_component_attrs`, `label_joint_regions` | moved | A (Core-4; checker 3 calls `label_joint_regions`), B, E | through `build_joint_graph` (`joint.py:250-251`). B: from `lift_joint_run` (`joint.py:652`); its 104 graphs hold 4,834 object-region and 1,548 BASE-region records, byte-identical. E: from `propose_phase8b` (`challenge_suite.py:360`), called unconditionally in the per-state loop, `states = 125` |
@@ -451,7 +454,7 @@ references are exactly the contract's. Code changed no production code.
 
 ## Unresolved
 
-1. **`fov3d.scene` now requires OpenCV at import.** On `main`, `import fov3d.scene` loaded
+1. **Closed by the closure below** (lazy export, `ba96122`). **`fov3d.scene` now requires OpenCV at import.** On `main`, `import fov3d.scene` loaded
    only `model`, `sphere` and NumPy (probe on a `git archive` of `989127c`). The eager
    export of `partition` the contract asks for now also loads `cv2`, `head_chart` and
    `association`, which makes the whole scene data model host-only. Blender's Python has
@@ -506,8 +509,8 @@ Leave the following untouched:
 - `gap_corridor` and relation extraction (`relations.py`), lineage, and `seen_any` replay;
 - benchmark policy.
 
-Settle unresolved item 1 first, because it decides whether a new scene module may be
-re-exported eagerly.
+Unresolved item 1 is closed by the lazy export. A new scene module that needs OpenCV
+should be exported through the same `__getattr__` pattern, not imported eagerly.
 
 Gates:
 - the Phase-3 joint lift against `partition-graph-4-lift`;
@@ -517,6 +520,188 @@ Gates:
 - Phase 8 only if an `integration.py` path changes;
 - a checker with a mutation harness covering interface enumeration, chain ordering and
   boundary ids.
+
+## Closure: lazy scene-partition export (package boundary)
+
+Requested by Chat's review of `dcaa79b` and executed at `ba96122` on the same branch.
+Everything in this section is **MEASURED** at `ba96122`.
+
+### Reason
+
+At `dcaa79b`, `fov3d/scene/__init__.py` imported `.partition` eagerly, and `partition`
+imports `cv2`. So a bare `import fov3d.scene` required OpenCV, which Blender's Python
+does not provide. On `main` (`989127c`) the scene package needed only NumPy. The
+measured scientific behavior was unaffected, but this was a package-level portability
+regression.
+
+### Implementation (`ba96122`)
+
+`fov3d/scene/__init__.py` drops the eager line
+`from .partition import SupportLayer, joint_owner, label_joint_regions, support_depth_from_map`
+and adds a PEP 562 module `__getattr__`:
+
+```python
+# Scene-partition construction needs OpenCV, which Blender's Python lacks.  Resolve it
+# on first access so that ``import fov3d.scene`` itself stays OpenCV-free.
+_PARTITION_EXPORTS = frozenset(
+    {"SupportLayer", "joint_owner", "label_joint_regions", "support_depth_from_map"}
+)
+
+
+def __getattr__(name: str):
+    if name in _PARTITION_EXPORTS:
+        from . import partition
+        return getattr(partition, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+```
+
+`__all__` is unchanged and still lists the four names. **`fov3d/scene/partition.py` is
+unchanged**: its git blob is `72fdf942db87baaa51fcfeede1ad05090bdc467c` at both `dcaa79b`
+and `ba96122`, and `git diff dcaa79b..ba96122 -- fov3d/scene/partition.py` is empty. No
+other production file changed in the closure.
+
+Every in-repo consumer uses `from fov3d.scene import <name>`. There are no star imports of
+`fov3d.scene`, and no `fov3d.scene.<name>` attribute access after a bare import (repo-wide
+`git grep`), so the lazy form is transparent to all of them. `from fov3d.scene import *`
+would load `partition`, as expected, because `__all__` names it.
+
+### Fresh-process import evidence
+
+Fresh interpreter processes at `ba96122`:
+- `import fov3d.scene` loads exactly `fov3d`, `fov3d.scene`, `fov3d.scene.model` and
+  `fov3d.scene.sphere`. `cv2` and `fov3d.scene.partition` are not loaded. This is the
+  same footprint as `main`@`989127c`, measured in the Core-4 run.
+- `from fov3d.scene import support_depth_from_map` loads `fov3d.scene.partition` (and
+  `cv2`), and the imported object `is fov3d.scene.partition.support_depth_from_map`.
+
+**Entry-point probe.** For each of the 12 Partition-Graph producer/evaluator entry points,
+a fresh process performs the tool's own `fov3d` imports and records `sys.modules`. The
+probe ran before (`dcaa79b`) and after (`ba96122`).
+
+| entry points | `scene.partition` loaded (before → after) | `cv2` loaded | module-set difference |
+|---|---|---|---|
+| Phase 3 lift; Phase 4 and 5 analyzers; Phase 8 proposer/evaluator; Phase 8b proposer/evaluator | yes → yes | yes | **none** (identical sets) |
+| Phase 2 lift; Phase 6 proposer/evaluator; Phase 7 proposer/evaluator | yes → **no** | yes | exactly `fov3d.scene.partition` removed |
+
+**Analysis (item 9).** For the first group, `partition` is still loaded. The first
+`from fov3d.scene import …` in `joint`, `relations`, `incidental`, `integration` or
+`challenge_suite` now triggers it, instead of the package import, and the resolved objects
+are identical. So only the import timing changes. The second group never references the
+partition functions, and it still loads `cv2`, `head_chart` and `association` through its
+own imports. So the closure changes no executable producer path beyond import timing. For
+certainty, all twelve runs were replayed anyway.
+
+### Checks and fail-capability
+
+`tools/dev/check_conceptual_core4.py` gains seven checks (25 → **32**). Each runs its
+scenario in a fresh `python -I` subprocess, and a crashed subprocess counts as a failure:
+
+1. `fresh import fov3d.scene loads neither cv2 nor fov3d.scene.partition`;
+2. `__all__ exposes the partition names and every __all__ name resolves`;
+3. `unknown scene attribute raises AttributeError without loading partition`;
+4. `fresh from fov3d.scene import <name> is fov3d.scene.partition.<name>`, one check each
+   for `SupportLayer`, `joint_owner`, `label_joint_regions` and `support_depth_from_map`.
+   Each also requires that `partition` was not loaded before the import and is loaded
+   after it.
+
+The existing `joint compatibility identities` check still passes. The whole checker runs
+in 0.59 s wall, which is still Interactive class.
+
+Package-init mutants were applied to copies of the working tree, each substitution
+asserted to apply exactly once. All 10 are caught:
+
+| mutant | caught by |
+|---|---|
+| eager re-export restored (exactly the `dcaa79b` init) | check 1, check 3 |
+| `import cv2` added to `fov3d/scene/model.py` | check 1 |
+| `__getattr__` returns wrappers instead of the objects | check 4 (×3 functions), `joint compatibility identities` |
+| a name missing from `_PARTITION_EXPORTS` | checker exits nonzero (`ImportError` at its own import) |
+| a name missing from `__all__` | check 2 |
+| an unresolvable extra name in `__all__` | check 2 |
+| unknown names swallowed (`return None`), with the submodule import still working | check 3 |
+| `partition` loaded for any attribute name (`importlib`) | check 3 |
+| unknown names swallowed for every name | checker exits nonzero (`ImportError`: the import system then sees a `partition` attribute) |
+| `partition` loaded via `from . import partition` for any name | checker exits nonzero (`RecursionError`) |
+
+Against the final checker, the Core-4 behavioral and static harnesses were rerun
+unchanged:
+- behavioral: **37/37** non-equivalent mutants caught; the same 6 equivalent mutants
+  survive;
+- static: **8/8** caught.
+
+### Gates rerun (at `ba96122`)
+
+**Gate A, complete:**
+
+```text
+compile: 8 changed Python files OK
+[conceptual-core4-check] SUMMARY checked=32 failed=0
+[conceptual-core3-check] SUMMARY checked=27 failed=0
+[conceptual-core2-check] SUMMARY checked=20 failed=0
+[conceptual-core1-check] SUMMARY checked=13 failed=0
+[partition-graph1-check] SUMMARY checked=13 failed=0
+[partition-graph2-check] SUMMARY checked=16 failed=0
+[partition-graph3-check] SUMMARY checked=20 failed=0
+[partition-graph4-check] SUMMARY checked=14 failed=0
+[partition-graph5-check] SUMMARY checked=12 failed=0
+[partition-graph6-check] SUMMARY checked=12 failed=0
+[partition-graph7-check] SUMMARY checked=12 failed=0
+[partition-graph8-check] SUMMARY checked=10 failed=0
+[partition-graph8b-check] SUMMARY checked=12 failed=0
+[consolidation3-facade-check] SUMMARY checked=16 failed=0
+[verify] 31 files tracked at baseline-classroom-oracle1-2026-09-25 are byte-identical in the working tree
+[verify] SUMMARY passed=9 failed=0
+[compare-golden] compared {"looks": 104, "npz_arrays_compared": 1348, "rgb_arrays_excluded": 337, "targets": 25}
+[compare-golden] MISMATCHES 0
+git diff --check: clean
+```
+
+The golden comparison took 9.88 s.
+
+**Replays.** All twelve ran sequentially, in the order below, each to a fresh
+`previews/conceptual-core-4-closure-*` directory. The commands and inputs are identical to
+Gates B–H and the supplementary replays above; only the output directory prefix differs.
+The comparison method and exclusions are unchanged.
+
+| run | wall | accepted reference | scope | result | scope manifest sha256 |
+|---|---|---|---|---|---|
+| Phase-3 joint lift | 22.70 s | `partition-graph-4-lift` | 419 | byte-identical | `7eed664047384a43f50f51940cc4ad61d602513bb1095e076adc6c083ac3cbe3` |
+| Phase-4 analyzer | 6.83 s | `partition-graph-4-full` (−107 −107) | 211 | byte-identical | `eca1b6ad798117de8d2de321e0ebfe6f92cb3e73a8f0b80e78e494f8a3f3cd8c` |
+| Phase-5 analyzer | 8.27 s | `partition-graph-5-full` (−7 −7) | 211 | byte-identical | `77f5ae3d408900c8b2428553f22a97fae60aeddef34ea1f500a78e39d07c68eb` |
+| Phase-8b proposer | 61.18 s | `partition-graph-8b-proposals` | 503 | byte-identical | `51a93fc464fc8ce00fc7f519ccadc25f539095be06de074788844b12ad6e7b7d` |
+| Phase-8b evaluator | 16.24 s | `partition-graph-8b-evaluation` (−8 −8) | 3 | byte-identical | `243133b66237523147e1a869ee5b1bf97ee28ec9d817c5c059921e9b254c5715` |
+| Phase-8 proposer | 662.08 s | `partition-graph-8-proposals` | 468 | byte-identical | `69ccbfb748f250e19baebb75789e57c66f4c26443286e43a9a85ca77f474a209` |
+| Phase-8 evaluator | 124.23 s | `partition-graph-8-evaluation` (−107 −107) | 107 | byte-identical | `01c8d253f5ea8698e8df290b7090f299d2fb462c6c40a0fdb04bdc7611525f7d` |
+| Phase-2 lift | 5.91 s | `partition-graph-2-full` (−107) | 417 | byte-identical | `8d3c87923bcba8cec41ca8b9033123e3b06c78c1ae36a6e97f25e1a29eb529e9` |
+| Phase-6 proposer | 2.80 s | `partition-graph-6-proposals` | 102 | byte-identical | `30e88f61da7ef1d43bc9bb530418f2d03c1403347b26f22a0d9a1c211309bbad` |
+| Phase-6 evaluator | 1.43 s | `partition-graph-6-evaluation` (−28 −28) | 3 | byte-identical | `b584139a0186e014627452c74c811ed7b5281f3351255ae2596340ef6ae96fff` |
+| Phase-7 proposer | 47.41 s | `partition-graph-7-proposals` | 835 | byte-identical | `3dde52e4cd34228f91c240db3682dc489d9f1adb74a5e85a7021b58bff1673de` |
+| Phase-7 evaluator | 19.44 s | `partition-graph-7-evaluation` (−107 −107) | 107 | byte-identical | `05d35ef37a6294c0b0da08a1f943d7c9c8daef93c22819adb9beb8bdb3da0515` |
+
+(−n −m) means that `demo/` n and `demo-package-original/` m were excluded, exactly as in
+Gates B–H.
+
+### Parity results
+
+- **Scopes.** All twelve scopes are byte-identical. In every run, `only_fresh`,
+  `only_accepted`, `fresh_under_excluded` and `byte_diff` were 0, and all twelve scope
+  manifests equal the pre-closure values.
+- **Summaries.** All twelve COMPLETE lines are string-identical to the pre-closure Core-4
+  run. They include `states = 104`, `evidence_checks = 51` and `evidence_mismatches = 0`
+  (Phase 3), `full_eligible_recall = 0.9335820895522388` (8b), and
+  `historical_state_misses = 101824`, `integration_gain = 61557` and
+  `residual_candidate_recall = 0.955472222912062` (8).
+- **Accepted trees.** All 13 accepted trees are unchanged, with identical per-file sha256
+  manifests before and after the replays.
+
+### Closure conclusion
+
+`import fov3d.scene` is OpenCV-free again, with the same module footprint as `main`. The
+public Core-4 API (`from fov3d.scene import SupportLayer / support_depth_from_map /
+joint_owner / label_joint_regions`) resolves to the identical `fov3d.scene.partition`
+objects. `partition.py` and all scientific/runtime behavior are unchanged, and every
+Partition-Graph producer and evaluator from Phase 2 through 8b is byte-identical.
+`docs/chat-handoff.md` is deliberately not updated; that belongs to acceptance on `main`.
 
 ## Success marker
 
