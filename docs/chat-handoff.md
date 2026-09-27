@@ -2,9 +2,9 @@
 
 ## Accepted main
 
-    main @ 518ff6ce4686238301f5ac946a5ea049e27ed9da
+    main @ 85c09381584e30c3643bd55be23183f1cdbd2af7
 
-Accepted milestone: Conceptual Core 9.
+Accepted milestone: Conceptual Core 10.
 
 ## Working arrangement
 
@@ -21,7 +21,7 @@ Accepted milestone: Conceptual Core 9.
 
 ## Accepted scientific / architectural state
 
-The sealed scientific behavior is unchanged through Conceptual Cores 1–9.
+The sealed scientific behavior is unchanged through Conceptual Cores 1–10.
 
 Conceptual ownership established so far:
 
@@ -46,11 +46,11 @@ Conceptual ownership established so far:
   - `_interface_edges`
   - `_trace_edge_components`
   - `extract_boundaries`
-- `fov3d.scene.corridors` (Core 6)
-  - `_component_boundary`
-  - `_line_cells`
-  - `gap_corridor`
-  - `corridors_for_object`
+- `fov3d.scene.corridors`
+  - Core 6, gap-corridor geometry: `_component_boundary`, `_line_cells`, `gap_corridor`,
+    `corridors_for_object`
+  - Core 10, corridor relation origin: `_region_code`, `_own_labels`,
+    `_joint_region_own_component`, `relation_origin`
 - `fov3d.scene.lineage` (Core 7)
   - `_lineage`
   - `_target_component_raster`
@@ -58,66 +58,72 @@ Conceptual ownership established so far:
   - `attach_state_region_codes`, which keeps its compatibility name; the rename is
     deferred
 - `fov3d.scene.relations` (Core 9)
-  - `_region_object`
-  - `_weighted_quantile`
-  - `boundary_depth_order`
+  - the NumPy-only boundary-depth-order module: `_region_object`, `_weighted_quantile`,
+    `boundary_depth_order`
 
-  The Phase-4 adapter `fov3d/experiments/classroom_partition/relations.py` keeps identity
-  imports of all three; `annotate_corridor` resolves the scene function.
+The Phase-4 adapter `fov3d/experiments/classroom_partition/relations.py` keeps identity
+imports of the Core-9 and Core-10 names; `annotate_corridor` resolves the scene functions.
 
 `fov3d.scene` lazily re-exports the four scene-partition names, so a bare
 `import fov3d.scene` stays OpenCV-free. The modules `boundaries`, `corridors`, `lineage`,
-`state_validation` and `relations` are imported explicitly and are not in
-`fov3d.scene.__all__`. `boundaries`, `lineage`, `state_validation` and `relations` are
-NumPy-only; `corridors` needs `cv2`.
+`state_validation` and `relations` are imported explicitly. `corridors` needs `cv2`; the
+others are NumPy-only.
 
-Conceptual Core 9 was accepted at `518ff6ce4686238301f5ac946a5ea049e27ed9da` with:
+Conceptual Core 10 was accepted at `85c09381584e30c3643bd55be23183f1cdbd2af7` with:
 
-    CONCEPTUAL_CORE9_RELATIONS_PRESERVE_BEHAVIOR
+    CONCEPTUAL_CORE10_RELATION_ORIGIN_PRESERVES_BEHAVIOR
 
-The preservation evidence, from `docs/migration-conceptual-core-9-report.md`, includes:
-- the three moved definitions are source-text and AST identical to their previous
+The evidence, from `docs/migration-conceptual-core-10-report.md`, includes:
+- the four moved definitions are source-text and AST identical to their previous
   implementation, with equivalent global bindings;
-- the Core-9 checker passes 24/24; it caught 38/38 non-equivalent behavioral mutants and
-  9/9 static/identity mutants;
+- the move into `corridors.py` was a pure append, leaving its imports and existing
+  functions unchanged;
+- the Core-10 checker passes 29/29; it caught 27/27 non-equivalent behavioral mutants
+  and 9/9 static/package mutants;
 - the Phase-4 relation product is 211/211 byte-identical, from 484 executions of
-  `boundary_depth_order`;
-- the sealed baseline is 31/31 and the golden comparison reports `MISMATCHES 0`;
-- the import audit showed that only Phase 4 is reached, so no other phase was replayed.
+  `relation_origin`;
+- the replays the import audit required (Phase 3 and the Phase-8b proposer/evaluator) are
+  byte-identical;
+- the sealed baseline is 31/31 and the golden comparison reports `MISMATCHES 0`.
+
+The cleanup of `own_support_labels` versus `_own_labels`, and of `component_lineage`
+versus `fov3d.scene.lineage._lineage`, remains **deferred**. Each pair is a measured
+behavioral duplicate, but unifying them is a separate causal question.
 
 ## Active next step
 
-Conceptual Core 10: the corridor relation-origin primitive
-(`docs/migration-conceptual-core-10.md`).
+Conceptual Core 11: the epistemic partition (`docs/migration-conceptual-core-11.md`).
 
-Causal question: can the generic corridor relation-origin primitive be moved from the
-Classroom Phase-4 adapter into the generic scene corridor layer without changing any
-behavior?
+Causal question: can the accepted epistemic-region representation and partition
+constructor be moved out of the Phase-6 benchmark module into the reusable epistemic layer
+without changing any behavior?
 
-Bounded target, moved literally from `fov3d/experiments/classroom_partition/relations.py`
-to **`fov3d.scene.corridors`**, not `fov3d.scene.relations`:
+Bounded target, moved intact from `fov3d/experiments/classroom_partition/benchmark.py` to
+`fov3d/epistemic/partition.py`:
 
-    _region_code
-    _own_labels
-    _joint_region_own_component
-    relation_origin
+    REGION_KIND, REGION_KIND_BY_CODE, CANDIDATE_KINDS
+    _component_labels, _distance_to_target, _touches_edge, _centroid_angles,
+    _angular_distance_deg, _region_interfaces
+    build_epistemic_partition
 
-The reason for that destination is that `_own_labels` uses `cv2.connectedComponents`, and
-`fov3d.scene.corridors` already carries the accepted OpenCV dependency. This keeps
-`fov3d.scene.relations` NumPy-only. The classification strings `ownership_cut` and
-`own_support_gap` are descriptive scene structure, not policy.
+`benchmark.py` keeps compatibility identities, the Phase-6 orchestration and the
+dense-truth evaluation. Phases 7, 8 and 8b import the conceptual partition directly.
+Core 11 migrates the accepted representation intact, including `CANDIDATE_KINDS`, the
+candidate flag and `reconstruction_status`. Separating representation from candidate,
+benchmark and attention policy is deferred to a later Core.
 
 ## Decision-critical open items
 
-1. Core 10 is structural only. `own_support_labels` is **not** unified with
-   `_own_labels`, and `component_lineage` is **not** unified with
-   `fov3d.scene.lineage._lineage`; each is a separate future causal question.
-2. Do not modify `fov3d/scene/__init__.py`; the bare import must stay OpenCV-free.
-3. Replays are decided by a fresh import audit at the Core-10 head. The Phase-8 proposer
-   runs only if it is reached.
+1. Core 11 is structural only: no representation or policy redesign, and no dataclasses,
+   enums or new validation.
+2. Do not modify `fov3d/epistemic/__init__.py`. A bare `import fov3d.epistemic` must stay
+   lightweight, with no OpenCV and no `partition`.
+3. Replays are decided by a fresh import audit. The Phase-8 proposer is authorized if the
+   audit reaches it.
 4. The following remain deferred:
+   - separating representation from policy;
+   - the `_own_labels`/`own_support_labels` and `component_lineage`/`_lineage` cleanup;
    - the `attach_state_region_codes` rename;
-   - the consumerless compatibility aliases;
-   - the separate Phase-2 and Phase-3 boundary lineages;
+   - the consumerless aliases;
    - the target-relative `HeadEvidence` placement;
-   - whether stricter one-region-per-code validation is wanted.
+   - the Phase-2 and Phase-3 boundary lineages.
