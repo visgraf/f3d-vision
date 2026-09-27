@@ -24,13 +24,13 @@ import numpy as np
 from fov3d.geometry import head_chart
 from fov3d.geometry.head_chart import chart_grid
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
-from fov3d.experiments.classroom_partition.benchmark import (
+from fov3d.epistemic.partition import (
     CANDIDATE_KINDS,
     REGION_KIND,
     REGION_KIND_BY_CODE,
-    _covered,
     build_epistemic_partition,
 )
+from fov3d.experiments.classroom_partition.benchmark import _covered
 from fov3d.epistemic.head_memory import HeadEvidence, add_head_patch
 
 
