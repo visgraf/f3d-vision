@@ -2,13 +2,13 @@
 
 ## Accepted main
 
-    main @ 6ff0da753acc8f20c84bf83e82c59db4f58de025
+    main @ 41a365c49cbec52a350139238753b087b8f29da0
 
-Accepted milestone: Conceptual Core 5.
+Accepted milestone: Conceptual Core 6.
 
 ## Accepted scientific / architectural state
 
-The sealed scientific behavior is unchanged through Conceptual Cores 1–5.
+The sealed scientific behavior is unchanged through Conceptual Cores 1–6.
 
 Conceptual ownership established so far:
 
@@ -39,58 +39,50 @@ Conceptual ownership established so far:
 `fov3d.scene.partition` on demand. `fov3d.scene.boundaries` is imported explicitly; it is
 not in `fov3d.scene.__all__` and is NumPy-only.
 
-Conceptual Core 5 was accepted with:
+Conceptual Core 6 was accepted with:
 
-    CONCEPTUAL_CORE5_BOUNDARY_EXTRACTION_PRESERVES_BEHAVIOR
+    CONCEPTUAL_CORE6_GAP_CORRIDORS_PRESERVE_BEHAVIOR
 
-The measured acceptance evidence, from `docs/migration-conceptual-core-5-report.md`,
-includes:
-- the three moved boundary functions are source-text identical to their previous
-  implementation and have identical global bindings;
-- the checkers pass: Core-5 38/38, Core-4 32/32, Core-3 27/27, Core-2 20/20,
-  Core-1 13/13, and Partition-Graph 1–8b;
-- the sealed baseline is 31/31 and the golden comparison reports `MISMATCHES 0`;
-- the Phase-3 lift (vs `partition-graph-4-lift`), the Phase-4 and Phase-5 analyzers, and
-  the Phase-8b proposer and evaluator are byte-identical to the accepted references;
-- the import audit showed that Core 5 does not reach Phases 2, 6, 7 or 8, so no
-  conditional gate was needed;
-- the accepted reference trees are unchanged, and the bare `fov3d.scene` import
-  footprint is unchanged.
+Measured acceptance evidence from docs/migration-conceptual-core-6-report.md includes:
+- Core-6 checker 35/35; Core-5 38/38; Core-4 32/32; Core-3 27/27; Core-2 20/20; Core-1 13/13;
+- all Partition-Graph checkers pass, sealed baseline 31/31, golden MISMATCHES 0;
+- Phase 3/4/5/8b producer scopes and the Phase-8b evaluator scope are byte-identical;
+- 41/41 non-equivalent behavioral mutants and 8/8 static/package mutants are caught;
+- 570 corridor records and accepted aggregates are reproduced exactly;
+- bare import fov3d.scene remains lightweight and OpenCV-free.
 
-`FineEvidence`, `HeadEvidence`, gap corridors, relation classification, lineage,
-controller-evidence replay, the Phase-2 boundary construction, and benchmark/evaluator
-policy stayed outside the Core-5 extraction.
+The Phase-2 boundary lineage, Phase-4 relation classification, FineEvidence, lineage,
+controller-evidence replay, benchmark/evaluator policy, and target-relative HeadEvidence
+placement remain outside Core 6.
 
 ## Active next step
 
-Conceptual Core 6: gap-corridor topology (`docs/migration-conceptual-core-6.md`).
+Conceptual Core 7: target-component lineage.
 
 Bounded target:
 
-    _component_boundary
-    _line_cells
-    gap_corridor
-    corridors_for_object
+    _lineage
+    _target_component_raster
 
-The goal is to move the local gap-corridor measurement out of
-`fov3d/experiments/classroom_partition/joint.py` into `fov3d.scene.corridors` without
-changing behavior. `seen_any` stays an explicit argument, and the corridor module is not
-coupled to controller replay.
+Move these two NumPy/ScenePartitionGraph helpers out of
+`fov3d/experiments/classroom_partition/joint.py` into a scene-level lineage module,
+preserving exact behavior.
+
+Before extraction, explicitly retire the historical one-shot tool
+`tools/dev/apply_partition_graph4_lineage_fix.py`, whose sole purpose was to patch the
+pre-fix `_lineage` source in joint.py. It is no longer an active repair mechanism once the
+accepted fixed implementation becomes conceptual code.
 
 ## Decision-critical open items
 
-1. Core 6 is a structural migration only. Do not change corridor semantics, relation
-   classification, partition construction, boundaries, lineage, controller replay,
-   benchmark policy, gaze, controller, matcher, fusion, renderer, scene behavior, or
-   termination.
-2. Keep the package boundary: `fov3d/scene/__init__.py` is not modified, and a bare
-   `import fov3d.scene` must not load `cv2`, `fov3d.scene.partition`,
-   `fov3d.scene.boundaries` or `fov3d.scene.corridors`.
-3. Keep the accepted Phase-3 reference lineage, `previews/partition-graph-4-lift`.
-4. The Phase-8 proposer (about 11 minutes) runs only if the import audit shows Core 6
-   reaches it.
-5. The following remain deferred:
-   - the consumerless compatibility aliases (Core 2 and Core 5);
-   - the separate Phase-2 and Phase-3 boundary lineages;
-   - the Core-3 target-relative `HeadEvidence` placement;
-   - the carried Core-2 cleanup items.
+1. Core 7 is structural only: do not change lineage semantics, component-label encoding,
+   region ordering, partition construction, relation classification, controller replay,
+   benchmark/evaluator policy, or runtime scientific behavior.
+2. Retire the historical Phase-4 lineage patch tool explicitly rather than leaving a
+   source-replacement utility that points at a function no longer owned by joint.py.
+3. Keep controller seen_any replay, corridors, boundaries, partition construction and
+   lift/report traversal in their current layers.
+4. Preserve bare fov3d.scene import behavior; do not eagerly export a new lineage module.
+5. Preserve the accepted Phase-3 reference lineage: previews/partition-graph-4-lift.
+6. Earlier compatibility aliases and target-relative HeadEvidence placement remain
+   deferred unless Core 7 directly requires them.
