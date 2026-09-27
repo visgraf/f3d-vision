@@ -2,13 +2,13 @@
 
 ## Accepted main
 
-    main @ 502439f689ca55c9c50aa2be851415f4568037bb
+    main @ 643d21a729e1e80c238aa08649715c5dfc1c18dd
 
-Accepted milestone: Conceptual Core 3.
+Accepted milestone: Conceptual Core 4.
 
 ## Accepted scientific / architectural state
 
-The current sealed scientific behavior remains unchanged through Conceptual Cores 1-3.
+The current sealed scientific behavior remains unchanged through Conceptual Cores 1-4.
 
 Conceptual ownership established so far:
 
@@ -24,55 +24,67 @@ Conceptual ownership established so far:
   - persistent head-centered epistemic memory
   - `HeadEvidence`
   - `add_head_patch`
+- `fov3d.scene.partition`
+  - `SupportLayer`
+  - `support_depth_from_map`
+  - `joint_owner`
+  - `label_joint_regions`
 
-Conceptual Core 3 is accepted with:
+The four scene-partition construction names are lazily re-exported through
+`fov3d.scene`, so bare `import fov3d.scene` remains OpenCV-free while direct access to
+the construction API loads `fov3d.scene.partition` on demand.
 
-    CONCEPTUAL_CORE3_HEAD_MEMORY_PRESERVES_BEHAVIOR
+Conceptual Core 4 is accepted with:
+
+    CONCEPTUAL_CORE4_SCENE_PARTITION_PRESERVES_BEHAVIOR
 
 Measured acceptance evidence includes:
 
+- Core-4 checker 32/32
 - Core-3 checker 27/27
 - Core-2 checker 20/20
 - Core-1 checker 13/13
 - Partition-Graph checkers 1-8b all pass
 - sealed baseline 31/31
 - golden comparison MISMATCHES 0
-- byte-identical producer scopes for Phases 4, 5, 7, 8, and 8b
-- byte-identical evaluator scopes for Phases 7, 8, and 8b
+- all twelve Partition-Graph producer/evaluator replay scopes from Phase 2 through 8b
+  byte-identical to accepted references after the lazy-export closure
 - accepted reference trees unchanged
 
-`FineEvidence` and `add_patch_observation` remain historical Phase-4 adapters in
-`relations.py`. `ObservationFootprint` and `ObservationOverlay` remain scene concepts.
+`FineEvidence`, `HeadEvidence`, boundary extraction, gap relations, lineage,
+controller-evidence replay, and benchmark/evaluator policy remain outside the Core-4
+extraction.
 
 ## Active next step
 
-Conceptual Core 4: scene partition construction.
+Conceptual Core 5: boundary extraction.
 
-The bounded target is to move generic support rasterization and joint
-ownership/region construction out of the historical
-`fov3d/experiments/classroom_partition/joint.py` lineage and behind the scene
-representation API, without changing scientific/runtime behavior.
+Bounded target:
 
-Likely reusable concepts include:
+    _interface_edges
+    _trace_edge_components
+    extract_boundaries
 
-- `support_depth_from_map`
-- frontmost joint ownership/depth construction
-- connected scene-region construction
+Move the reusable 4-neighbour interface enumeration and deterministic
+`BoundaryChain` tracing out of
+`fov3d/experiments/classroom_partition/joint.py` into a scene-level module, while
+preserving exact behavior.
 
-The exact extraction boundary must be determined from the live repository before
+The exact Core-5 extraction boundary must be determined from the live repository before
 implementation.
 
 ## Decision-critical open items
 
-1. Core 4 must remain a structural migration: no new partition semantics, topology,
-   benchmark policy, gaze policy, matcher/fusion/controller behavior, or scene behavior.
-2. Keep `FineEvidence`, topology/relations, benchmark policy, and the unresolved
-   target-relative HeadEvidence representation question outside Core 4.
-3. Preserve the accepted Phase-3 reference lineage:
-   `previews/partition-graph-4-lift`, not the historically stale
-   `partition-graph-3-full`.
-4. If Core 4 changes a path used by Phase 8, the approximately 11-minute Phase-8 replay
-   must be run explicitly.
-5. Carried Core-2 cleanup items remain deferred unless Core 4 directly requires them:
-   compatibility aliases, the demo-side 0.012 literal, sealed-runtime association twin,
-   and accepted-reference registry.
+1. Core 5 remains a structural migration only. Do not change boundary semantics,
+   topology, relation interpretation, partition construction, benchmark policy, gaze,
+   controller, matcher, fusion, renderer, scene behavior, or termination.
+2. Leave the distinct Phase-2 boundary construction in `lift.py` untouched; unification
+   is a later question.
+3. Leave `gap_corridor`, `corridors_for_object`, Phase-4 relation extraction,
+   target-component lineage, and `seen_any` replay in the experiment layer.
+4. Preserve the Core-4 lazy-export package boundary: any new scene module that depends on
+   OpenCV must not make bare `import fov3d.scene` require OpenCV.
+5. Preserve the accepted Phase-3 reference lineage:
+   `previews/partition-graph-4-lift`.
+6. Core-3 target-relative HeadEvidence placement and carried Core-2 cleanup items remain
+   deferred unless Core 5 directly requires them.
