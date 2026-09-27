@@ -38,7 +38,6 @@ def _component_labels(mask: np.ndarray, connectivity: int) -> tuple[int, np.ndar
     return int(n), labs.astype(np.int32)
 
 
-
 def _distance_to_target(target_support: np.ndarray, grid_deg: float) -> np.ndarray:
     target = np.asarray(target_support, bool)
     if not target.any():
@@ -48,13 +47,11 @@ def _distance_to_target(target_support: np.ndarray, grid_deg: float) -> np.ndarr
     return (d * float(grid_deg)).astype(np.float32)
 
 
-
 def _touches_edge(mask: np.ndarray) -> bool:
     m = np.asarray(mask, bool)
     if not m.any():
         return False
     return bool(m[0].any() or m[-1].any() or m[:, 0].any() or m[:, -1].any())
-
 
 
 def _centroid_angles(mask: np.ndarray, domain: dict[str, Any], grid_deg: float) -> tuple[float, float]:
@@ -65,14 +62,12 @@ def _centroid_angles(mask: np.ndarray, domain: dict[str, Any], grid_deg: float) 
     return float(y0 + xs.mean() * grid_deg), float(p0 + ys.mean() * grid_deg)
 
 
-
 def _angular_distance_deg(a: tuple[float, float], b: tuple[float, float]) -> float:
     ay, ap = map(math.radians, a)
     by, bp = map(math.radians, b)
     ua = np.array([math.sin(ay) * math.cos(ap), math.sin(ap), -math.cos(ay) * math.cos(ap)])
     ub = np.array([math.sin(by) * math.cos(bp), math.sin(bp), -math.cos(by) * math.cos(bp)])
     return float(math.degrees(math.acos(float(np.clip(np.dot(ua, ub), -1.0, 1.0)))))
-
 
 
 def _region_interfaces(region_code: np.ndarray) -> tuple[list[dict[str, Any]], dict[int, dict[int, int]]]:
@@ -101,7 +96,6 @@ def _region_interfaces(region_code: np.ndarray) -> tuple[list[dict[str, Any]], d
         adjacency[a][b] = int(n)
         adjacency[b][a] = int(n)
     return edges, adjacency
-
 
 
 def build_epistemic_partition(
