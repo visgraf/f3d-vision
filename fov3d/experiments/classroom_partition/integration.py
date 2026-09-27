@@ -41,11 +41,11 @@ from fov3d.epistemic.head_memory import (
     HeadEvidence,
     add_head_patch,
 )
+from fov3d.scene import support_depth_from_map
 from fov3d.reconstruction.measurement_memory import (
     InstanceMeasurementMemory,
     effective_target_geometry,
 )
-from fov3d.experiments.classroom_partition.joint import support_depth_from_map
 from fov3d.experiments.classroom_partition.prefix_benchmark import (
     AREA_BINS,
     _angles_to_codes,
