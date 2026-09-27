@@ -23,11 +23,10 @@ import json
 
 import numpy as np
 
-from fov3d.scene import ScenePartitionGraph
+from fov3d.scene import ScenePartitionGraph, support_depth_from_map
 from fov3d.geometry.head_chart import chart_grid
 from fov3d.epistemic.head_memory import HeadEvidence, add_head_patch
 from fov3d.experiments.classroom_partition.lift import ReadLog
-from fov3d.experiments.classroom_partition.joint import support_depth_from_map
 
 
 HEAD_CLASS_NAMES = (
