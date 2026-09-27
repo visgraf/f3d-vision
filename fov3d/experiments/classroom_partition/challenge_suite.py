@@ -46,7 +46,7 @@ from fov3d.experiments.classroom_partition.benchmark import (
     _region_interfaces,
     build_epistemic_partition,
 )
-from fov3d.experiments.classroom_partition.incidental import (
+from fov3d.epistemic.head_memory import (
     HeadEvidence,
     add_head_patch,
 )
