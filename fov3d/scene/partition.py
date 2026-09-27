@@ -164,3 +164,19 @@ def label_joint_regions(
                     "identity_source": "inherited_from_classroom_oracle1",
                 },
             )
+
+    n_base, base_labs = cv2.connectedComponents((owner == 0).astype(np.uint8), connectivity=4)
+    for lab in range(1, n_base):
+        mask = base_labs == lab
+        rid = f"base:c{lab:03d}"
+        attrs = _component_attrs(mask)
+        attrs.update({"source": "joint_frontmost_complement", "state_region_code": int(next_code)})
+        regions[rid] = PartitionRegion(rid, RegionKind.BASE, attributes=attrs)
+        region_code[mask] = next_code
+        code_to_rid[next_code] = rid
+        rid_to_code[rid] = next_code
+        next_code += 1
+
+    if np.any(region_code == 0):
+        raise RuntimeError("joint region labelling left unlabeled cells")
+    return regions, objects, region_code, code_to_rid, rid_to_code
