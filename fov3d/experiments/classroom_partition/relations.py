@@ -16,7 +16,7 @@ import json
 import cv2
 import numpy as np
 
-from fov3d.scene import BoundaryKind, RegionKind, ScenePartitionGraph
+from fov3d.scene import BoundaryKind, RegionKind, ScenePartitionGraph, support_depth_from_map
 from fov3d.geometry.head_chart import chart_cells, chart_grid, head_angles_from_unit
 from fov3d.reconstruction.association import SURFACE_ASSOCIATION_RADIUS_M
 from fov3d.experiments.classroom_partition.lift import ReadLog
@@ -24,7 +24,6 @@ from fov3d.experiments.classroom_partition.joint import (
     StereoOps,
     _default_stereo_ops,
     _rectified_core_directions_h,
-    support_depth_from_map,
 )
 
 
