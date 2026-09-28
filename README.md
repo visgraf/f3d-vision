@@ -7,9 +7,9 @@ post-hoc demo. Nothing has been refactored, renamed, or moved.
 
 - Legacy repository: https://github.com/visgraf/fov-3d-vision
 - Freeze tag: `legacy-classroom-oracle3b-2026-09-25` → `48a3139020e87bfaf1255df1585390f7e9094ec8`
-- Provenance and the inherited contracts: [docs/legacy-provenance.md](docs/legacy-provenance.md)
-- What was migrated and what was not: [docs/migration-manifest.md](docs/migration-manifest.md), [migration-manifest.json](migration-manifest.json)
-- The experiment itself: [docs/classroom-oracle-1.md](docs/classroom-oracle-1.md) (verbatim from the legacy repo)
+- Provenance and the inherited contracts: [docs/legacy-provenance.md](docs/baseline/legacy-provenance.md)
+- What was migrated and what was not: [docs/migration-manifest.md](docs/baseline/migration-manifest.md), [migration-manifest.json](migration-manifest.json)
+- The experiment itself: [docs/classroom-oracle-1.md](docs/classroom-oracle/classroom-oracle-1.md) (verbatim from the legacy repo)
 
 ## Requirements
 

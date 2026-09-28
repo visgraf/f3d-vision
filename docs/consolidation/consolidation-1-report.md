@@ -23,7 +23,7 @@
   - 4 environment
   - 1 doc
 - 5 new files: README, provenance, manifest (`.md` and `.json`), and `tools/consolidation1_demo.py`.
-- 573 files excluded. See [migration-manifest.md](migration-manifest.md).
+- 573 files excluded. See [migration-manifest.md](../baseline/migration-manifest.md).
 
 ## Structural checks (staging, `.venv` Python 3.12.3)
 

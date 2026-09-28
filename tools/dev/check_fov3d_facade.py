@@ -85,7 +85,7 @@ def main() -> int:
     ap.add_argument("--blender", default="blender")
     ns = ap.parse_args()
     repo = ns.repo.resolve()
-    layout = ns.layout or repo / "docs" / "consolidation-3-layout.json"
+    layout = ns.layout or repo / "docs" / "consolidation" / "consolidation-3-layout.json"
     spec = json.loads(layout.read_text(encoding="utf-8"))
 
     sys.path.insert(0, str(repo))

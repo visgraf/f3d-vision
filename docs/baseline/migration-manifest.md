@@ -1,7 +1,7 @@
 # Migration manifest — Consolidation 1
 
 Machine-readable form, with every sha256 and the reason for every excluded file:
-[`migration-manifest.json`](../migration-manifest.json). Source: legacy freeze commit
+[`migration-manifest.json`](../../migration-manifest.json). Source: legacy freeze commit
 `48a3139` (tag `legacy-classroom-oracle3b-2026-09-25`), 598 tracked files.
 Migrated: 25 unchanged, plus 5 new. Excluded: 573.
 

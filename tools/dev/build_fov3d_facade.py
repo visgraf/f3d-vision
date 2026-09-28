@@ -49,7 +49,7 @@ def main() -> int:
     ap.add_argument("--force", action="store_true")
     ns = ap.parse_args()
     repo = ns.repo.resolve()
-    layout = ns.layout or repo / "docs" / "consolidation-3-layout.json"
+    layout = ns.layout or repo / "docs" / "consolidation" / "consolidation-3-layout.json"
     spec = json.loads(layout.read_text(encoding="utf-8"))
 
     pkg = repo / "fov3d"
