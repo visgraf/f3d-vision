@@ -389,8 +389,19 @@ def run_control_loop(
 
 TARGET_NEUTRAL_HEAD_FIELDS = ("depth_seen", "nearest_instance", "nearest_range_m",
                               "ambiguous_instance", "sample_count")
-FORBIDDEN_VIEW_FIELDS = ("candidate", "candidate_region_count", "reconstruction_status",
-                         "min_distance_to_historical_gaze_deg")
+# The Core-14 intrinsic schema.  A view with any other key carries an interpretation
+# (candidate, run context, action history), so it is not the intrinsic view.
+INTRINSIC_ROW_FIELDS = frozenset({
+    "region_code", "region_id", "kind", "instance_id", "cell_count", "touches_domain_edge",
+    "centroid_yaw_deg", "centroid_pitch_deg", "min_distance_to_target_deg",
+    "median_distance_to_target_deg", "seen_any_fraction", "head_depth_fraction", "mapped_cells",
+    "incidental_cells", "surface_source", "adjacent_regions", "adjacent_to_target_support",
+})
+INTRINSIC_DIAG_FIELDS = frozenset({
+    "target_id", "target_name", "chart_shape_hw", "region_count", "kind_region_counts",
+    "kind_cell_counts", "target_evidence_unmapped_cells", "ambiguous_boundary_cells",
+    "head_depth_cells", "eye_ray_seen_cells", "truth_used",
+})
 
 
 def target_neutral_head_view(head: Any) -> dict[str, np.ndarray]:
@@ -462,11 +473,11 @@ def target_epistemic_view(
 
 
 def assert_intrinsic(rows: list[dict[str, Any]], diag: Mapping[str, Any]) -> None:
-    """Refuse a view carrying candidate, run-context or action-history annotations."""
-    leaked = sorted({k for r in rows for k in r if k in FORBIDDEN_VIEW_FIELDS}
-                    | {k for k in diag if k in FORBIDDEN_VIEW_FIELDS})
-    if leaked:
-        raise AssertionError(f"target view is not intrinsic: {leaked}")
+    """Refuse a view with any key outside the Core-14 intrinsic schema."""
+    extra = sorted({k for r in rows for k in r if k not in INTRINSIC_ROW_FIELDS}
+                   | {k for k in diag if k not in INTRINSIC_DIAG_FIELDS})
+    if extra:
+        raise AssertionError(f"target view is not intrinsic: {extra}")
 
 
 def view_summary(rows: list[dict[str, Any]], edges: list[dict[str, Any]], diag: Mapping[str, Any]) -> dict[str, Any]:

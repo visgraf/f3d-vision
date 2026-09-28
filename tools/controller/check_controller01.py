@@ -56,6 +56,10 @@ HISTORICAL_BARE = {
     "classroom_oracle1_run", "classroom_oracle1_eval",
 }
 HISTORICAL_POLICY = ("candidate_policy", "run_context", "gaze_context")
+# Historical interpretation fields that the intrinsic view must never carry.  Named here, not in
+# fov3d: Core 14 requires that only gaze_context names the gaze field inside fov3d.
+FORBIDDEN_VIEW_FIELDS = ("candidate", "candidate_region_count", "reconstruction_status",
+                         "min_distance_to_historical_gaze_deg")
 
 checked = 0
 failed = 0
@@ -633,7 +637,7 @@ def t14_intrinsic_view(head_view_fn, view_fn):
     kinds = {x["kind"] for x in r}
     if not {"TARGET_SUPPORT", "OTHER_SURFACE", "UNKNOWN"} <= kinds:
         errs.append(f"fixture kinds {sorted(kinds)}")
-    leaked = sorted({k for x in r for k in x if k in ic.FORBIDDEN_VIEW_FIELDS} | (set(d) & set(ic.FORBIDDEN_VIEW_FIELDS)))
+    leaked = sorted({k for x in r for k in x if k in FORBIDDEN_VIEW_FIELDS} | (set(d) & set(FORBIDDEN_VIEW_FIELDS)))
     if leaked:
         errs.append(f"non-intrinsic fields {leaked}")
     owner = joint_owner({k: support_depth_from_map(v, DOMAIN, 0.10, instance_id=k, object_name=str(k))
@@ -651,11 +655,17 @@ def t14_intrinsic_view(head_view_fn, view_fn):
                               seen_any=seen, domain=DOMAIN, grid_deg=0.10)
     if r2 != r or d2 != d or not all(np.array_equal(a2[k], a[k]) for k in a):
         errs.append("view depends on the target-relative HeadEvidence fields")
+    for field in FORBIDDEN_VIEW_FIELDS:
+        try:
+            ic.assert_intrinsic([{**r[0], field: None}], d) if field != "candidate_region_count" \
+                else ic.assert_intrinsic(r, {**d, field: 0})
+            errs.append(f"a view annotated with {field} was accepted")
+        except AssertionError:
+            pass
     try:
-        ic.assert_intrinsic([{"kind": "UNKNOWN", "candidate": True}], {})
-        errs.append("a candidate-annotated view was accepted")
-    except AssertionError:
-        pass
+        ic.assert_intrinsic(r, d)
+    except AssertionError as exc:
+        errs.append(f"the real intrinsic view was refused: {exc}")
     return errs
 
 
@@ -1046,7 +1056,7 @@ def validate_run(root: Path) -> None:
         view = e.get("epistemic_view")
         if view is not None:
             s = view["summary"]
-            if s.get("truth_used") is not False or set(s) & set(ic.FORBIDDEN_VIEW_FIELDS) or \
+            if s.get("truth_used") is not False or set(s) & set(FORBIDDEN_VIEW_FIELDS) or \
                     not (root / view["path"]).is_file():
                 errs.append(f"view {view['path']} invalid")
     check(f"{tag} events: reactivations QUIET -> ACTIONABLE by another target; saved views intrinsic", not errs,
