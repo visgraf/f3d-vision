@@ -1235,6 +1235,15 @@ def terminal_reprobe(root: Path, obj: int) -> dict:
                  f"mismatched steps {mismatched[:5]}")
             snap_w = memory.snapshot(obj)
             points_w = int(len(snap_w.xyz_h))
+            saved_eff = _audit_npz(odir / "final_effective_geometry.npz")
+            n_map = int(saved_eff["active_map_points"])
+            gate("prefix memory (XYZ and provenance) equals the head of the saved terminal provenance (append-only)",
+                 len(saved_eff["measured_source_global_index"]) >= points_w
+                 and np.array_equal(snap_w.source_global_index, saved_eff["measured_source_global_index"][:points_w])
+                 and np.array_equal(snap_w.source_active_target_id,
+                                    saved_eff["measured_source_active_target_id"][:points_w])
+                 and np.array_equal(snap_w.xyz_h, saved_eff["xyz_h"][n_map:n_map + points_w]),
+                 f"{points_w} prefix points")
 
             # -- the object's own local-policy context, from its own saved acquisitions only
             ctx = c01.LocalPolicyContext(obj)
@@ -1306,7 +1315,6 @@ def terminal_reprobe(root: Path, obj: int) -> dict:
                  not mismatched, f"mismatched steps {mismatched[:5]}")
             snap_t = memory.snapshot(obj)
             eff_t = effective_target_geometry(map_xyz, snap_t.xyz_h)
-            saved_eff = _audit_npz(odir / "final_effective_geometry.npz")
             gate("terminal effective geometry (XYZ and per-point provenance) equals the saved final_effective_geometry",
                  int(saved_eff["active_map_points"]) == len(final_xyz)
                  and np.array_equal(eff_t.astype(np.float32), saved_eff["xyz_h"])
