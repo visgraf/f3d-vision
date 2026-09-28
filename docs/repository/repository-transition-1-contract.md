@@ -109,6 +109,9 @@ require it, and then the choice is documented.
 
 ### Files retained at the `tools/` root (provisional set, as specified)
 
+> Superseded by the *Inventory-resolved clarification* at the end of this contract: the
+> root set is exactly the 16 sealed modules of the Consolidation-3 facade layout.
+
     tools/bl_common.py
     tools/exr_lite.py
     tools/fsg3_surface_map.py
@@ -604,3 +607,68 @@ that separates structural repository change from scientific behavior.
 
 Commits stay reviewable and are not squashed. The branch is pushed. Then execution stops:
 no merge to `main`, no Core 15, no controller code, no controller architecture work.
+
+## Inventory-resolved clarification: the `tools/` root set
+
+Added after the contract commit `827b5c7`, as a separate commit. The published contract text
+above is not rewritten.
+
+**Finding.** The read-only dependency inventory, run before any path change, showed that the
+six Classroom-Oracle modules
+
+    tools/classroom_oracle1_epistemic.py
+    tools/classroom_oracle1_eval.py
+    tools/classroom_oracle1_matcher.py
+    tools/classroom_oracle1_public.py
+    tools/classroom_oracle1_render.py
+    tools/classroom_oracle1_run.py
+
+that the specified move map sent to `tools/classroom_oracle/` belong to the sealed `tools/`
+compatibility closure:
+- all six are `fov3d` facade targets:
+  `fov3d/experiments/classroom_oracle/{config,epistemic,eval,matcher,render,run}.py` call
+  `reexport_legacy(globals(), 'tools.classroom_oracle1_*')`, and `fov3d/` is immutable;
+- the facade checker requires every sealed implementation to live directly under `tools/`
+  (`check_fov3d_facade.py`: `old_file.parent != repo / "tools"` is a failure);
+- they are members of the 16-module golden runtime closure checked by
+  `check_runtime_environment.py` (`HOST_MODULES`, `BLENDER_MODULES`), 17 files with the
+  acceptance check;
+- `classroom_oracle1_run.py` launches Blender directly on
+  `tools/classroom_oracle1_render.py` (`-P str(repo / "tools/classroom_oracle1_render.py")`);
+- moving them, or leaving re-export shims at the root, would alter the sealed compatibility
+  surface for no architectural benefit.
+
+Execution stopped before moving any of them, as the stop rule requires.
+
+**Decision (Luiz).** The `tools/` root set is **exactly the 16 legacy modules listed by the
+Consolidation-3 facade layout** (`docs/consolidation-3-layout.json`, after this transition
+`docs/consolidation/consolidation-3-layout.json`, field `mappings[].legacy`):
+
+    tools/bl_common.py                tools/classroom_oracle1_epistemic.py
+    tools/exr_lite.py                 tools/classroom_oracle1_eval.py
+    tools/fsg3_surface_map.py         tools/classroom_oracle1_matcher.py
+    tools/fsg6f_frontier.py           tools/classroom_oracle1_public.py
+    tools/fsg6f_public.py             tools/classroom_oracle1_render.py
+    tools/fsg_geometry.py             tools/classroom_oracle1_run.py
+    tools/fsg_stereo.py
+    tools/multiobject2c_policy.py
+    tools/render_foveated.py
+    tools/warp.py
+
+This supersedes the provisional 10-file list above.
+
+**Consequences.**
+- Only these Classroom ancillary tools move to `tools/classroom_oracle/`:
+
+      tools/check_classroom_assets.py        -> tools/classroom_oracle/check_classroom_assets.py
+      tools/place_eye.py                     -> tools/classroom_oracle/place_eye.py
+      tools/dev/check_classroom_oracle1.py   -> tools/classroom_oracle/check_classroom_oracle1.py
+
+- The approved move map is the specified one minus the six modules above: `docs/` 60 files
+  and `tools/` 55 files, 115 moves in total.
+- The layout checker derives the sealed root closure from the Consolidation-3 layout rather
+  than from the provisional 10-file list. The root must equal the layout's `legacy` set
+  exactly.
+- The runner and evaluator stay at their historical paths, so `scripts/run_golden.sh` needs
+  no path change. The facade layout, the Blender launch path and the runtime-environment
+  closure stay as they are.
