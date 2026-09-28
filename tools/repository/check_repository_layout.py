@@ -15,6 +15,11 @@ paths in current code/scripts/active docs, the README and CLAUDE.md contracts, M
 links, and the accepted Core-14 status of the active architecture documents.  Scientific
 behavior is checked elsewhere (the Conceptual-Core and Partition-Graph checkers,
 scripts/verify_baseline.sh and the golden comparator).
+
+Controller 01 (docs/controller/controller-01-state-action-contract.md) accommodates the
+layout narrowly: the controller stage directories, the declared Controller-01 files (the only
+new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the Chat Handoff
+as accepted for Repository Stage Transition 1.
 """
 from __future__ import annotations
 
@@ -34,8 +39,9 @@ LAYOUT = "docs/consolidation/consolidation-3-layout.json"
 PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
-             "methodology", "partition-graph", "repository"}
-TOOLS_DIRS = {"baseline", "classroom_oracle", "conceptual_core", "consolidation", "partition_graph", "repository"}
+             "controller", "methodology", "partition-graph", "repository"}
+TOOLS_DIRS = {"baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller", "partition_graph",
+              "repository"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
 ADDED_REQUIRED = {
     "docs/repository/repository-transition-1-contract.md",
@@ -43,7 +49,14 @@ ADDED_REQUIRED = {
     "tools/baseline/check_baseline_files.py",
     "tools/repository/check_repository_layout.py",
 }
-ADDED_ALLOWED = ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"}
+CONTROLLER01_FOV3D = {"fov3d/control/integrated.py", "fov3d/experiments/classroom_oracle/controller01.py"}
+CONTROLLER01_REQUIRED = CONTROLLER01_FOV3D | {
+    "docs/controller/controller-01-state-action-contract.md",
+    "tools/controller/check_controller01.py",
+    "tools/controller/plot_controller01.py",
+}
+CONTROLLER01_ALLOWED = CONTROLLER01_REQUIRED | {"docs/controller/controller-01-state-action-report.md"}
+ADDED_ALLOWED = ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -254,14 +267,25 @@ def main() -> int:
     check("every file in the new hierarchy is a move target or a declared addition", not extra, str(extra))
     missing_added = sorted(ADDED_REQUIRED - set(index))
     check("the transition's own files are tracked", not missing_added, str(missing_added))
+    missing_c01 = sorted(CONTROLLER01_REQUIRED - set(index))
+    check("the declared Controller-01 files are tracked", not missing_c01, str(missing_c01))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
 
     # ---- immutable fov3d/, tests/, scenes/
     for d in ("fov3d", "tests", "scenes"):
-        diff = git("diff", BASE, "--", d)
-        check(f"{d}/ differs by zero bytes from the base", len(diff) == 0, f"{len(diff)} diff bytes")
+        if d == "fov3d":
+            diff = git("diff", BASE, "--", d, *[f":(exclude){f}" for f in sorted(CONTROLLER01_FOV3D)])
+            check("fov3d/ differs from the base only by the declared Controller-01 additions", len(diff) == 0,
+                  f"{len(diff)} diff bytes")
+            at_base = set(git("ls-tree", "-r", "--name-only", BASE, "--", d).decode().split())
+            new_fov3d = sorted({f for f in index if f.startswith("fov3d/")} - at_base)
+            check("the only new fov3d/ files are the declared Controller-01 modules, absent at the base",
+                  set(new_fov3d) <= CONTROLLER01_FOV3D and not (CONTROLLER01_FOV3D & at_base), str(new_fov3d))
+        else:
+            diff = git("diff", BASE, "--", d)
+            check(f"{d}/ differs by zero bytes from the base", len(diff) == 0, f"{len(diff)} diff bytes")
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
     for tag, commit in TAGS.items():
