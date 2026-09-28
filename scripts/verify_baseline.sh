@@ -6,7 +6,13 @@
 # Renders nothing and writes nothing: Python compiles in memory, bytecode writing is
 # disabled, and every checker is read-only. Steps:
 #   compile tracked .py | check_classroom_oracle1 | tangent-frame check | module self-tests |
-#   classroom assets | runtime environment | baseline files unchanged | git diff --check
+#   classroom assets | runtime environment | baseline files accounted | git diff --check
+#
+# "Baseline files accounted" is relocation-aware (Repository Transition 1): every path tracked
+# at the baseline tag must be unchanged at its path, or relocated by the committed move map
+# (docs/repository/repository-transition-1-moves.json) as a pure or declared-repaired move,
+# or declared replaced.  The historical baseline's byte/path identity is not the current layout;
+# sealed scientific behavior is guarded by the checkers and the golden comparator.
 set -uo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -66,20 +72,11 @@ sys.exit(1 if bad else 0)') || rc=1
   return $rc
 }
 
-baseline_files_unchanged() {
+baseline_files_accounted() {
   if ! git rev-parse -q --verify "refs/tags/$BASELINE_TAG" >/dev/null; then
     echo "[verify] baseline tag $BASELINE_TAG absent"; return 1
   fi
-  local n
-  n=$(git ls-tree -r --name-only "$BASELINE_TAG" | wc -l)
-  if git ls-tree -r -z --name-only "$BASELINE_TAG" | xargs -0 git diff --quiet "$BASELINE_TAG" --; then
-    echo "[verify] $n files tracked at $BASELINE_TAG are byte-identical in the working tree"
-  else
-    echo "[verify] files changed since $BASELINE_TAG:"
-    git ls-tree -r -z --name-only "$BASELINE_TAG" | xargs -0 git diff --stat "$BASELINE_TAG" --
-    return 1
-  fi
-  git merge-base --is-ancestor "$BASELINE_TAG" HEAD || { echo "[verify] $BASELINE_TAG is not an ancestor of HEAD"; return 1; }
+  "$PY" tools/baseline/check_baseline_files.py --self-test && "$PY" tools/baseline/check_baseline_files.py
 }
 
 diff_check() {
@@ -87,13 +84,13 @@ diff_check() {
 }
 
 step "compile-tracked-python"        compile_tracked
-step "check_classroom_oracle1"       "$PY" tools/dev/check_classroom_oracle1.py
-step "check_fsg_tangent_frame"       "$PY" tools/dev/check_fsg_tangent_frame.py
+step "check_classroom_oracle1"       "$PY" tools/classroom_oracle/check_classroom_oracle1.py
+step "check_fsg_tangent_frame"       "$PY" tools/baseline/check_fsg_tangent_frame.py
 step "module-self-tests"             module_self_tests
-step "classroom-assets-self-test"    "$PY" tools/check_classroom_assets.py --self-test
-step "classroom-assets"              "$PY" tools/check_classroom_assets.py
-step "runtime-environment"           "$PY" tools/check_runtime_environment.py
-step "baseline-files-unchanged"      baseline_files_unchanged
+step "classroom-assets-self-test"    "$PY" tools/classroom_oracle/check_classroom_assets.py --self-test
+step "classroom-assets"              "$PY" tools/classroom_oracle/check_classroom_assets.py
+step "runtime-environment"           "$PY" tools/baseline/check_runtime_environment.py
+step "baseline-files-accounted"      baseline_files_accounted
 step "git-diff-check"                diff_check
 
 echo "[verify] SUMMARY passed=$PASSED failed=$FAILED${FAILED_STEPS[*]:+ failed_steps=${FAILED_STEPS[*]}}"

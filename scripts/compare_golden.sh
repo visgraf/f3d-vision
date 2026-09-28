@@ -6,8 +6,8 @@
 #
 # Works from any directory: the repo is located from this script's path, and RUN_DIR is
 # resolved against the caller's directory. Exit 0 only with 0 behavioral mismatches.
-# RGB content is excluded by design (docs/baseline-contract.md); all logic lives in
-# tools/compare_golden.py.
+# RGB content is excluded by design (docs/baseline/baseline-contract.md); all logic lives in
+# tools/baseline/compare_golden.py.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -28,4 +28,4 @@ fi
 RUN="$(realpath -m -- "$RUN")"
 if [ -x "$REPO/.venv/bin/python" ]; then PY="$REPO/.venv/bin/python"; else PY="python3"; fi
 
-exec "$PY" "$REPO/tools/compare_golden.py" compare "$SIG" "$RUN"
+exec "$PY" "$REPO/tools/baseline/compare_golden.py" compare "$SIG" "$RUN"

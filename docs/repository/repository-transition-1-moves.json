@@ -1,0 +1,851 @@
+{
+ "schema": "f3d-repository-transition-1-moves-v1",
+ "transition": "Repository Transition 1 (docs/repository/repository-transition-1-contract.md)",
+ "base": "330577f176e507c3d36c5f2606692fc735bc6def",
+ "baseline_tag": "baseline-classroom-oracle1-2026-09-25",
+ "baseline_commit": "a980e59dfc453c590190f842c47c4588bc99989d",
+ "kinds": {
+  "pure": "new path is byte-identical to the base blob at the old path",
+  "repaired": "new path equals the base blob with exactly the listed literal edits applied, each 'before' occurring exactly once",
+  "active": "moved active document; content governed by the active-document rules, not pinned"
+ },
+ "replaced": {
+  "README.md": "replaced entirely by the approved two-section text (contract: README.md replaced)"
+ },
+ "root_tools_source": "docs/consolidation/consolidation-3-layout.json mappings[].legacy",
+ "moves": [
+  {
+   "old": "docs/baseline-contract.md",
+   "new": "docs/baseline/baseline-contract.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/classroom-oracle-1.md",
+   "new": "docs/classroom-oracle/classroom-oracle-1.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/conceptual-core-map.md",
+   "new": "docs/conceptual-core/conceptual-core-map.md",
+   "kind": "active"
+  },
+  {
+   "old": "docs/consolidation-1-report.md",
+   "new": "docs/consolidation/consolidation-1-report.md",
+   "kind": "repaired",
+   "edits": [
+    [
+     "See [migration-manifest.md](migration-manifest.md).",
+     "See [migration-manifest.md](../baseline/migration-manifest.md)."
+    ]
+   ]
+  },
+  {
+   "old": "docs/consolidation-2-report.md",
+   "new": "docs/consolidation/consolidation-2-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/consolidation-3-interface-refactor.md",
+   "new": "docs/consolidation/consolidation-3-interface-refactor.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/consolidation-3-layout.json",
+   "new": "docs/consolidation/consolidation-3-layout.json",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/consolidation-3-report.md",
+   "new": "docs/consolidation/consolidation-3-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/current-architecture-map.md",
+   "new": "docs/architecture/current-architecture-map.md",
+   "kind": "active"
+  },
+  {
+   "old": "docs/fov3d-api.md",
+   "new": "docs/architecture/fov3d-api.md",
+   "kind": "active"
+  },
+  {
+   "old": "docs/legacy-provenance.md",
+   "new": "docs/baseline/legacy-provenance.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/methodology-test-1-report.md",
+   "new": "docs/methodology/methodology-test-1-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-1-closure-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-1-closure-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-1-closure.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-1-closure.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-1-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-1-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-1.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-1.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-10-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-10-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-10.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-10.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-11-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-11-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-11.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-11.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-12-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-12-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-12.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-12.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-13-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-13-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-13.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-13.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-14-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-14-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-14.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-14.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-2-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-2-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-2.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-2.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-3-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-3-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-3.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-3.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-4-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-4-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-4.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-4.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-5-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-5-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-5.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-5.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-6-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-6-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-6.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-6.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-7-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-7-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-7.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-7.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-8-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-8-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-8.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-8.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-9-report.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-9-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-conceptual-core-9.md",
+   "new": "docs/conceptual-core/migration-conceptual-core-9.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/migration-manifest.md",
+   "new": "docs/baseline/migration-manifest.md",
+   "kind": "repaired",
+   "edits": [
+    [
+     "[`migration-manifest.json`](../migration-manifest.json)",
+     "[`migration-manifest.json`](../../migration-manifest.json)"
+    ]
+   ]
+  },
+  {
+   "old": "docs/partition-graph-1.md",
+   "new": "docs/partition-graph/partition-graph-1.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-2-report.md",
+   "new": "docs/partition-graph/partition-graph-2-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-2.md",
+   "new": "docs/partition-graph/partition-graph-2.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-3-report.md",
+   "new": "docs/partition-graph/partition-graph-3-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-3.md",
+   "new": "docs/partition-graph/partition-graph-3.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-4-report.md",
+   "new": "docs/partition-graph/partition-graph-4-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-4.md",
+   "new": "docs/partition-graph/partition-graph-4.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-5-report.md",
+   "new": "docs/partition-graph/partition-graph-5-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-5.md",
+   "new": "docs/partition-graph/partition-graph-5.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-6-report.md",
+   "new": "docs/partition-graph/partition-graph-6-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-6.md",
+   "new": "docs/partition-graph/partition-graph-6.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-7-report.md",
+   "new": "docs/partition-graph/partition-graph-7-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-7.md",
+   "new": "docs/partition-graph/partition-graph-7.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-8-report.md",
+   "new": "docs/partition-graph/partition-graph-8-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-8.md",
+   "new": "docs/partition-graph/partition-graph-8.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-8b-report.md",
+   "new": "docs/partition-graph/partition-graph-8b-report.md",
+   "kind": "pure"
+  },
+  {
+   "old": "docs/partition-graph-8b.md",
+   "new": "docs/partition-graph/partition-graph-8b.md",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/check_classroom_assets.py",
+   "new": "tools/classroom_oracle/check_classroom_assets.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "    .venv/bin/python tools/check_classroom_assets.py            # exit 1 on a required failure\n    .venv/bin/python tools/check_classroom_assets.py --self-test\n",
+     "    .venv/bin/python tools/classroom_oracle/check_classroom_assets.py            # exit 1 on a required failure\n    .venv/bin/python tools/classroom_oracle/check_classroom_assets.py --self-test\n"
+    ],
+    [
+     "REPO = Path(__file__).resolve().parents[1]",
+     "REPO = Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/check_runtime_environment.py",
+   "new": "tools/baseline/check_runtime_environment.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "    .venv/bin/python tools/check_runtime_environment.py            # exit 1 on a REQUIRED failure\n    .venv/bin/python tools/check_runtime_environment.py --no-blender\n",
+     "    .venv/bin/python tools/baseline/check_runtime_environment.py            # exit 1 on a REQUIRED failure\n    .venv/bin/python tools/baseline/check_runtime_environment.py --no-blender\n"
+    ],
+    [
+     "REPO = Path(__file__).resolve().parents[1]",
+     "REPO = Path(__file__).resolve().parents[2]"
+    ],
+    [
+     "# The 17-file golden runtime closure (docs/current-architecture-map.md).",
+     "# The 17-file golden runtime closure (docs/architecture/current-architecture-map.md)."
+    ],
+    [
+     "DEV_CHECK = REPO / \"tools/dev/check_classroom_oracle1.py\"",
+     "DEV_CHECK = REPO / \"tools/classroom_oracle/check_classroom_oracle1.py\""
+    ]
+   ]
+  },
+  {
+   "old": "tools/compare_golden.py",
+   "new": "tools/baseline/compare_golden.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "    .venv/bin/python tools/compare_golden.py compare REFERENCE CANDIDATE\n",
+     "    .venv/bin/python tools/baseline/compare_golden.py compare REFERENCE CANDIDATE\n"
+    ],
+    [
+     "    .venv/bin/python tools/compare_golden.py signature RUN --out tests/golden/classroom-oracle1-signature.json\n",
+     "    .venv/bin/python tools/baseline/compare_golden.py signature RUN --out tests/golden/classroom-oracle1-signature.json\n"
+    ],
+    [
+     "    .venv/bin/python tools/compare_golden.py self-test\n",
+     "    .venv/bin/python tools/baseline/compare_golden.py self-test\n"
+    ],
+    [
+     "(docs/baseline-contract.md)",
+     "(docs/baseline/baseline-contract.md)"
+    ],
+    [
+     "\"generated_by\": \"tools/compare_golden.py signature\",",
+     "\"generated_by\": \"tools/baseline/compare_golden.py signature\","
+    ]
+   ]
+  },
+  {
+   "old": "tools/consolidation1_demo.py",
+   "new": "tools/consolidation/consolidation1_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "HERE = Path(__file__).resolve().parent\nif str(HERE) not in sys.path:\n    sys.path.insert(0, str(HERE))\n",
+     "TOOLS_ROOT = Path(__file__).resolve().parents[1]\nif str(TOOLS_ROOT) not in sys.path:\n    sys.path.insert(0, str(TOOLS_ROOT))\n"
+    ],
+    [
+     ".venv/bin/python tools/consolidation1_demo.py --run {rel}",
+     ".venv/bin/python tools/consolidation/consolidation1_demo.py --run {rel}"
+    ]
+   ]
+  },
+  {
+   "old": "tools/dev/apply_partition_graph4_lineage_fix.py",
+   "new": "tools/partition_graph/apply_partition_graph4_lineage_fix.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "(``docs/partition-graph-4-report.md``)",
+     "(``docs/partition-graph/partition-graph-4-report.md``)"
+    ]
+   ]
+  },
+  {
+   "old": "tools/dev/build_fov3d_facade.py",
+   "new": "tools/consolidation/build_fov3d_facade.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "repo / \"docs\" / \"consolidation-3-layout.json\"",
+     "repo / \"docs\" / \"consolidation\" / \"consolidation-3-layout.json\""
+    ]
+   ]
+  },
+  {
+   "old": "tools/dev/check_classroom_oracle1.py",
+   "new": "tools/classroom_oracle/check_classroom_oracle1.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core1.py",
+   "new": "tools/conceptual_core/check_conceptual_core1.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core10.py",
+   "new": "tools/conceptual_core/check_conceptual_core10.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core11.py",
+   "new": "tools/conceptual_core/check_conceptual_core11.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core12.py",
+   "new": "tools/conceptual_core/check_conceptual_core12.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core13.py",
+   "new": "tools/conceptual_core/check_conceptual_core13.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core14.py",
+   "new": "tools/conceptual_core/check_conceptual_core14.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core2.py",
+   "new": "tools/conceptual_core/check_conceptual_core2.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core3.py",
+   "new": "tools/conceptual_core/check_conceptual_core3.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core4.py",
+   "new": "tools/conceptual_core/check_conceptual_core4.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core5.py",
+   "new": "tools/conceptual_core/check_conceptual_core5.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core6.py",
+   "new": "tools/conceptual_core/check_conceptual_core6.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_conceptual_core7.py",
+   "new": "tools/conceptual_core/check_conceptual_core7.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "TOOL = ROOT / \"tools\" / \"dev\" / \"apply_partition_graph4_lineage_fix.py\"",
+     "TOOL = ROOT / \"tools\" / \"partition_graph\" / \"apply_partition_graph4_lineage_fix.py\""
+    ]
+   ]
+  },
+  {
+   "old": "tools/dev/check_conceptual_core8.py",
+   "new": "tools/conceptual_core/check_conceptual_core8.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "(ROOT / \"tools\" / \"dev\" / \"check_partition_graph3.py\")",
+     "(ROOT / \"tools\" / \"partition_graph\" / \"check_partition_graph3.py\")"
+    ]
+   ]
+  },
+  {
+   "old": "tools/dev/check_conceptual_core9.py",
+   "new": "tools/conceptual_core/check_conceptual_core9.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_fov3d_facade.py",
+   "new": "tools/consolidation/check_fov3d_facade.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "repo / \"docs\" / \"consolidation-3-layout.json\"",
+     "repo / \"docs\" / \"consolidation\" / \"consolidation-3-layout.json\""
+    ]
+   ]
+  },
+  {
+   "old": "tools/dev/check_fsg_tangent_frame.py",
+   "new": "tools/baseline/check_fsg_tangent_frame.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph1.py",
+   "new": "tools/partition_graph/check_partition_graph1.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph2.py",
+   "new": "tools/partition_graph/check_partition_graph2.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph3.py",
+   "new": "tools/partition_graph/check_partition_graph3.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph4.py",
+   "new": "tools/partition_graph/check_partition_graph4.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph5.py",
+   "new": "tools/partition_graph/check_partition_graph5.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph6.py",
+   "new": "tools/partition_graph/check_partition_graph6.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph7.py",
+   "new": "tools/partition_graph/check_partition_graph7.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph8.py",
+   "new": "tools/partition_graph/check_partition_graph8.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/dev/check_partition_graph8b.py",
+   "new": "tools/partition_graph/check_partition_graph8b.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/partition_graph1_demo.py",
+   "new": "tools/partition_graph/partition_graph1_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ],
+    [
+     "tools/partition_graph1_demo.py",
+     "tools/partition_graph/partition_graph1_demo.py"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph2_demo.py",
+   "new": "tools/partition_graph/partition_graph2_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ],
+    [
+     "tools/partition_graph2_demo.py",
+     "tools/partition_graph/partition_graph2_demo.py"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph2_lift.py",
+   "new": "tools/partition_graph/partition_graph2_lift.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph3_demo.py",
+   "new": "tools/partition_graph/partition_graph3_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ],
+    [
+     "tools/partition_graph3_demo.py",
+     "tools/partition_graph/partition_graph3_demo.py"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph3_lift.py",
+   "new": "tools/partition_graph/partition_graph3_lift.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph4_analyze.py",
+   "new": "tools/partition_graph/partition_graph4_analyze.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph4_demo.py",
+   "new": "tools/partition_graph/partition_graph4_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ],
+    [
+     "tools/partition_graph4_demo.py",
+     "tools/partition_graph/partition_graph4_demo.py"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph4_lift.py",
+   "new": "tools/partition_graph/partition_graph4_lift.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph5_analyze.py",
+   "new": "tools/partition_graph/partition_graph5_analyze.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph5_demo.py",
+   "new": "tools/partition_graph/partition_graph5_demo.py",
+   "kind": "pure"
+  },
+  {
+   "old": "tools/partition_graph6_demo.py",
+   "new": "tools/partition_graph/partition_graph6_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ],
+    [
+     "tools/partition_graph6_demo.py",
+     "tools/partition_graph/partition_graph6_demo.py"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph6_evaluate.py",
+   "new": "tools/partition_graph/partition_graph6_evaluate.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph6_propose.py",
+   "new": "tools/partition_graph/partition_graph6_propose.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph7_demo.py",
+   "new": "tools/partition_graph/partition_graph7_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph7_evaluate.py",
+   "new": "tools/partition_graph/partition_graph7_evaluate.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph7_propose.py",
+   "new": "tools/partition_graph/partition_graph7_propose.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph8_demo.py",
+   "new": "tools/partition_graph/partition_graph8_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph8_evaluate.py",
+   "new": "tools/partition_graph/partition_graph8_evaluate.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph8_integrate.py",
+   "new": "tools/partition_graph/partition_graph8_integrate.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph8b_demo.py",
+   "new": "tools/partition_graph/partition_graph8b_demo.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph8b_evaluate.py",
+   "new": "tools/partition_graph/partition_graph8b_evaluate.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/partition_graph8b_propose.py",
+   "new": "tools/partition_graph/partition_graph8b_propose.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "Path(__file__).resolve().parents[1]",
+     "Path(__file__).resolve().parents[2]"
+    ]
+   ]
+  },
+  {
+   "old": "tools/place_eye.py",
+   "new": "tools/classroom_oracle/place_eye.py",
+   "kind": "repaired",
+   "edits": [
+    [
+     "    blender -b scene.blend -P tools/place_eye.py -- --dry-run\n    blender -b scene.blend -P tools/place_eye.py -- --location 0 0 1.2 --yaw 30 --out scene_eye.blend\n    blender -b scene.blend -P tools/place_eye.py -- --from-camera renderCam --height 1.2 --out scene_eye.blend\n",
+     "    blender -b scene.blend -P tools/classroom_oracle/place_eye.py -- --dry-run\n    blender -b scene.blend -P tools/classroom_oracle/place_eye.py -- --location 0 0 1.2 --yaw 30 --out scene_eye.blend\n    blender -b scene.blend -P tools/classroom_oracle/place_eye.py -- --from-camera renderCam --height 1.2 --out scene_eye.blend\n"
+    ],
+    [
+     "sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))\n",
+     "sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # tools/ root: bl_common\n"
+    ]
+   ]
+  }
+ ]
+}
