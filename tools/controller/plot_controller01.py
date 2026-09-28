@@ -9,7 +9,7 @@ regenerable previews into the run directory:
 - ``controller-attention-timeline.png``: x = global action, y = object.  Marker shape and
   color give the action source (seed square, FSG6f circle, Cyclopean triangle); a thin line
   joins the actions of one attention bout; dashed connectors mark switches; ``Q`` marks a
-  quiet entry, a ring marks a natural reactivation, ``x`` a block.
+  quiet entry, a ring marks a natural reactivation, a cross a block.
 - ``controller-gaze-chart.png``: the executed gaze sequence in the yaw/pitch controller
   domain, labelled by global action, with each object's id at its seed.
 
@@ -62,15 +62,35 @@ def dashed(d: ImageDraw.ImageDraw, x0, y0, x1, y1, color, dash=4) -> None:
         d.line([x0 + (x1 - x0) * a, y0 + (y1 - y0) * a, x0 + (x1 - x0) * b, y0 + (y1 - y0) * b], fill=color, width=1)
 
 
+def cross(d: ImageDraw.ImageDraw, x: float, y: float, r: float = 5.0) -> None:
+    d.line([x - r, y - r, x + r, y + r], fill=INK, width=2)
+    d.line([x - r, y + r, x + r, y - r], fill=INK, width=2)
+
+
 def legend(d: ImageDraw.ImageDraw, x: float, y: float, extra: list[tuple[str, str]]) -> None:
+    """Source markers, then extra keys drawn as shapes: bout, switch, ring, cross, or a text glyph."""
     f = font(13)
     for s in ("oracle_seed", "fsg6f", "cyclopean_epistemic"):
         marker(d, x + 6, y + 8, s)
         d.text((x + 18, y), SOURCE_LABEL[s], fill=INK2, font=f)
         x += 30 + d.textlength(SOURCE_LABEL[s], font=f)
-    for glyph, label in extra:
-        d.text((x, y), glyph, fill=INK, font=f)
-        x += 6 + d.textlength(glyph, font=f)
+    for key, label in extra:
+        cy = y + 8
+        if key == "bout":
+            d.line([x, cy, x + 16, cy], fill=INK2, width=2)
+            x += 22
+        elif key == "switch":
+            dashed(d, x + 4, cy - 7, x + 4, cy + 7, MUTED, dash=3)
+            x += 12
+        elif key == "ring":
+            d.ellipse([x, cy - 8, x + 16, cy + 8], outline=INK, width=2)
+            x += 22
+        elif key == "cross":
+            cross(d, x + 6, cy)
+            x += 16
+        else:
+            d.text((x, y), key, fill=INK, font=f)
+            x += 6 + d.textlength(key, font=f)
         d.text((x, y), label, fill=INK2, font=f)
         x += 22 + d.textlength(label, font=f)
 
@@ -99,10 +119,10 @@ def timeline(run: Path, manifest: dict, actions: list[dict], events: list[dict])
     f, fs = font(13), font(11)
     x_of = lambda t: left + step * (t + 0.5)
     y_of = lambda o: top + rh * (row[o] + 0.5)
-    d.text((16, 12), f"Controller-01 attention timeline — {run.name}", fill=INK, font=font(18))
+    d.text((16, 12), f"Controller-01 attention timeline: {run.name}", fill=INK, font=font(18))
     d.text((16, 38), headline(manifest), fill=INK2, font=f)
-    legend(d, 16, 62, [("—", "attention bout"), ("┊", "switch"), ("Q", "quiet entry"), ("◯", "natural reactivation"),
-                       ("×", "blocked")])
+    legend(d, 16, 62, [("bout", "attention bout"), ("switch", "switch"), ("Q", "quiet entry"),
+                       ("ring", "natural reactivation"), ("cross", "blocked")])
     bouts: dict[int, list[dict]] = {}
     for a in actions:
         bouts.setdefault(int(a["attention_bout"]), []).append(a)
@@ -118,7 +138,7 @@ def timeline(run: Path, manifest: dict, actions: list[dict], events: list[dict])
         d.text((12, y - 8), label, fill=INK2, font=f)
         final = st.get("state", "") if st.get("blocked_reason") is None else f"BLOCKED:{st['blocked_reason']}"
         d.text((left - 8 - d.textlength(final, font=fs), y - 7), final, fill=MUTED, font=fs)
-    for t in range(0, n + 1, 10 if n <= 200 else 25):
+    for t in range(0, n + 1, 1 if n <= 20 else 5 if n <= 100 else 10 if n <= 200 else 25):
         x = left + step * t
         d.line([x, top + rh * len(objs), x, top + rh * len(objs) + 5], fill=INK2)
         d.text((x - 6, top + rh * len(objs) + 8), str(t), fill=INK2, font=fs)
@@ -142,7 +162,7 @@ def timeline(run: Path, manifest: dict, actions: list[dict], events: list[dict])
             d.ellipse([x - 9, y - 9, x + 9, y + 9], outline=INK, width=2)
             d.text((x + 11, y - 20), f"reactivated by {e['trigger_target']} @ {t}", fill=INK, font=fs)
         elif e["event"] == "blocked":
-            d.text((x - 3, y - 9), "×", fill=INK, font=f)
+            cross(d, x, y, 4.0)
             d.text((x + 8, y - 20), str(e["reason"]), fill=INK, font=fs)
     out = run / "controller-attention-timeline.png"
     img.save(out)
@@ -161,9 +181,10 @@ def gaze_chart(run: Path, manifest: dict, actions: list[dict], events: list[dict
     f, fs = font(13), font(10)
     X = lambda yaw: left + (yaw - y0) * s
     Y = lambda pitch: top + (p1 - pitch) * s
-    d.text((16, 12), f"Controller-01 executed gaze sequence — {run.name}", fill=INK, font=font(18))
+    d.text((16, 12), f"Controller-01 executed gaze sequence: {run.name}", fill=INK, font=font(18))
     d.text((16, 38), headline(manifest), fill=INK2, font=f)
-    legend(d, 16, 64, [("n", "global action"), ("id", "object at its seed"), ("◯", "first look after a natural reactivation")])
+    legend(d, 16, 64, [("n", "global action"), ("id", "object at its seed"),
+                       ("ring", "first look after a natural reactivation")])
     for v in range(int(y0), int(y1) + 1, 5):
         d.line([X(v), Y(p1), X(v), Y(p0)], fill=GRID)
         d.text((X(v) - 8, Y(p0) + 6), f"{v}°", fill=INK2, font=fs)
