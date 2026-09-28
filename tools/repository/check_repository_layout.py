@@ -20,6 +20,7 @@ Controller 01 (docs/controller/controller-01-state-action-contract.md) accommoda
 layout narrowly: the controller stage directories, the declared Controller-01 files (the only
 new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the Chat Handoff
 as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescence claim).
+Controller-01A declares its audit contract (required) and report (allowed).
 """
 from __future__ import annotations
 
@@ -56,7 +57,10 @@ CONTROLLER01_REQUIRED = CONTROLLER01_FOV3D | {
     "tools/controller/plot_controller01.py",
 }
 CONTROLLER01_ALLOWED = CONTROLLER01_REQUIRED | {"docs/controller/controller-01-state-action-report.md"}
-ADDED_ALLOWED = ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
+CONTROLLER01A_REQUIRED = {"docs/controller/controller-01a-terminal-audit-contract.md"}
+CONTROLLER01A_ALLOWED = CONTROLLER01A_REQUIRED | {"docs/controller/controller-01a-terminal-audit-report.md"}
+ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
+                 | CONTROLLER01A_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -269,6 +273,8 @@ def main() -> int:
     check("the transition's own files are tracked", not missing_added, str(missing_added))
     missing_c01 = sorted(CONTROLLER01_REQUIRED - set(index))
     check("the declared Controller-01 files are tracked", not missing_c01, str(missing_c01))
+    missing_c01a = sorted(CONTROLLER01A_REQUIRED - set(index))
+    check("the declared Controller-01A audit contract is tracked", not missing_c01a, str(missing_c01a))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
