@@ -1,6 +1,6 @@
 # Working agreement
 
-Engineering-first / science-second project.
+Science-led, engineering-disciplined project.
 
 The project is developed through two human-supervised AI surfaces connected by a
 shared GitHub repository:
@@ -11,34 +11,36 @@ shared GitHub repository:
 
 Luiz is the project lead and decision authority.
 
-ChatGPT is the design, review, specification, and proposal surface.
+ChatGPT is the design, review and specification surface. Its GitHub connection is
+read-only.
 
-Claude Code is the workstation implementation, execution, diagnosis, and measurement
-surface.
+Claude Code is the workstation implementation, repository-mutation, execution,
+diagnosis, and measurement surface.
 
-GitHub is the normal handoff medium between the two.
+GitHub is the durable source of truth and the normal handoff medium between the two.
 
 ## The loop
 
     Luiz sets direction
         ↓
-    Chat reads the live repository, reasons about the next step, writes the
-    specification/code/docs, checks what it can, and—when Luiz explicitly
-    authorizes a repository write—commits the proposed change to the active branch
+    Chat reads the live repository, reasons about the next step,
+    develops the architecture / specification / contract / code drafts,
+    checks what it can, and prepares a self-contained Claude Code prompt
         ↓
-    Luiz tells Claude Code to pull and execute the step
+    Luiz gives the prompt to Claude Code
         ↓
-    Claude Code runs it on the workstation, diagnoses failures, makes only
-    delegated fixes, records measured results, commits, and pushes
+    Claude Code creates/uses the authorized branch and isolated worktree,
+    commits the durable contract before substantial execution,
+    implements, diagnoses, measures, commits, and pushes
         ↓
-    Chat reads the resulting commits, reports, and diffs directly from GitHub
+    Chat reads and reviews the resulting GitHub commits, reports, and diffs
         ↓
-    Luiz decides
+    Luiz accepts, redirects, or rejects
         ↓
     repeat
 
-Luiz remains in the loop for decisions, but should not have to act as a mechanical
-file courier.
+Luiz remains in the loop for decisions. Beyond giving Claude Code the prompt, Luiz does
+not act as a mechanical file courier.
 
 ## Authority and responsibility
 
@@ -56,31 +58,38 @@ Neither AI surface makes an undelegated project decision.
 
 ### ChatGPT
 
+ChatGPT's GitHub connection is **read-only**.
+
+Chat may inspect, search and review authorized repository content. Chat does **not**
+push commits, branches, updates, or pull requests.
+
 Chat:
 
 - reads the current GitHub repository before proposing changes;
 - reasons about architecture, experiments, checks, and acceptance criteria;
-- writes specifications, code, documentation, and workstation instructions;
+- drafts architecture, specifications, contracts, code, and documentation;
+- prepares the self-contained Claude Code prompt for each substantial handoff;
 - runs checks available in its environment;
 - clearly states what it could not run;
 - reviews Claude Code's committed reports and changes directly from GitHub;
 - distinguishes proposed behavior from measured behavior.
 
-Chat may read the repository routinely.
-
-Chat writes to the repository only when Luiz has explicitly authorized a repository
-write for the current task.
-
-A Chat-authored commit is a **proposal**, not a workstation validation.
+In the normal workflow, repository mutation is performed by Claude Code under Luiz's
+authority. Luiz remains free to intervene explicitly.
 
 ### Claude Code
 
-Claude Code is the execution authority on the Ubuntu workstation.
+Claude Code is the execution authority on the Ubuntu workstation and performs the
+repository mutations of the normal workflow.
 
 It:
 
-- pulls the exact active branch before starting;
+- creates or uses the explicitly authorized branch, and pulls its exact head before
+  starting;
+- works in a dedicated isolated git worktree, and does not switch or mutate the shared
+  checkout;
 - reads this working agreement and the step contract;
+- commits the durable step contract before substantial implementation or execution;
 - runs commands in the prescribed order;
 - reads actual console output rather than trusting exit status alone;
 - diagnoses a failing check before modifying code;
@@ -95,29 +104,30 @@ GPU, Blender, scene-asset, performance, and full workstation claims become
 
 ## GitHub handoff
 
-GitHub is the default transport.
+GitHub is the default transport. The normal handoff is:
 
-The normal Chat → Code handoff is therefore:
+1. Chat prepares the design/specification and a self-contained Claude Code prompt.
+2. Luiz gives the prompt to Claude Code.
+3. Claude Code creates/uses the authorized branch and isolated worktree.
+4. For substantial work, Claude Code commits the durable contract **before**
+   implementation/execution.
+5. Claude Code implements, executes, and measures.
+6. Claude Code commits and pushes the implementation/report.
+7. Chat reviews the committed result directly from GitHub.
+8. Luiz decides whether it is accepted.
 
-1. Chat commits the proposed code/specification/documentation to the active branch.
-2. Luiz tells Claude Code to pull.
-3. Claude Code executes the committed contract.
-4. Claude Code commits the report and any delegated fixes.
-5. Chat reads those commits directly.
+For each substantial handoff, Chat provides Luiz with a self-contained Claude Code
+prompt ready to paste.
 
-ZIP + SHA256 handoffs remain a fallback for situations where direct GitHub access is
-unavailable or where an external package must be transferred exactly.
+The committed contract, normally `docs/<stage>/<phase>-contract.md`, is the durable
+specification. The paste-ready prompt supplies the handoff context needed to create and
+execute it; it does not replace the committed contract.
 
 No result needs to be pasted between Chat and Code when it is already committed in
 the repository.
 
-After every Chat-authored GitHub handoff, Chat provides Luiz with a self-contained
-Claude Code prompt in a fenced code block, ready to copy/paste.
-
-For substantial project work, the step contract is committed before workstation
-execution, normally as `docs/<phase>.md`. The paste-ready Code prompt points to that
-committed contract and supplies only the handoff context needed to execute it; it
-does not replace the durable specification.
+ZIP + SHA256 remains only a fallback, for when direct repository transfer is
+impossible or an external exact package must be transferred.
 
 ## Branch policy
 
@@ -125,8 +135,8 @@ Development occurs on the explicitly active project branch.
 
 Do not assume `main`.
 
-Before changing anything, both Chat and Claude Code must identify the current active
-branch and its head.
+Before proposing or changing anything, both Chat and Claude Code must identify the
+current active branch and its head.
 
 Normal development is forward-only:
 
@@ -151,9 +161,9 @@ Every important claim belongs to one of three states:
 
 Never blur these categories.
 
-A Chat commit may contain expected outputs.
+A Chat proposal or contract draft may contain expected outputs.
 
-Only an actual run may convert them into measured outputs.
+Only workstation execution converts them into measured outputs.
 
 ## Two hard rules
 
@@ -171,14 +181,18 @@ Only an actual run may convert them into measured outputs.
 
    A tool that cannot come out wrong has not been tested.
 
-## Scientific steps and refactoring steps
+## Scientific, design and refactoring steps
 
-Scientific work and structural refactoring have different visible products.
+Scientific work, architectural design, and structural refactoring have different
+visible products.
 
-### Scientific / behavioral step
+### Scientific / behavioral and design steps
 
-When meaningful, produce an inspectable visual or measurable result together with
-the checks.
+An executed scientific/behavioral step must produce an inspectable visual
+and a measurable result, together with its checks and a short summary.
+
+Pure architectural/design steps may instead produce a reviewed specification
+or contract, together with a short summary.
 
 ### Structural / migration / refactoring step
 
@@ -196,22 +210,32 @@ unless the contract explicitly declares a deliberate behavioral change.
 
 Refactoring must not silently become a scientific change.
 
-## Current migration principle
+## Current project stage
 
-The repository is in a migration/refactoring period.
+The Conceptual Core migration/refactoring through Core 14 is accepted
+and paused.
 
-The governing rule is:
+The reusable substrate under `fov3d/` is now the basis for the next
+stage: architectural design and implementation of the Integrated
+Foveal Controller.
+
+Do not start another migration or cleanup Core automatically.
+
+For future behavior-preserving refactoring, the standing rule remains:
 
     migrate behavior first; redesign structure second
 
-The historical implementation under `tools/` is a compatibility baseline where the
-current contracts say it is sealed.
+## Repository layout
 
-New architecture should be organized around stable concepts under `fov3d`, not around
-historical experiment lineage.
-
-Refactoring is therefore part of the work, but preserved behavior must remain
-measurable throughout the transition.
+- `fov3d/` is the reusable conceptual implementation. New architecture is organized
+  around its stable concepts, not around historical experiment lineage.
+- The `tools/` root holds only the sealed compatibility engine: the 16 modules that
+  `fov3d` re-exports (`docs/consolidation/consolidation-3-layout.json`). It is a
+  compatibility baseline where the current contracts say it is sealed.
+- Other tools live in stage/topic directories: `tools/<stage>/`.
+- Documentation lives in `docs/<stage>/`. `docs/chat-handoff.md` is the fixed recovery
+  entry point.
+- `scripts/` holds the stable top-level entry points.
 
 ## Checks and acceptance criteria
 
@@ -242,8 +266,8 @@ Unless a step contract explicitly says otherwise:
   fixes to the active branch. Work outside that scope requires Luiz.
 - If the contract does not state a scope of permitted fixes, the default is **no
   fixes**: diagnose, report, and stop.
-- Phase contracts and reports follow the existing convention
-  `docs/<phase>.md` and `docs/<phase>-report.md`.
+- Contracts and reports follow the convention `docs/<stage>/<phase>-contract.md` and
+  `docs/<stage>/<phase>-report.md`. Historical documents keep their existing names.
 - If the active branch is not named by the instruction or contract, ask rather than
   infer it from the current checkout.
 - An overnight command runs only when the step contract explicitly authorizes it and
@@ -337,8 +361,8 @@ Conversation summaries are useful handoffs but are secondary sources.
 
 ### Chat Handoff at accepted main milestones
 
-At every accepted `main` milestone, maintain a compact **Chat Handoff** section or
-canonical handoff file. It should be short enough to scan at the start of a fresh
+At every accepted `main` milestone, maintain the compact **Chat Handoff**,
+`docs/chat-handoff.md`. It should be short enough to scan at the start of a fresh
 conversation and record at least:
 
 - the accepted `main` commit;
@@ -407,7 +431,7 @@ The working process should optimize for:
 
 GitHub carries state.
 
-Claude Code measures on the workstation.
+Claude Code mutates the repository and measures on the workstation.
 
 Chat designs and reviews.
 

@@ -6,6 +6,12 @@
 
 Accepted milestone: Conceptual Core 14. The conceptual-core migration **pauses** here.
 
+Current work (**proposed, not accepted**): the structural *Repository Transition 1* on
+`stage/repository-transition-1` reorganizes `docs/` and `tools/` by stage/topic and updates
+`README.md` and `CLAUDE.md` for the controller stage, with no scientific change. It awaits
+review by Luiz and Chat; its record is
+`docs/repository/repository-transition-1-report.md`.
+
 ## Working arrangement
 
 - Luiz is the scientific and acceptance authority.
@@ -111,7 +117,7 @@ Conceptual Core 14 was accepted at `296001e8683ba0b1ad62642811d3dea0e84b6566` wi
 
     CONCEPTUAL_CORE14_GAZE_CONTEXT_SEPARATION_PRESERVES_BEHAVIOR
 
-The evidence, from `docs/migration-conceptual-core-14-report.md`, includes:
+The evidence, from `docs/conceptual-core/migration-conceptual-core-14-report.md`, includes:
 - the intrinsic output is accepted Core 13 minus only the gaze-distance field; `gaze_context`,
   `run_context` and `candidate_policy` re-create the accepted outputs exactly, and the
   historical producers (with their target-local gaze selection) are unchanged;

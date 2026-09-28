@@ -1,56 +1,93 @@
-# fov-3d-vision — core staging (compatibility extraction)
+# Foveal Stereo Vision
 
-This is a **local staging extraction**, not a new architecture. It contains only the
-files needed to reproduce **Classroom-Oracle-1 full**, copied byte-for-byte from the
-frozen legacy repository, plus a small number of new documentation files and a
-post-hoc demo. Nothing has been refactored, renamed, or moved.
+## Migration and Refactoring
 
-- Legacy repository: https://github.com/visgraf/fov-3d-vision
-- Freeze tag: `legacy-classroom-oracle3b-2026-09-25` → `48a3139020e87bfaf1255df1585390f7e9094ec8`
-- Provenance and the inherited contracts: [docs/legacy-provenance.md](docs/baseline/legacy-provenance.md)
-- What was migrated and what was not: [docs/migration-manifest.md](docs/baseline/migration-manifest.md), [migration-manifest.json](migration-manifest.json)
-- The experiment itself: [docs/classroom-oracle-1.md](docs/classroom-oracle/classroom-oracle-1.md) (verbatim from the legacy repo)
+This repository has completed a behavior-preserving migration and conceptual
+refactoring of the experimental Foveal Stereo Vision system.
 
-## Requirements
+The work began from a sealed historical implementation whose behavior had been
+established through the Classroom and Partition-Graph experiments. The purpose of
+the migration was not to invent a new algorithm, but to recover the reusable
+conceptual architecture that had gradually become embedded in experiment-specific
+code.
 
-- Linux workstation, NVIDIA GPU with OptiX (the golden record was produced on an RTX 4090).
-- Blender 5.2.1 LTS on `PATH` as `blender`.
-- Host Python 3.12 venv built from the **system** interpreter (not a conda `python3`):
+The migration followed two principles:
 
-```bash
-/usr/bin/python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt -r requirements-fsg.txt
-```
+    migrate behavior first; redesign structure second
 
-## Scene
+and
 
-`scenes/classroom/` is gitignored and must be rebuilt (see `scenes/manifest.json`, entry `classroom`):
+    one causal question per conceptual step
 
-```bash
-# 1. download https://download.blender.org/demo/test/classroom.zip (md5 3adbb7114b514bfc6fc724ce20f86b4e)
-#    and unzip it so that scenes/classroom/classroom.blend, assets/ and textures/ exist
-# 2. place the eye
-blender -b scenes/classroom/classroom.blend -P tools/place_eye.py -- \
-        --location -0.6 -1.0 1.2 --yaw 0 --out scenes/classroom/classroom_eye.blend
-```
+Conceptual Cores 1–11 established reusable ownership for the principal mechanisms
+under `fov3d/`, including persistent instance-keyed 3-D measurement memory, the
+fixed-head spherical chart, persistent head-centered epistemic memory, scene
+partition/topology, and the intrinsic epistemic partition.
 
-The acceptance run used a byte-identical copy of the legacy checkout's `scenes/classroom/`
-(`classroom_eye.blend` sha256 `dca66a32…6953cc`).
+Conceptual Cores 12–14 then separated three concepts that had historically been
+mixed into the epistemic representation:
 
-## Run
+- candidate interpretation;
+- prerecorded experiment/run context;
+- fixation/action history.
 
-```bash
-.venv/bin/python tools/dev/check_classroom_oracle1.py            # expect SUMMARY passed=12 failed=0
-.venv/bin/python tools/classroom_oracle1_run.py --repo . --out previews/classroom-oracle-1-smoke --profile small --device OPTIX --smoke
-.venv/bin/python tools/classroom_oracle1_run.py --repo . --out previews/classroom-oracle-1-full  --profile full  --device OPTIX
-.venv/bin/python tools/classroom_oracle1_eval.py --run previews/classroom-oracle-1-full
-.venv/bin/python tools/consolidation1_demo.py   --run previews/classroom-oracle-1-full
-```
+The resulting conceptual stack is:
 
-Expected golden result: 25 instances, 104 fixations (25 `oracle_seed` / 53 `fsg6f` /
-26 `cyclopean_epistemic`), 25 `attention_complete`, 29,288 reachable samples, 25,618
-covered, coverage 0.8746927069106801.
+    measured 3-D geometry
+            ↓
+    persistent head-centered evidence
+            ↓
+    scene geometry / topology
+            ↓
+    intrinsic epistemic partition
+            ↓
+    optional gaze/action context
+            ↓
+    optional experiment run context
+            ↓
+    candidate interpretation
 
-## Status
+The intrinsic epistemic partition now represents accumulated causal evidence in
+the spherical head-centered domain without depending on candidate policy, future
+experiment scheduling, or fixation history. It remains intentionally
+target-relative: target support, target evidence and distance-to-target are defined
+with respect to one designated object.
 
-Consolidation 1: compatibility extraction. No remote. See the migration report in `docs/`.
+The migration is accepted through Conceptual Core 14. Its established scientific
+behavior was preserved throughout the redesign against the sealed reference
+experiments, including the accepted baseline and golden behavioral comparisons.
+
+The conceptual-core migration pauses here.
+
+## Next Stage — Integrated Foveal Controller
+
+The next stage is a fresh architectural design of the Integrated Foveal Controller
+built on the representation established by the migration.
+
+The central question is no longer how to recover structure from the historical
+experiments, but how an active binocular observer should use that structure to
+decide what to do next.
+
+The controller design will begin from explicit definitions of:
+
+    STATE
+        persistent scene / object memory
+        + intrinsic epistemic representation
+        + observer history
+        + current attentional context
+
+    ACTION
+        retain or switch the attended object
+        + choose the next fixation direction
+        + choose vergence / focus
+        + continue, stop or change attentional mode
+
+The initial design retains the current fixed-head, static-scene setting and follows
+the project's principles of Back to Occam and Bounded Boldness: start with the
+simplest coherent closed-loop controller that can be tested causally, then increase
+complexity only when the evidence requires it.
+
+The immediate architectural question is:
+
+    given what the system currently knows,
+    what should the eyes do next?

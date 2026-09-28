@@ -1,19 +1,26 @@
 # Current architecture map (as migrated, before refactoring)
 
+> **Status.** The conceptual-core migration is accepted through Conceptual Core 14 and
+> paused; the next activity is the architectural design of the Integrated Foveal
+> Controller (`docs/conceptual-core/conceptual-core-map.md`). This map still describes
+> the sealed engine. Repository Transition 1 kept its 16 runtime modules at the `tools/`
+> root and relocated only the acceptance check, byte-identical, to `tools/classroom_oracle/`.
+
 This maps the 17-file golden runtime closure by responsibility. The files have not been
-moved or renamed; every path below is where the file lives today, byte-identical to
+moved or renamed, except the acceptance check (relocated, byte-identical, by Repository
+Transition 1); every path below is where the file lives today, byte-identical to
 legacy `48a3139`. The map is the input to Consolidation 3.
 
 The closure is:
 
 - the 16 runtime modules under `tools/`;
-- the acceptance check `tools/dev/check_classroom_oracle1.py`.
+- the acceptance check `tools/classroom_oracle/check_classroom_oracle1.py`.
 
 Outside the closure, and not mapped here:
 
-- `tools/place_eye.py`, the scene generator;
-- `tools/dev/check_fsg_tangent_frame.py`;
-- `tools/consolidation1_demo.py`, which is post-hoc only;
+- `tools/classroom_oracle/place_eye.py`, the scene generator;
+- `tools/baseline/check_fsg_tangent_frame.py`;
+- `tools/consolidation/consolidation1_demo.py`, which is post-hoc only;
 - the Consolidation 2 checkers.
 
 "Direct project imports" means imports of other repository modules, including imports
@@ -74,7 +81,7 @@ both import (`classroom_oracle1_public`, `fsg_geometry`, `fsg6f_public`, `exr_li
 |---|---|---|
 | `tools/classroom_oracle1_public.py` | The experiment's public contract: spec id, scene path, defaults, 24-look watchdog, 100-point initialization floor, fusion rule, and the oracle / control / benchmark contracts with their digest. | — |
 | `tools/classroom_oracle1_run.py` | The control loop. It launches the Blender bootstrap, then for each seed runs: render → match → initialize or fuse (with an idempotence replay) → Cyclopean evidence → FSG6f next gaze → Cyclopean handoff on `no_frontier`. This repeats until `attention_complete`, `seed_uninitializable` or the watchdog. It writes all per-look artifacts, the manifest, and the repaired smoke gate. | `classroom_oracle1_epistemic`, `classroom_oracle1_matcher`, `classroom_oracle1_public`, `fsg3_surface_map` [Patch, initialize, fuse], `fsg6f_public` [FUSION], `multiobject2c_policy` [choose_next, history_entry] |
-| `tools/dev/check_classroom_oracle1.py` | The 12 fail-capable acceptance checks: contract self-tests, a source scan (no SGBM, the same-instance rule, the runner never names `evaluation_only`, Blender contains no policy), the inherited constants, benchmark retention, and empty looks. | `classroom_oracle1_epistemic`, `classroom_oracle1_matcher`, `classroom_oracle1_public`, `classroom_oracle1_run`, `fsg6f_public`, `multiobject2c_policy` |
+| `tools/classroom_oracle/check_classroom_oracle1.py` | The 12 fail-capable acceptance checks: contract self-tests, a source scan (no SGBM, the same-instance rule, the runner never names `evaluation_only`, Blender contains no policy), the inherited constants, benchmark retention, and empty looks. | `classroom_oracle1_epistemic`, `classroom_oracle1_matcher`, `classroom_oracle1_public`, `classroom_oracle1_run`, `fsg6f_public`, `multiobject2c_policy` |
 
 ## 7. Evaluation
 
@@ -121,7 +128,7 @@ future code (partition, segmentation, topology, …)
         │  imports only
         ▼
 fov3d.*            stable conceptual API — 16 re-export wrappers, generated from
-                   docs/consolidation-3-layout.json (docs/fov3d-api.md)
+                   docs/consolidation/consolidation-3-layout.json (docs/architecture/fov3d-api.md)
         │  re-exports, unchanged
         ▼
 tools/*            sealed compatibility engine — the 17-file closure mapped above,
@@ -138,7 +145,7 @@ tools/*            sealed compatibility engine — the 17-file closure mapped ab
 | 6 experiment orchestration | `fov3d.experiments.classroom_oracle.{config, run}` |
 | 7 evaluation | `fov3d.experiments.classroom_oracle.eval` |
 
-`tools/dev/check_classroom_oracle1.py` stays a sealed check and has no facade.
+`tools/classroom_oracle/check_classroom_oracle1.py` stays a sealed check and has no facade.
 
 Rules from Consolidation 3 on:
 
