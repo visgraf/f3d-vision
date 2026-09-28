@@ -2,9 +2,21 @@
 
 ## Accepted main
 
-    main @ b12bdef0593a043c5e7593b38d78735875c007fd
+    main @ e3bf5e08f579104024036d94a2d97a9221ca82dd
+
+`origin/main` is fast-forwarded to the docs-only acceptance commit that adds this entry, whose
+parent is `e3bf5e0`.
 
 Accepted milestones:
+- **Integrated Foveal Controller 01**, accepted at `e3bf5e0` (implementation and measured
+  scientific result):
+
+      INTEGRATED_FOVEAL_CONTROLLER01_ACCEPTED
+
+  The implementation marker `CONTROLLER01_IMPLEMENTATION_CHECKS_PASS` is accepted. Global
+  quiescence was **not** reached, and the global-quiescence marker was not emitted. The
+  accepted scientific outcome is `INCOMPLETE`. That is a measured scientific result, not an
+  implementation failure.
 - **Repository Stage Transition 1**, accepted at `b12bdef`. It is structural only and
   changes no scientific behavior:
 
@@ -79,6 +91,42 @@ Evidence (measured; report):
 - golden `MISMATCHES 0`;
 - the 13 accepted reference trees were unchanged;
 - the layout checker passed 487/487 and caught 22/22 mutations.
+
+## Integrated Foveal Controller 01 (accepted at `e3bf5e0`)
+
+Luiz and Chat accepted the implementation, the measured scientific result (explicitly as
+`INCOMPLETE`, not global quiescence) and the layout-checker repair `baf3fed`.
+
+Record (branch `controller/controller-01`, base `c5f6be6`):
+- contract: `docs/controller/controller-01-state-action-contract.md` (`4233a55`);
+- report: `docs/controller/controller-01-state-action-report.md` (`e3bf5e0`);
+- code: `fov3d/control/integrated.py` (reusable state/action concepts, the deterministic
+  retain/switch/stop scheduler, the generic closed loop, the target-relative view E_t(i), the
+  truth firewall) and `fov3d/experiments/classroom_oracle/controller01.py` (the Classroom
+  adapter/executable);
+- checks: `tools/controller/check_controller01.py`; visuals: `tools/controller/plot_controller01.py`.
+
+Accepted measured result of the one full run (at `5b66e59`):
+
+| quantity | value |
+|---|---|
+| localized / initialized | 25 / 25 |
+| observations | 141 |
+| switches / attention bouts | 26 / 27 |
+| natural reactivations | 2 (109 by 110's look; 178 by 224's look; both serviced and quiet again) |
+| QUIET at termination | 24 |
+| blocked | 210 `wall.008`, `BLOCKED:watchdog`: at the inherited 24-look watchdog its accepted local policy still proposed an FSG6f look |
+| terminal | `INCOMPLETE(localized_objects_blocked)` |
+| descriptive coverage (after control) | 0.9833720295001366 |
+
+Preserved full run:
+
+    /home/lvelho/temp/previews-2026.09.28/controller-01-full
+
+It was copied with `rsync -a` and verified file by file: 1,678/1,678 sha256 identical to the source,
+including `controller-attention-timeline.png` and `controller-gaze-chart.png`. The report-recorded
+hashes are `manifest.json` `d293a98f…`, `actions.json` `12cdbe4d…` and `evaluation.json`
+`76cb1e5d…`. The smoke runs are plumbing artifacts and were not archived.
 
 ## Accepted scientific / architectural state
 
@@ -193,30 +241,27 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-The next activity is a **fresh architectural design of the Integrated Foveal Controller**,
-beginning from the controller's **STATE** and **ACTION**, over the now-clean representation
-boundary:
-
-    intrinsic epistemic representation          fov3d.epistemic.partition
-        → optional gaze / action context        classroom_partition.gaze_context
-        → optional experiment run context       classroom_partition.run_context
-        → candidate interpretation              classroom_partition.candidate_policy
-        → future attention / controller policy  (to be designed)
-
-No controller logic exists yet, and no controller branch has been created. The design starts
-from the Core-14 controller-readiness boundary rather than from further historical cleanup.
-Acceptance administration does not implement controller logic. The first controller contract
-will follow `docs/<stage>/<phase>-contract.md`, for example
-`docs/controller/controller-01-state-action-contract.md`.
+The next activity is **Controller-01A**, a **read-only terminal blocked-state audit** of object
+210, on branch `controller/controller-01a-terminal-audit`. It is **not** Controller-02. Its one
+question: at the final causal scene state, would 210 still be ACTIONABLE if only the sticky
+BLOCKED flag were ignored and the unchanged accepted local policy were asked again? It uses no
+Blender, no new observation, no policy change and no evaluation truth.
 
 ## Decision-critical open items
 
-1. The controller design is a design activity, led by Luiz with Chat; it is not a
-   continuation of the migration and does not change accepted behavior by itself.
-2. Not yet designed or implemented: controller candidate eligibility, scoring/ranking,
-   fixation selection, vergence/focus action, inhibition of return, gaze recency/decay,
-   global versus target-local gaze memory, continuation/stopping integration, the
-   budget/quality trade-off, a moving head, semantic decisions.
+1. Controller design is led by Luiz with Chat. Controller-01 reuses the accepted local policy
+   unchanged. Open questions from its report:
+   - the adequacy of the 24-look watchdog under effective geometry;
+   - target-local versus global observation evidence for the Cyclopean handoff (both natural
+     reactivations came through it);
+   - the service latency of reactivated objects under the cyclic order;
+   - sticky BLOCKED;
+   - the metric scope (active fused map versus effective geometry);
+   - measured-but-unlocated instances;
+   - a target-neutral scene-level epistemic formulation.
+2. Still not designed or implemented: candidate ranking/scoring, a new fixation policy,
+   vergence/focus action, inhibition of return, gaze recency/decay, the budget/quality
+   trade-off, a moving head, semantic decisions.
 3. Representation observation for the design: the intrinsic partition is still relative to one
    designated target (`target_id`, `target_support`, the target kinds and target distances).
 4. Deferred historical cleanups (not to be started automatically):
@@ -232,6 +277,6 @@ will follow `docs/<stage>/<phase>-contract.md`, for example
      text-only `fov3d/` change and needs an explicit decision.
    - `docs/conceptual-core/conceptual-core-map.md` keeps the stale headings "Proposed
      Conceptual Core 3 extraction" and "Proposed later extraction order".
-   - Reference-tree location: the shared checkout's `previews/` is empty. The accepted trees
-     are at `/home/lvelho/temp/previews-2026.09.28`, and gates that name `previews/…` need
-     that location linked.
+   - Reference-tree location: the shared checkout's `previews/` is empty. The accepted trees,
+     now including `controller-01-full`, are at `/home/lvelho/temp/previews-2026.09.28`, and
+     gates that name `previews/…` need that location linked.

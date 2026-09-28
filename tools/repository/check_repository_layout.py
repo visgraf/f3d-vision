@@ -19,7 +19,7 @@ scripts/verify_baseline.sh and the golden comparator).
 Controller 01 (docs/controller/controller-01-state-action-contract.md) accommodates the
 layout narrowly: the controller stage directories, the declared Controller-01 files (the only
 new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the Chat Handoff
-as accepted for Repository Stage Transition 1.
+as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescence claim).
 """
 from __future__ import annotations
 
@@ -349,10 +349,13 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Repository Stage Transition 1, Core 14 the scientific milestone",
-          "main @ b12bdef0593a043c5e7593b38d78735875c007fd" in handoff
+    check("chat handoff records accepted main at Integrated Foveal Controller 01, with RT1 and Core 14 recorded",
+          "main @ e3bf5e08f579104024036d94a2d97a9221ca82dd" in handoff
+          and "INTEGRATED_FOVEAL_CONTROLLER01_ACCEPTED" in handoff
           and "REPOSITORY_STAGE_TRANSITION_1_PRESERVES_SCIENTIFIC_BEHAVIOR" in handoff
           and "`296001e8683ba0b1ad62642811d3dea0e84b6566`" in handoff)
+    check("chat handoff does not claim Controller-01 global quiescence (the measured outcome is INCOMPLETE)",
+          "CONTROLLER01_GLOBAL_QUIESCENCE_REACHED" not in handoff)
     check("chat handoff records the transition as accepted, not proposed",
           "## Repository Stage Transition 1 (accepted at `b12bdef`)" in handoff
           and "proposed, not accepted" not in handoff)
