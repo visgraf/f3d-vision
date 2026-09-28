@@ -1,8 +1,8 @@
 # Conceptual core migration map
 
-Status: Conceptual Cores 1-11 were verified and accepted. Conceptual Core 12, the first
-intentional redesign Core, is now proposed (measured) on `migration/conceptual-core-12`; its
-measured acceptance status belongs in `docs/migration-conceptual-core-12-report.md`.
+Status: Conceptual Cores 1-12 were verified and accepted. Conceptual Core 13, the second
+intentional redesign Core, is now proposed (measured) on `migration/conceptual-core-13`; its
+measured acceptance status belongs in `docs/migration-conceptual-core-13-report.md`.
 
 The purpose of this map is to distinguish stable system concepts from the
 Classroom/Partition-Graph experiment lineage. It is intentionally architectural, not
@@ -22,7 +22,8 @@ saved-run adaptation, **H** historical phase scaffolding.
 | `relations.py` | T, E, H | derives ownership cuts, own-support gaps and relation descriptors; Phase-4 left-eye evidence replay (`FineEvidence`) | topological/geometric relation extraction between scene regions/components | Phase-specific diagnostics and report fields; left-eye `FineEvidence`, superseded by head-centred `HeadEvidence` in Phase 5 | imports private `joint` helpers (`_default_stereo_ops`, `_rectified_core_directions_h`) and, since Core 4, `support_depth_from_map` from `fov3d.scene`; since Core 9 the generic boundary depth-order primitive (`boundary_depth_order` with `_region_object`, `_weighted_quantile`) lives in the NumPy-only `fov3d.scene.relations`, and since Core 10 the corridor relation-origin cluster (`relation_origin` with `_region_code`, `_own_labels`, `_joint_region_own_component`) lives in the OpenCV-dependent `fov3d.scene.corridors` beside the gap-corridor geometry; both are imported back as identity names used by `annotate_corridor` (ownership margins, evidence classification, `FineEvidence`, `annotate_corridor`, `component_lineage` and `own_support_labels` stay here); no later module imports it, and Phase 5 consumes its output only as saved `relations.json` |
 | `incidental.py` | E, H | Phase-5 head-evidence analysis and relation annotation | none after Core 3; `HeadEvidence` / `add_head_patch` move to `fov3d.epistemic.head_memory` | Phase-5 report classifications and saved-prefix analysis | Core 3 keeps compatibility names by importing the conceptual definitions; they are used by its own `analyze_phase5`/`annotate_head_relation` and by the unmodified `tools/dev/check_partition_graph{5,7,8}.py`; Phases 7, 8 and 8b import the conceptual module directly; still imports `ReadLog` from lift, and since Core 4 takes `support_depth_from_map` from `fov3d.scene`; it is the only production reader of the target-relative fields `target_depth_seen`/`other_depth_seen` |
 | `benchmark.py` | B, V, C | Phase-6 proposal orchestration over the explicit historical candidate view, truth firewall and Phase-6 evaluation | none left after Core 11: the epistemic-region vocabulary (`REGION_KIND`, `REGION_KIND_BY_CODE`) and the partition constructor (`build_epistemic_partition` with `_component_labels`, `_distance_to_target`, `_touches_edge`, `_centroid_angles`, `_angular_distance_deg`, `_region_interfaces`) live in `fov3d.epistemic.partition`; since Core 12 the candidate rule `CANDIDATE_KINDS` lives in `candidate_policy` | saved-run paths and the truth firewall (`_guard_source_path`), `propose_phase6`/`evaluate_phase6`, `_covered`, `_miss_components`, JSON I/O | since Core 12 keeps the historical API: the eight representation names are identity imports from `fov3d.epistemic.partition`, `CANDIDATE_KINDS` and `build_candidate_partition` come from `candidate_policy`, and `build_epistemic_partition` is a compatibility alias of `build_candidate_partition` (the accepted candidate view) for the unmodified `tools/dev/check_partition_graph{6,7,8}.py`; `propose_phase6` calls `build_candidate_partition` explicitly; `tools/dev/check_partition_graph8b.py` and `tools/partition_graph{6,7,8b}_demo.py` still import `REGION_KIND`/`REGION_KIND_BY_CODE` through it; `CANDIDATE_KINDS` and the six helper names have no in-repo consumer through `benchmark` besides the Core-11/12 checks; keeps Core-2 aliases `_cells`/`_grid` (still used by `tools/partition_graph6_demo.py`) and `FUSION_RADIUS_M` (no remaining importer); its 12-mm `_covered` query is used by the Phase-8 proposer's novelty metric as well as by evaluators; the measured orphans `cv2`, `math` and `defaultdict` were dropped |
-| `candidate_policy.py` | B, H | Core 12: the historical Phase-6/7/8 candidate interpretation of the epistemic partition (`CANDIDATE_KINDS = {OTHER_SURFACE, UNKNOWN}`, `annotate_candidate_partition`, `build_candidate_partition`) | the explicit representation/policy boundary may become a pattern for later policies; the rule itself is **not** an accepted universal attention policy | the historical candidate rule and the accepted Core-11 key positions of `candidate` (after `kind`) and `candidate_region_count` (after `region_count`) | imports only `fov3d.epistemic.partition`; used by `benchmark`, `prefix_benchmark`, `integration` and `challenge_suite`; importing it loads the experiment package (`lift`) but no benchmark, evaluator, stereo or renderer module |
+| `candidate_policy.py` | B, H | Core 12: the historical Phase-6/7/8 candidate interpretation of the epistemic partition (`CANDIDATE_KINDS = {OTHER_SURFACE, UNKNOWN}`, `annotate_candidate_partition`, `build_candidate_partition`) | the explicit representation/policy boundary may become a pattern for later policies; the rule itself is **not** an accepted universal attention policy | the historical candidate rule and the accepted Core-11 key positions of `candidate` (after `kind`) and `candidate_region_count` (after `region_count`) | since Core 13 composes intrinsic partition → `run_context` → candidate annotation, importing only `run_context`; used by `benchmark`, `prefix_benchmark`, `integration` and `challenge_suite`; importing it loads the experiment package (`lift`), `run_context` and the intrinsic partition but no benchmark, evaluator, stereo or renderer module |
+| `run_context.py` | C, H | Core 13: the historical run context of the partition — `annotate_reconstruction_status` adds `reconstruction_status` (`mapped_now` / `targeted_later` / `never_targeted`) right after `surface_source` from `mapped_cells` and the experiment's target schedule `all_target_ids`; `build_run_context_partition` keeps the historical builder signature | none as such: knowing which objects a prerecorded experiment will target later is not an epistemic quantity | the Classroom target schedule and the accepted status rule | imports only `fov3d.epistemic.partition`; used only by `candidate_policy`; the Phase-5 `incidental.reconstruction_status` helper is a separate, deferred duplicate |
 | `prefix_benchmark.py` | B, V, H | builds Phase-7 prefix benchmark views and metrics | small representation helpers may survive after audit | prefix scenarios, candidate capture metrics, evaluation/report aggregation | since Core 12 takes `REGION_KIND` and `REGION_KIND_BY_CODE` (both unused inside it) from `fov3d.epistemic.partition`, `build_candidate_partition` from `candidate_policy` and only `_covered` from `benchmark`; its orphan `CANDIDATE_KINDS` import was removed in Core 12; Phase 8 imports six names from it, five private (`_memory_state`, `_partition_signature`, `_region_lookup`, `_angles_to_codes`, `_candidate_capture_metrics`) |
 | `integration.py` | B, V, H | Phase-8 causal instance-keyed integration proposer/evaluator | none left beyond `cross_target_novelty`; the measured-geometry memory and effective-geometry composition moved to `fov3d.reconstruction.measurement_memory` in Core 1 | Phase-7 parity, Phase-8 proposal tree, novelty metrics, evaluator | imports five private names from `prefix_benchmark`; since Core 12 takes `build_candidate_partition` from `candidate_policy` (both partition sites) and only `_covered` from `benchmark`; `tools/dev/check_partition_graph8.py` still imports `effective_target_geometry` through this module (a re-export) |
 | `challenge_suite.py` | B, V | Phase-8b budget replay, UNKNOWN shells, eligibility floor and evaluation | no new core extraction in this step beyond using shared measurement memory | budgets, shells, eligibility, scenario construction, evaluation | since Core 1 it no longer duplicates routing or imports from `integration`; since Core 12 takes `REGION_KIND` and `_region_interfaces` from `fov3d.epistemic.partition`, the base integrated partition from `candidate_policy.build_candidate_partition` (its FULL parity against Phase 8 includes `candidate`) and only the private `_covered` from `benchmark`; it keeps its own, distinct `candidate_raw`/`eligible_candidate` interpretation (independent literal `{"UNKNOWN", "OTHER_SURFACE"}`, `MIN_ELIGIBLE_CELLS`, UNKNOWN shells), evidence that several candidate interpretations can exist over one epistemic representation; still imports `build_joint_graph` from `joint`; `HeadEvidence`/`add_head_patch` come from `fov3d.epistemic.head_memory` (Core 3) and `support_depth_from_map` from `fov3d.scene` (Core 4); chart and radius come from the conceptual modules since Core 2 |
@@ -95,7 +96,7 @@ candidate generation or attention policy is **deferred**. `fov3d/epistemic/__ini
 unchanged, so a bare `import fov3d.epistemic` stays OpenCV-free; the OpenCV-dependent module
 is imported explicitly.
 
-## Proposed Conceptual Core 12 separation
+## Conceptual Core 12 separation (accepted)
 
 The first intentional redesign Core separates one concept, candidate status, from the
 intrinsic epistemic partition:
@@ -119,10 +120,36 @@ and `candidate_policy` re-creates the accepted Core-11 view type- and key-order-
 Phase 8b uses it for its base partition and keeps its distinct `candidate_raw` /
 `eligible_candidate` interpretation. The representation/policy separation is now explicit.
 
-The next architectural question is the separation of the historical/context annotations that
-remain inside the representation: `reconstruction_status` (`mapped_now` / `targeted_later` /
-`never_targeted`, which depends on `all_target_ids`), `surface_source` and
-`min_distance_to_historical_gaze_deg`.
+## Proposed Conceptual Core 13 separation
+
+The second redesign Core separates the prerecorded experiment's run context from the intrinsic
+partition:
+
+    accepted Core-12 intrinsic partition = Core-13 intrinsic partition
+                                         + historical reconstruction-status annotation
+
+    causal evidence
+        ↓
+    fov3d.epistemic.partition            (kinds, identity, geometry, topology,
+                                          evidence statistics, surface_source)
+        ↓
+    classroom_partition.run_context      (historical schedule → reconstruction_status)
+        ↓
+    classroom_partition.candidate_policy (historical candidate interpretation)
+        ↓
+    Phase 6 / 7 / 8 / 8b historical pipeline
+
+The intrinsic `build_epistemic_partition` no longer takes `all_target_ids` and no longer emits
+`reconstruction_status`; its output is exactly accepted Core 12 minus that field.
+`surface_source` (`mapped` / `incidental` / `mapped_and_incidental`) stays intrinsic: it is
+causal evidence provenance, determined by the current state alone. `run_context` re-creates the
+accepted Core-12 rows exactly; `candidate_policy.build_candidate_partition` keeps its historical
+signature and composes run context and candidate annotation. The historical producers,
+`benchmark`'s compatibility API and Phase 8b's separate `candidate_raw` / `eligible_candidate`
+interpretation are unchanged (Phase 8b still propagates `reconstruction_status` to refined rows).
+
+The next architectural question is the historical gaze context still inside the intrinsic
+partition: `min_distance_to_historical_gaze_deg` and the `gazes_deg` input.
 
 ## Proposed later extraction order
 
@@ -162,9 +189,12 @@ Subject to the measured results of Core 3, the likely next conceptual refactors 
    epistemic-region vocabulary and partition constructor moved intact from `benchmark.py`
    to `fov3d.epistemic.partition`, with `benchmark.py` keeping identity compatibility names
    and Phases 7, 8 and 8b importing the conceptual module directly. Second step,
-   **Conceptual Core 12 (proposed)**: candidate status leaves the intrinsic partition and
+   **Conceptual Core 12 (accepted)**: candidate status leaves the intrinsic partition and
    becomes the experiment-side historical interpretation `candidate_policy`, which the
-   historical pipeline uses explicitly. Next question: separating the historical/context
-   annotations (`reconstruction_status`, `surface_source`, the historical-gaze descriptor).
+   historical pipeline uses explicitly. Third step, **Conceptual Core 13 (proposed)**:
+   `reconstruction_status` and the `all_target_ids` dependency leave the intrinsic partition
+   and become the experiment-side run context `run_context`, while `surface_source` stays
+   intrinsic. Next question: the historical gaze context (`min_distance_to_historical_gaze_deg`,
+   `gazes_deg`).
 
 The later order remains a proposal, not permission to perform those migrations in Core 3.
