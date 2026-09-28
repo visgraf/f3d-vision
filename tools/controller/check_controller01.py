@@ -3,12 +3,19 @@
 
     .venv/bin/python tools/controller/check_controller01.py              # unit + architecture
     .venv/bin/python tools/controller/check_controller01.py --run DIR    # + run-artifact validation
+    .venv/bin/python tools/controller/check_controller01.py --terminal-reprobe DIR --object 210
+                                                                         # Controller-01A read-only audit
 
 Contract: docs/controller/controller-01-state-action-contract.md.  The unit checks are
 Blender-free.  Every behavioral check is also run against a deliberate negative control (a
 mutant scheduler, probe, loop configuration, memory view or firewall) that must be rejected,
 so each check is shown to be able to fail.  ``--run`` validates a completed run directory
 from controller-time artifacts only; it never opens evaluation truth.
+
+``--terminal-reprobe`` (Controller-01A, docs/controller/controller-01a-terminal-audit-contract.md)
+reconstructs a completed run's causal state from its saved artifacts, validates the
+reconstruction against the saved watchdog-prefix probe, and asks the unchanged accepted local
+policy again at the terminal state.  It renders, fuses and changes nothing, under the truth firewall.
 """
 from __future__ import annotations
 
@@ -1122,11 +1129,260 @@ def validate_run(root: Path) -> None:
               and all("new_surfels" in r for r in rows_m[i]["trajectory"]) for i in per))
 
 
+# ---------------------------------------------------------------- Controller-01A terminal re-probe audit
+
+# The saved Controller-01 watchdog-prefix probe of object 210, restated from the Controller-01A contract
+# (docs/controller/controller-01a-terminal-audit-contract.md).  The audit also compares against the saved
+# probe record itself.
+CONTROLLER01A_EXPECTED_PREFIX = {
+    210: {"revision": [24, 1584958], "effective_points": 1748902, "state": "ACTIONABLE", "source": "fsg6f",
+          "reason": "continue", "frontier_open_count": 58, "frontier_raw_count": 354,
+          "frontier_map_resolved_count": 26, "frontier_boundary_resolved_count": 270, "candidates": 1,
+          "consensus_rejected_candidates": 3, "next_gaze_deg": [7.6, 18.2]},
+}
+
+
+class AuditFailure(Exception):
+    pass
+
+
+def _audit_npz(path: Path) -> dict[str, np.ndarray]:
+    with np.load(path, allow_pickle=False) as z:
+        return {k: z[k] for k in z.files}
+
+
+def _same_summary(a, b, tol: float = 1e-9) -> bool:
+    """Exact equality of probe summaries, with a gaze tolerance for floats."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_same_summary(a[k], b[k], tol) for k in a)
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        return len(a) == len(b) and all(_same_summary(x, y, tol) for x, y in zip(a, b))
+    if isinstance(a, float) or isinstance(b, float):
+        return isinstance(a, (int, float)) and isinstance(b, (int, float)) and abs(float(a) - float(b)) <= tol
+    return a == b
+
+
+def _probe_record(result: ic.ProbeResult, decisions: dict, geometry_points: int, revision: list[int]) -> dict:
+    action = result.action
+    selected = (decisions.get("fsg6f_decision") or {}).get("selected")
+    return {
+        "state": result.state.value,
+        "source": None if action is None else action.source,
+        "proposed_gaze_deg": None if action is None else list(action.gaze_yaw_pitch_deg),
+        "revision": list(revision),
+        "effective_points": int(geometry_points),
+        "summary": c01._jsonable(dict(result.detail)),
+        "fsg6f_selected": None if selected is None else c01._jsonable(
+            {k: selected[k] for k in ("yaw_deg", "pitch_deg", "frontier_support_count", "raw_frontier_support_count",
+                                      "map_resolved_support_count", "boundary_resolved_support_count",
+                                      "predicted_new_angular_area_deg2", "frontier_score")}),
+    }
+
+
+def terminal_reprobe(root: Path, obj: int) -> dict:
+    """Controller-01A: reconstruct the causal state of a completed run and re-probe one object.
+
+    Read-only.  It replays the saved patches into a fresh InstanceMeasurementMemory, rebuilds the
+    object's own local-policy context from its saved acquisitions with the accepted matcher, validates
+    the reconstruction against the saved watchdog-prefix probe, and only then asks the unchanged
+    accepted local probe again at the terminal state.  No render, fusion or policy change.
+    """
+    from fov3d.control import object_policy
+    from fov3d.experiments.classroom_oracle import epistemic, matcher
+
+    out: dict = {"run": str(root), "object": obj, "gates": [], "failure": None, "outcome": None}
+
+    def gate(name: str, ok: bool, detail: str = "") -> None:
+        out["gates"].append({"gate": name, "ok": bool(ok), "detail": detail})
+        if not ok:
+            raise AuditFailure(f"{name}: {detail}")
+
+    fw = ic.TruthFirewall(root, c01.is_evaluation_truth)
+    try:
+        with fw:
+            manifest = json.loads((root / "manifest.json").read_text())
+            acts = json.loads((root / "actions.json").read_text())["actions"]
+            odir = root / f"objects/instance_{obj:04d}"
+            result = json.loads((odir / "result.json").read_text())
+
+            # -- action order
+            steps = [int(a["global_step"]) for a in acts]
+            own = [a for a in acts if int(a["target_id"]) == obj]
+            fixations = int(manifest["final_service_states"][str(obj)]["fixations"])
+            gate("action order: contiguous ascending global steps; own looks at local steps 0..n-1 in global order; "
+                 "count = manifest fixations",
+                 steps == list(range(len(acts))) and [int(a["object_local_step"]) for a in own] == list(range(len(own)))
+                 and len(own) == fixations and len(own) > 0,
+                 f"steps ok={steps == list(range(len(acts)))}, own={len(own)}, fixations={fixations}")
+            watchdog_step = int(own[-1]["global_step"])
+            out["watchdog_step"] = watchdog_step
+
+            # -- global measurement memory, replayed in global action order
+            memory = InstanceMeasurementMemory()
+            mismatched: list[int] = []
+
+            def replay(a: dict) -> None:
+                i, k = int(a["target_id"]), int(a["object_local_step"])
+                patch = _audit_npz(root / f"objects/instance_{i:04d}/patches/fix_{k:02d}.npz")
+                added = memory.append_patch(patch, source_global_index=int(a["global_step"]),
+                                            source_active_target_id=int(a["target_id"]))
+                if {str(x): int(v) for x, v in sorted(added.items())} != a["measurement_memory_additions"]:
+                    mismatched.append(int(a["global_step"]))
+
+            for a in acts[: watchdog_step + 1]:
+                replay(a)
+            gate("memory replay through the watchdog step reproduces every logged per-action addition", not mismatched,
+                 f"mismatched steps {mismatched[:5]}")
+            snap_w = memory.snapshot(obj)
+            points_w = int(len(snap_w.xyz_h))
+
+            # -- the object's own local-policy context, from its own saved acquisitions only
+            ctx = c01.LocalPolicyContext(obj)
+            gaze_bad, patch_bad = [], []
+            for a in own:
+                k = int(a["object_local_step"])
+                adir = odir / "acquisitions" / f"fix_{k:02d}"
+                c = json.loads((adir / "calibration.json").read_text())
+                rec, _meta, st = matcher.compute(c, _audit_npz(adir / "oracle_observation.npz"))
+                gaze = (float(a["gaze_deg"][0]), float(a["gaze_deg"][1]))
+                if max(abs(float(c["gaze_yaw_pitch_deg"][j]) - gaze[j]) for j in (0, 1)) > 1e-9:
+                    gaze_bad.append(k)
+                saved = _audit_npz(odir / "patches" / f"fix_{k:02d}.npz")
+                if not (np.array_equal(np.asarray(rec["xyz_h"], np.float32), saved["xyz_h"], equal_nan=True)
+                        and np.array_equal(np.asarray(rec["valid"], bool), saved["valid"])
+                        and np.array_equal(np.asarray(rec["instance_id"], np.int32), saved["instance_id"])):
+                    patch_bad.append(k)
+                epistemic.add_observation(ctx.evidence, c, st["ids_left"], st["raw_support_L"],
+                                          st["ids_right"], st["raw_support_R"], rec["valid"], obj)
+                ctx.history.append(object_policy.history_entry(
+                    calibration=c, instance_L=st["ids_left"], raw_support_L=st["raw_support_L"],
+                    instance_R=st["ids_right"], raw_support_R=st["raw_support_R"], target_object_id=obj))
+                ctx.visited.append(gaze)
+                ctx.gaze, ctx.calibration, ctx.state = gaze, c, st
+            gate("own-look identity: each calibration gaze equals the logged gaze; each matcher-recreated patch equals "
+                 "the saved patch", not gaze_bad and not patch_bad, f"gaze {gaze_bad}, patch {patch_bad}")
+            logged_own = [(float(a["gaze_deg"][0]), float(a["gaze_deg"][1])) for a in own]
+            gate("own context holds exactly the object's own looks (visited = logged own gazes in order; one history "
+                 "entry per own look)", ctx.visited == logged_own and len(ctx.history) == len(own) == fixations,
+                 f"visited {len(ctx.visited)}, history {len(ctx.history)}, own {len(own)}")
+
+            # -- active map (saved geometry; no fusion)
+            final_xyz = _audit_npz(odir / "final_map.npz")["xyz_h"]
+            last_xyz = _audit_npz(odir / "maps" / f"fix_{len(own) - 1:02d}.npz")["xyz_h"]
+            gate("active map: final_map equals the map after the last own look and its logged size",
+                 np.array_equal(final_xyz, last_xyz) and len(final_xyz) == int(own[-1]["active_map_size_after"]),
+                 f"{len(final_xyz)} vs {len(last_xyz)} / {own[-1]['active_map_size_after']}")
+            map_xyz = np.asarray(final_xyz, np.float64)
+
+            # -- watchdog-prefix reproduction (the stop gate)
+            eff_w = effective_target_geometry(map_xyz, snap_w.xyz_h)
+            res_w, dec_w = c01.probe_local_policy(ctx, eff_w)
+            prefix = _probe_record(res_w, dec_w, len(eff_w), [len(own), points_w])
+            out["watchdog_prefix_probe"] = prefix
+            saved_w = [pr for pr in result["probes"] if int(pr["after_global_step"]) == watchdog_step]
+            gate("the saved Controller-01 probe record after the watchdog step exists", len(saved_w) == 1,
+                 f"{len(saved_w)} records")
+            sw = saved_w[0]
+            keys = ("fsg6f", "cyclopean", "effective_points")
+            same_record = (sw["revision"] == prefix["revision"] and sw["state"] == prefix["state"]
+                           and _same_summary({k: sw[k] for k in keys}, {k: prefix["summary"][k] for k in keys}))
+            expected = CONTROLLER01A_EXPECTED_PREFIX.get(obj)
+            same_contract = expected is None or (
+                prefix["revision"] == expected["revision"] and prefix["effective_points"] == expected["effective_points"]
+                and prefix["state"] == expected["state"] and prefix["source"] == expected["source"]
+                and prefix["summary"]["fsg6f"]["reason"] == expected["reason"]
+                and all(prefix["summary"]["fsg6f"][k] == expected[k] for k in (
+                    "frontier_open_count", "frontier_raw_count", "frontier_map_resolved_count",
+                    "frontier_boundary_resolved_count", "candidates", "consensus_rejected_candidates"))
+                and _same_summary(prefix["proposed_gaze_deg"], expected["next_gaze_deg"]))
+            gate("watchdog-prefix reproduction: the re-probe equals the saved Controller-01 probe record and the "
+                 "contract's expected values", same_record and same_contract,
+                 f"re-probe {prefix['state']} {prefix['source']} {prefix['summary'].get('fsg6f')} rev {prefix['revision']}")
+
+            # -- terminal state: the remaining saved observations; own context unchanged
+            for a in acts[watchdog_step + 1:]:
+                replay(a)
+            gate("memory replay of the remaining observations reproduces every logged per-action addition",
+                 not mismatched, f"mismatched steps {mismatched[:5]}")
+            snap_t = memory.snapshot(obj)
+            eff_t = effective_target_geometry(map_xyz, snap_t.xyz_h)
+            saved_eff = _audit_npz(odir / "final_effective_geometry.npz")
+            gate("terminal effective geometry (XYZ and per-point provenance) equals the saved final_effective_geometry",
+                 int(saved_eff["active_map_points"]) == len(final_xyz)
+                 and np.array_equal(eff_t.astype(np.float32), saved_eff["xyz_h"])
+                 and np.array_equal(snap_t.source_global_index, saved_eff["measured_source_global_index"])
+                 and np.array_equal(snap_t.source_active_target_id, saved_eff["measured_source_active_target_id"]),
+                 f"{len(eff_t)} vs {len(saved_eff['xyz_h'])}")
+            after = snap_t.source_global_index > watchdog_step
+            src = snap_t.source_active_target_id[after]
+            out["measurements"] = {
+                "measured_points_at_watchdog": points_w,
+                "measured_points_at_terminal": int(len(snap_t.xyz_h)),
+                "added_after_watchdog": int(after.sum()),
+                "added_by_source_target": {str(int(t)): int((src == t).sum()) for t in np.unique(src)},
+                "added_source_global_steps": sorted(int(g) for g in np.unique(snap_t.source_global_index[after])),
+                "added_by_source_step": {str(int(g)): int((snap_t.source_global_index == g).sum())
+                                         for g in np.unique(snap_t.source_global_index[after])},
+                "active_map_points": int(len(final_xyz)),
+                "effective_points_at_watchdog": int(len(eff_w)),
+                "effective_points_at_terminal": int(len(eff_t)),
+                "own_looks": len(own),
+            }
+            res_t, dec_t = c01.probe_local_policy(ctx, eff_t)
+            out["terminal_probe"] = _probe_record(res_t, dec_t, len(eff_t), [len(own), int(len(snap_t.xyz_h))])
+            out["outcome"] = "FINAL_REPROBE_ACTIONABLE" if ic.can_act(res_t) else "FINAL_REPROBE_QUIET"
+    except AuditFailure as exc:
+        out["failure"] = f"audit gate failed: {exc}"
+    except Exception as exc:  # noqa: BLE001  (a reconstruction that cannot even be read is a failure)
+        out["failure"] = f"{type(exc).__name__}: {exc}"
+    out["firewall_violations"] = list(fw.violations)
+    out["opened_run_files"] = sorted(fw.opened)
+    if fw.violations:
+        out["outcome"] = None
+        out["failure"] = out["failure"] or f"truth firewall violations: {fw.violations}"
+    return out
+
+
+def run_terminal_audit(root: Path, obj: int, out_path: Path | None) -> None:
+    res = terminal_reprobe(root, obj)
+    for g in res["gates"]:
+        check(f"01A {g['gate']}", g["ok"], g["detail"])
+    check("01A truth firewall: no violation; no opened file is evaluation truth",
+          not res["firewall_violations"] and not any(c01.is_evaluation_truth(str(root / p)) for p in res["opened_run_files"]),
+          str(res["firewall_violations"]))
+    check("01A audit reached a result (no reconstruction failure)", res["failure"] is None and res["outcome"] is not None,
+          str(res["failure"]))
+    if out_path is not None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(res, indent=1, sort_keys=True) + "\n")
+    m = res.get("measurements", {})
+    for label in ("watchdog_prefix_probe", "terminal_probe"):
+        if label in res:
+            pr = res[label]
+            print(f"{PREFIX} 01A {label}: {pr['state']} source={pr['source']} gaze={pr['proposed_gaze_deg']} "
+                  f"rev={pr['revision']} effective={pr['effective_points']} fsg6f={pr['summary']['fsg6f']} "
+                  f"cyclopean={pr['summary']['cyclopean']}")
+    if m:
+        print(f"{PREFIX} 01A measurements: {json.dumps(m, sort_keys=True)}")
+    print(f"{PREFIX} 01A opened run files: {len(res['opened_run_files'])}")
+    if res["failure"] is None and res["outcome"] is not None:
+        print(f"{PREFIX} 01A RESULT CONTROLLER01A_{res['outcome']}")
+    else:
+        print(f"{PREFIX} 01A AUDIT RECONSTRUCTION FAILURE: {res['failure']}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--run", type=Path, action="append", default=[], help="completed run directory to validate")
     ap.add_argument("--skip-unit", action="store_true", help="validate runs only")
+    ap.add_argument("--terminal-reprobe", type=Path, default=None,
+                    help="Controller-01A: read-only terminal re-probe audit of a completed run (implies --skip-unit)")
+    ap.add_argument("--object", type=int, default=210, help="object id for --terminal-reprobe")
+    ap.add_argument("--audit-out", type=Path, default=None, help="write the audit record as JSON here")
     args = ap.parse_args()
+    if args.terminal_reprobe is not None:
+        run_terminal_audit(args.terminal_reprobe.resolve(), args.object, args.audit_out)
+        args.skip_unit = True
     if not args.skip_unit:
         unit()
         architecture()
