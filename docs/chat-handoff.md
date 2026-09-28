@@ -2,9 +2,9 @@
 
 ## Accepted main
 
-    main @ 3b7091ed7a8f58cfc84c552431bfe60dc694aad3
+    main @ 296001e8683ba0b1ad62642811d3dea0e84b6566
 
-Accepted milestone: Conceptual Core 13.
+Accepted milestone: Conceptual Core 14. The conceptual-core migration **pauses** here.
 
 ## Working arrangement
 
@@ -17,13 +17,14 @@ Accepted milestone: Conceptual Core 13.
   `/home/lvelho/rd/f3d-vision` checkout.
 - GitHub is the durable source of truth.
 - Migrate behavior first, redesign structure second, and answer one causal question per
-  Core. Cores 12 and 13 were the first two intentional redesign Cores and Core 14 is the
-  third: the simplest falsifiable redesign, preserving every accepted historical observable
-  and separating one concept at a time.
+  Core. Cores 12, 13 and 14 were the three intentional redesign Cores: the simplest
+  falsifiable redesign, preserving every accepted historical observable and separating one
+  concept at a time. The migration pauses after Core 14; no Core 15 is started
+  automatically.
 
 ## Accepted scientific / architectural state
 
-The sealed scientific behavior is unchanged through Conceptual Cores 1–13.
+The sealed scientific behavior is unchanged through Conceptual Cores 1–14.
 
 Conceptual ownership established so far:
 
@@ -71,17 +72,27 @@ Conceptual ownership established so far:
   - since Core 13 it no longer depends on the experiment's target schedule
     (`all_target_ids`) nor emits `reconstruction_status`; `surface_source` stays intrinsic
     causal evidence provenance
+  - since Core 14 it no longer takes the fixation/action history (`gazes_deg`) nor emits
+    `min_distance_to_historical_gaze_deg`; `_angular_distance_deg` stays as a generic helper
+  - it is therefore independent of the candidate interpretation, the experiment's future
+    target schedule and the fixation/action history; it depends only on accumulated
+    evidence and the chart (it is still relative to one designated target)
   - imported explicitly and OpenCV-dependent; `fov3d/epistemic/__init__.py` is unchanged,
     so a bare `import fov3d.epistemic` stays OpenCV-free
 - `fov3d/experiments/classroom_partition/candidate_policy.py` (Core 12, experiment-side)
   - the historical `OTHER_SURFACE`/`UNKNOWN` → candidate interpretation:
     `CANDIDATE_KINDS`, `annotate_candidate_partition`, `build_candidate_partition`, which
     re-creates the accepted candidate view exactly
-  - since Core 13 it composes intrinsic → run context → candidate annotation
+  - it composes on `run_context`; the full historical stack is
+    intrinsic → gaze context → run context → candidate annotation
 - `fov3d/experiments/classroom_partition/run_context.py` (Core 13, experiment-side)
-  - the historical run context: `annotate_reconstruction_status`,
+  - owns `reconstruction_status`: `annotate_reconstruction_status`,
     `build_run_context_partition` (`mapped_now`/`targeted_later`/`never_targeted` from
-    `mapped_cells` and `all_target_ids`)
+    `mapped_cells` and `all_target_ids`); since Core 14 it composes on `gaze_context`
+- `fov3d/experiments/classroom_partition/gaze_context.py` (Core 14, experiment-side)
+  - owns the historical target-local gaze descriptor: `annotate_gaze_context`,
+    `build_gaze_context_partition` (`min_distance_to_historical_gaze_deg` from the region
+    centroid and the producers' target-local gaze list)
 
 The Phase-4 adapter `fov3d/experiments/classroom_partition/relations.py` keeps identity
 imports of the Core-9 and Core-10 names; `annotate_corridor` resolves the scene functions.
@@ -96,69 +107,61 @@ is an alias of `build_candidate_partition`. Phases 6, 7, 8 and 8b call
 `state_validation` and `relations` are imported explicitly. `corridors` needs `cv2`; the
 others are NumPy-only.
 
-Conceptual Core 13 was accepted at `3b7091ed7a8f58cfc84c552431bfe60dc694aad3` with:
+Conceptual Core 14 was accepted at `296001e8683ba0b1ad62642811d3dea0e84b6566` with:
 
-    CONCEPTUAL_CORE13_RECONSTRUCTION_STATUS_SEPARATION_PRESERVES_BEHAVIOR
+    CONCEPTUAL_CORE14_GAZE_CONTEXT_SEPARATION_PRESERVES_BEHAVIOR
 
-The evidence, from `docs/migration-conceptual-core-13-report.md`, includes:
-- the intrinsic `epistemic.partition` no longer depends on `all_target_ids`;
-  `reconstruction_status` belongs to the experiment-side `run_context`, and `surface_source`
-  remains intrinsic causal evidence provenance;
-- `candidate_policy` composes intrinsic → run context → candidate, re-creating Core 12
-  exactly;
-- the Core-13 checker passes 65/65; it caught 50/50 dynamic and 20/20 static mutants;
+The evidence, from `docs/migration-conceptual-core-14-report.md`, includes:
+- the intrinsic output is accepted Core 13 minus only the gaze-distance field; `gaze_context`,
+  `run_context` and `candidate_policy` re-create the accepted outputs exactly, and the
+  historical producers (with their target-local gaze selection) are unchanged;
+- the Core-14 checker passes 64/64; it caught 48/48 dynamic and 22/22 static mutants;
 - the random-state differential agreed on 10,000/10,000 states;
 - all 8 Phase-6/7/8/8b products are byte-identical;
 - the sealed baseline is 31/31 and the golden comparison reports `MISMATCHES 0`;
 - the 13 accepted reference trees are unchanged.
 
-The intrinsic partition still takes the action history `gazes_deg` (the current target's
-historical gaze prefix) and emits `min_distance_to_historical_gaze_deg`.
+The Core-14 report ends with a read-only **Controller-readiness boundary** (intrinsic
+information available, separated historical layers, what is not implemented, and the
+observation that the intrinsic partition is still target-relative).
 
-Earlier accepted Cores (1–12) are summarised in their reports. The cleanup of
+Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 `own_support_labels` versus `_own_labels`, and of `component_lineage` versus
 `fov3d.scene.lineage._lineage`, remains **deferred**.
 
 ## Active next step
 
-Conceptual Core 14, the third redesign step (`docs/migration-conceptual-core-14.md`, branch
-`migration/conceptual-core-14`).
+**The conceptual-core migration pauses after Core 14.** Do not start Core 15 automatically
+and do not create a new migration branch.
 
-Causal question: can action-history-derived gaze context (`gazes_deg` and
-`min_distance_to_historical_gaze_deg`) be removed from the intrinsic epistemic partition and
-reconstructed as a separate historical gaze-context annotation, while reproducing every
-accepted Core-13 historical product exactly?
+The next activity is a **fresh architectural design of the Integrated Foveal Controller**,
+beginning from the controller's **STATE** and **ACTION**, over the now-clean representation
+boundary:
 
-    accepted Core-13 intrinsic partition = Core-14 intrinsic partition
-                                         + historical gaze-context annotation
+    intrinsic epistemic representation          fov3d.epistemic.partition
+        → optional gaze / action context        classroom_partition.gaze_context
+        → optional experiment run context       classroom_partition.run_context
+        → candidate interpretation              classroom_partition.candidate_policy
+        → future attention / controller policy  (to be designed)
 
-- Evidence history stays intrinsic: `seen_any_fraction`, `head_depth_fraction`,
-  `mapped_cells`, `incidental_cells`, `surface_source`.
-- Action history (the region's distance to previous fixations) moves to the new
-  experiment-side `fov3d/experiments/classroom_partition/gaze_context.py`; the accepted
-  target-local gaze lists chosen by the historical producers are preserved exactly.
-- The stack becomes intrinsic → gaze context → run context → candidate annotation.
-
-**After Core 14, pending acceptance,** the intended next architectural activity is a fresh
-design of the integrated foveal controller over the clean representation boundary, not an
-automatic continuation of historical cleanup.
+No controller logic exists yet; the design starts from the Core-14 controller-readiness
+boundary rather than from further historical cleanup.
 
 ## Decision-critical open items
 
-1. The central Core-14 invariant is measured against accepted Core 13 (`3b7091e`).
-2. The accepted Core-13 checker stays unmodified and is verified at `3b7091e`; the Core-14
-   checker supersedes it at the current head. Core-1–10 conceptual checkers and
-   Partition-Graph checkers 1–8b stay current-head gates, unmodified.
-3. Do not implement the controller in Core 14: no scoring, ranking, fixation choice,
-   inhibition of return or recency model. Do not modify `fov3d/epistemic/__init__.py` or the
-   Phase-8b candidate/refinement semantics (refined rows do not propagate the gaze field).
-4. Deferred:
-   - global versus target-local observer gaze history, inhibition of return, recency/decay;
-   - real-controller candidate eligibility, ranking/scoring, fixation selection,
-     vergence/focus action, integrated continuation/stopping;
+1. The controller design is a design activity, led by Luiz with Chat; it is not a
+   continuation of the migration and does not change accepted behavior by itself.
+2. Not yet designed or implemented: controller candidate eligibility, scoring/ranking,
+   fixation selection, vergence/focus action, inhibition of return, gaze recency/decay,
+   global versus target-local gaze memory, continuation/stopping integration, the
+   budget/quality trade-off, a moving head, semantic decisions.
+3. Representation observation for the design: the intrinsic partition is still relative to one
+   designated target (`target_id`, `target_support`, the target kinds and target distances).
+4. Deferred historical cleanups (not to be started automatically):
    - the target-relative `HeadEvidence` placement;
    - the Phase-5 `reconstruction_status` duplication;
    - the `_own_labels`/`own_support_labels` and `component_lineage`/`_lineage` cleanup;
    - the `attach_state_region_codes` rename;
    - the consumerless aliases;
+   - the three private `_insert_after` copies;
    - the Phase-2 and Phase-3 boundary lineages.
