@@ -11,7 +11,9 @@ representation, not part of it, and the historical rule lives with the Classroom
 experiment adapters. Conceptual Core 13 removed the reconstruction status and with it the
 experiment's target schedule (``all_target_ids``): whether a surface will be targeted later
 is historical run context, not evidence. The evidence provenance ``surface_source`` stays
-here. The historical-gaze descriptor is still carried here; its separation is deferred.
+here. Conceptual Core 14 removed the observer's action history (``gazes_deg`` and the
+region's distance to previous fixations): the partition depends only on accumulated evidence,
+and ``_angular_distance_deg`` stays here as a generic geometric helper.
 """
 from __future__ import annotations
 
@@ -108,7 +110,6 @@ def build_epistemic_partition(
     target_name: str,
     domain: dict[str, Any],
     grid_deg: float,
-    gazes_deg: list[tuple[float, float]],
 ) -> tuple[dict[str, np.ndarray], list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
     """Build a truth-free causal evidence partition for one target-final state.
 
@@ -169,10 +170,6 @@ def build_epistemic_partition(
             cyaw, cpitch = _centroid_angles(m, domain, grid_deg)
             dvals = distance_deg[m]
             finite_d = dvals[np.isfinite(dvals)]
-            gaze_dist = [
-                _angular_distance_deg((cyaw, cpitch), (float(y), float(p)))
-                for y, p in gazes_deg
-            ] if gazes_deg and np.isfinite(cyaw) and np.isfinite(cpitch) else []
             mapped_n = int((mapped_other & m).sum())
             incidental_n = int((incidental_other & m).sum())
             row: dict[str, Any] = {
@@ -186,7 +183,6 @@ def build_epistemic_partition(
                 "centroid_pitch_deg": cpitch,
                 "min_distance_to_target_deg": None if not len(finite_d) else float(np.min(finite_d)),
                 "median_distance_to_target_deg": None if not len(finite_d) else float(np.median(finite_d)),
-                "min_distance_to_historical_gaze_deg": None if not gaze_dist else float(min(gaze_dist)),
                 "seen_any_fraction": float(seen_any[m].mean()),
                 "head_depth_fraction": float(depth_seen[m].mean()),
                 "mapped_cells": mapped_n,

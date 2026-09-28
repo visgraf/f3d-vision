@@ -9,6 +9,9 @@ run does with it: ``reconstruction_status`` of an ``OTHER_SURFACE`` region is
 
 The rule is experiment-side on purpose: an autonomous representation cannot know which
 objects a prerecorded experiment will target later.
+
+Since Conceptual Core 14 the run context is composed on the historical gaze-context
+partition (``gaze_context``), which adds the historical-gaze descriptor to the intrinsic one.
 """
 from __future__ import annotations
 
@@ -16,7 +19,7 @@ from typing import Any
 
 import numpy as np
 
-from fov3d.epistemic.partition import build_epistemic_partition
+from fov3d.experiments.classroom_partition.gaze_context import build_gaze_context_partition
 
 
 def _insert_after(mapping: dict[str, Any], anchor: str, key: str, value: Any) -> dict[str, Any]:
@@ -68,8 +71,8 @@ def build_run_context_partition(
     grid_deg: float,
     gazes_deg: list[tuple[float, float]],
 ) -> tuple[dict[str, np.ndarray], list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
-    """Build the intrinsic epistemic partition and apply the historical run context."""
-    arrays, region_rows, edge_rows, diag = build_epistemic_partition(
+    """Build the historical gaze-context partition and apply the historical run context."""
+    arrays, region_rows, edge_rows, diag = build_gaze_context_partition(
         state,
         target_id=target_id,
         target_name=target_name,
