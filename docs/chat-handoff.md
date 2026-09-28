@@ -2,35 +2,88 @@
 
 ## Accepted main
 
-    main @ 296001e8683ba0b1ad62642811d3dea0e84b6566
+    main @ b12bdef0593a043c5e7593b38d78735875c007fd
 
-Accepted milestone: Conceptual Core 14. The conceptual-core migration **pauses** here.
+Accepted milestones:
+- **Repository Stage Transition 1**, accepted at `b12bdef`. It is structural only and
+  changes no scientific behavior:
 
-Current work (**proposed, not accepted**): the structural *Repository Transition 1* on
-`stage/repository-transition-1` reorganizes `docs/` and `tools/` by stage/topic and updates
-`README.md` and `CLAUDE.md` for the controller stage, with no scientific change. It awaits
-review by Luiz and Chat; its record is
-`docs/repository/repository-transition-1-report.md`.
+      REPOSITORY_STAGE_TRANSITION_1_PRESERVES_SCIENTIFIC_BEHAVIOR
+
+- **Conceptual Core 14** remains the accepted **scientific** milestone:
+  `296001e8683ba0b1ad62642811d3dea0e84b6566`. The conceptual-core migration **pauses** here.
 
 ## Working arrangement
 
 - Luiz is the scientific and acceptance authority.
-- Chat is the architecture and review surface. It reads, designs and reviews only, and it
-  does not mutate GitHub or the workstation checkout.
-- Claude Code is the execution and mutation surface. It performs every repository
-  mutation and every measured execution in dedicated isolated git worktrees, under the
-  branch/HEAD/clean-tree guard, never by switching branches in the shared
-  `/home/lvelho/rd/f3d-vision` checkout.
+- Chat is the architecture, specification and review surface. **Its GitHub connection is
+  read-only**: it inspects, searches and reviews, and it does not push commits, branches,
+  updates or pull requests. For each substantial handoff it prepares a self-contained
+  Claude Code prompt, which Luiz gives to Claude Code.
+- Claude Code is the **repository-mutation and execution surface**. It commits the durable
+  contract before substantial execution. It performs every repository mutation and every
+  measured execution in dedicated isolated git worktrees, under the branch/HEAD/clean-tree
+  guard, never by switching branches in the shared `/home/lvelho/rd/f3d-vision` checkout.
 - GitHub is the durable source of truth.
+- Result rules (`CLAUDE.md`):
+  - an executed scientific/behavioral step must produce an **inspectable visual** and a
+    **measurable result**, together with its **checks** and a **short summary**;
+  - pure architectural/design steps may instead produce a **reviewed
+    specification/contract** and a **short summary**;
+  - structural/refactoring steps need machine-checkable preservation evidence.
+- New contracts and reports follow `docs/<stage>/<phase>-contract.md` and
+  `docs/<stage>/<phase>-report.md`.
 - Migrate behavior first, redesign structure second, and answer one causal question per
   Core. Cores 12, 13 and 14 were the three intentional redesign Cores: the simplest
   falsifiable redesign, preserving every accepted historical observable and separating one
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
+## Repository Stage Transition 1 (accepted at `b12bdef`)
+
+`origin/main` was fast-forwarded `330577f → b12bdef` with a plain, non-forced push.
+
+Record:
+- contract: `docs/repository/repository-transition-1-contract.md`, including its
+  inventory-resolved clarification;
+- report: `docs/repository/repository-transition-1-report.md`;
+- move map: `docs/repository/repository-transition-1-moves.json`.
+
+What changed:
+- `docs/` and `tools/` are organized by stage/topic:
+  - `docs/{architecture,baseline,classroom-oracle,consolidation,conceptual-core,methodology,partition-graph,repository}/`,
+    with `docs/chat-handoff.md` as the fixed top-level entry point;
+  - `tools/{baseline,classroom_oracle,conceptual_core,consolidation,partition_graph,repository}/`.
+- The `tools/` root is exactly the 16-module sealed compatibility/runtime closure, the
+  `mappings[].legacy` set of `docs/consolidation/consolidation-3-layout.json`.
+  `tools/dev/` is gone.
+- `README.md` now summarizes the migration and the Integrated Foveal Controller stage.
+- `CLAUDE.md` now defines Chat's GitHub role as read-only and Claude Code as the
+  repository-mutation/execution surface. It states the result rules above and the current
+  project stage.
+- `scripts/verify_baseline.sh`: the step `baseline-files-accounted`
+  (`tools/baseline/check_baseline_files.py`) is relocation-aware. It accounts for the 31
+  baseline-tag files as 22 unchanged, 4 pure relocations, 4 declared-repaired relocations
+  and 1 declared replacement (README). Historical baseline byte/path identity is not the
+  current layout.
+- `tools/repository/check_repository_layout.py` checks the layout.
+- Historical reports keep their verbatim pre-transition commands and paths; the move map
+  translates them.
+
+Evidence (measured; report):
+- `fov3d/`, the 16 sealed root modules, `tests/` and `scenes/` were unchanged (0 bytes vs
+  `330577f`);
+- the applicable Conceptual-Core checks (Cores 1–10 and 14) and Partition-Graph checks
+  (1–8b) passed;
+- facade 16/16; Classroom-Oracle 12/12; `verify_baseline` 9/9;
+- golden `MISMATCHES 0`;
+- the 13 accepted reference trees were unchanged;
+- the layout checker passed 487/487 and caught 22/22 mutations.
+
 ## Accepted scientific / architectural state
 
-The sealed scientific behavior is unchanged through Conceptual Cores 1–14.
+The sealed scientific behavior is unchanged through Conceptual Cores 1–14 and Repository
+Stage Transition 1.
 
 Conceptual ownership established so far:
 
@@ -137,8 +190,8 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 
 ## Active next step
 
-**The conceptual-core migration pauses after Core 14.** Do not start Core 15 automatically
-and do not create a new migration branch.
+**The conceptual-core migration remains paused after Core 14.** Do not create Core 15
+automatically and do not create a new migration branch.
 
 The next activity is a **fresh architectural design of the Integrated Foveal Controller**,
 beginning from the controller's **STATE** and **ACTION**, over the now-clean representation
@@ -150,8 +203,11 @@ boundary:
         → candidate interpretation              classroom_partition.candidate_policy
         → future attention / controller policy  (to be designed)
 
-No controller logic exists yet; the design starts from the Core-14 controller-readiness
-boundary rather than from further historical cleanup.
+No controller logic exists yet, and no controller branch has been created. The design starts
+from the Core-14 controller-readiness boundary rather than from further historical cleanup.
+Acceptance administration does not implement controller logic. The first controller contract
+will follow `docs/<stage>/<phase>-contract.md`, for example
+`docs/controller/controller-01-state-action-contract.md`.
 
 ## Decision-critical open items
 
@@ -171,3 +227,11 @@ boundary rather than from further historical cleanup.
    - the consumerless aliases;
    - the three private `_insert_after` copies;
    - the Phase-2 and Phase-3 boundary lineages.
+5. Open items from Repository Stage Transition 1 (see its report):
+   - `fov3d/__init__.py`'s docstring still names pre-transition paths. Fixing it is a
+     text-only `fov3d/` change and needs an explicit decision.
+   - `docs/conceptual-core/conceptual-core-map.md` keeps the stale headings "Proposed
+     Conceptual Core 3 extraction" and "Proposed later extraction order".
+   - Reference-tree location: the shared checkout's `previews/` is empty. The accepted trees
+     are at `/home/lvelho/temp/previews-2026.09.28`, and gates that name `previews/…` need
+     that location linked.
