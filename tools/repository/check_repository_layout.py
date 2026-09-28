@@ -44,6 +44,7 @@ ADDED_REQUIRED = {
     "tools/repository/check_repository_layout.py",
 }
 ADDED_ALLOWED = ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"}
+HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
 ACTIVE_DOCS = {"README.md", "CLAUDE.md", "AGENTS.md", "docs/chat-handoff.md"} | ACTIVE_MOVED
@@ -272,7 +273,10 @@ def main() -> int:
     current_code = [f for f in files if (f.startswith("tools/") or f.startswith("scripts/"))
                     and f.endswith((".py", ".sh")) and f != "tools/repository/check_repository_layout.py"]
     for f in current_code + sorted(ACTIVE_DOCS & fileset):
-        stale = stale_references(disk(f).read_text(encoding="utf-8"), olds)
+        text = disk(f).read_text(encoding="utf-8")
+        if f == "docs/chat-handoff.md" and text.count(HANDOFF_REMOVAL_SENTENCE) == 1:
+            text = text.replace(HANDOFF_REMOVAL_SENTENCE, "")  # the accepted record of the removal itself
+        stale = stale_references(text, olds)
         check(f"no obsolete moved path in {f}", not stale, str(sorted(set(stale))[:4]))
     for f in [f for f in files if f.startswith("scripts/") and f.endswith(".sh")]:
         missing = sorted({p for p in re.findall(r"tools/[A-Za-z0-9_/]+\.py", disk(f).read_text(encoding="utf-8"))
@@ -321,11 +325,13 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff keeps accepted main at Core 14",
-          "main @ 296001e8683ba0b1ad62642811d3dea0e84b6566" in handoff
-          and "Accepted milestone: Conceptual Core 14." in handoff)
-    check("chat handoff does not claim the transition accepted",
-          "Repository Transition 1" in handoff and "proposed, not accepted" in handoff)
+    check("chat handoff records accepted main at Repository Stage Transition 1, Core 14 the scientific milestone",
+          "main @ b12bdef0593a043c5e7593b38d78735875c007fd" in handoff
+          and "REPOSITORY_STAGE_TRANSITION_1_PRESERVES_SCIENTIFIC_BEHAVIOR" in handoff
+          and "`296001e8683ba0b1ad62642811d3dea0e84b6566`" in handoff)
+    check("chat handoff records the transition as accepted, not proposed",
+          "## Repository Stage Transition 1 (accepted at `b12bdef`)" in handoff
+          and "proposed, not accepted" not in handoff)
 
     print(f"{PREFIX} moves={len(moves)} pure={kinds['pure']} repaired={kinds['repaired']} active={kinds['active']} "
           f"root_tools={len(root_tracked)} markdown_links={all_links} active_links={active_links} "
