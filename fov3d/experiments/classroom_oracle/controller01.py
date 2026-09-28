@@ -232,6 +232,13 @@ class ClassroomController01:
         own = len(self.ctx[i].visited) if i in self.ctx else 0
         return own, int(self.measured_points.get(i, 0))
 
+    def remember_measurements(self, patch: dict[str, np.ndarray], step: int, target: int) -> tuple[dict[int, int], dict[str, int]]:
+        """Append one saved patch to the global measurement memory and head evidence."""
+        additions = self.memory.append_patch(patch, source_global_index=step, source_active_target_id=target)
+        for k, n in additions.items():
+            self.measured_points[int(k)] = self.measured_points.get(int(k), 0) + int(n)
+        return additions, add_head_patch(self.head, patch, target, self.domain, GRID_DEG)
+
     # -- loop callbacks
     def probe(self, i: int) -> ic.ProbeResult:
         t0 = time.perf_counter()
@@ -287,10 +294,7 @@ class ClassroomController01:
         _save_rgb(odir / "benchmark" / f"fix_{local:02d}_L.png", rec["rgb_left"])
         _save_rgb(odir / "benchmark" / f"fix_{local:02d}_R.png", rec["rgb_right"])
 
-        additions = self.memory.append_patch(patch, source_global_index=step, source_active_target_id=i)
-        for k, n in additions.items():
-            self.measured_points[int(k)] = self.measured_points.get(int(k), 0) + int(n)
-        head_stats = add_head_patch(self.head, patch, i, self.domain, GRID_DEG)
+        additions, head_stats = self.remember_measurements(patch, step, i)
         epistemic.add_observation(self.seen, c, st["ids_left"], st["raw_support_L"],
                                   st["ids_right"], st["raw_support_R"], rec["valid"], i)
 

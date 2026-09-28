@@ -478,7 +478,8 @@ class ToyWorld:
     def revision(self, i):
         return len(self.visited[i]), self.counts.get(i, 0)
 
-    def run(self, *, revision=True, rev_fn=None, watchdog=24, cap=None):
+    def run(self, *, revision=True, rev_fn=None, watchdog=24, cap=500):
+        # The cap only turns a non-terminating mutant into a named failure (CapReached) instead of a hang.
         return ic.run_control_loop(
             self.seeds, observe=self.observe, probe=self.probe,
             revision=(rev_fn or self.revision) if revision else None,
@@ -588,6 +589,26 @@ def t13_effective_geometry(geometry_fn):
     prov = run.memory_provenance(7)
     if prov["cross_target_points"] != 50 or prov["by_source_target"] != {"8": 50}:
         errs.append(f"cross-target provenance {prov}")
+    return errs
+
+
+def t12c_revision_tracks_memory(revision_fn):
+    """The real probe-cache key changes exactly when a probe input changes."""
+    errs = []
+    run = _dummy_run()
+    rng = np.random.default_rng(12)
+    r7, r8, r9 = (revision_fn(run, i) for i in (7, 8, 9))
+    run.remember_measurements(_patch({7: rng.normal([0.4, 0.1, -2.0], 0.05, (20, 3))}), 0, 8)
+    if revision_fn(run, 7) == r7:
+        errs.append("revision of 7 unchanged after a look measured instance 7")
+    if revision_fn(run, 9) != r9 or revision_fn(run, 8) != r8:
+        errs.append("revision of an unmeasured, unobserved object changed")
+    run.ctx[8].visited.append((1.0, 0.0))
+    if revision_fn(run, 8) == r8:
+        errs.append("revision of 8 unchanged after its own look")
+    for i in (7, 8, 9):
+        if run.revision(i)[1] != len(run.memory.snapshot(i).xyz_h):
+            errs.append(f"measured point count of {i} disagrees with the memory snapshot")
     return errs
 
 
@@ -916,6 +937,8 @@ def unit() -> None:
               (reactivation_world, {"rev_fn": lambda i: 0})})
     verified("12b exact probe cache equals the cache-free loop", t12b_cache_exact,
              (lambda w, i: w.revision(i),), {"own-look-only revision key": (lambda w, i: len(w.visited[i]),)})
+    verified("12c the real probe-cache key tracks own looks and measured points", t12c_revision_tracks_memory,
+             (lambda run, i: run.revision(i),), {"own-look-only key": (lambda run, i: len(run.ctx[i].visited),)})
     verified("13 effective target geometry includes cross-target XYZ; SurfaceMap untouched", t13_effective_geometry,
              (lambda run, i: run.geometry(i),),
              {"map-only geometry": (m_geometry_map_only,), "geometry fusing into the map": (m_geometry_fuses,)})
