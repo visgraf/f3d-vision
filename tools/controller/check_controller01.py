@@ -938,7 +938,8 @@ def unit() -> None:
     verified("12b exact probe cache equals the cache-free loop", t12b_cache_exact,
              (lambda w, i: w.revision(i),), {"own-look-only revision key": (lambda w, i: len(w.visited[i]),)})
     verified("12c the real probe-cache key tracks own looks and measured points", t12c_revision_tracks_memory,
-             (lambda run, i: run.revision(i),), {"own-look-only key": (lambda run, i: len(run.ctx[i].visited),)})
+             (lambda run, i: run.revision(i),),
+             {"own-look-only key": (lambda run, i: len(run.ctx[i].visited) if i in run.ctx else 0,)})
     verified("13 effective target geometry includes cross-target XYZ; SurfaceMap untouched", t13_effective_geometry,
              (lambda run, i: run.geometry(i),),
              {"map-only geometry": (m_geometry_map_only,), "geometry fusing into the map": (m_geometry_fuses,)})
