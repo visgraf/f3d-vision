@@ -22,7 +22,7 @@ new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the 
 as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescence claim).
 Controller-01A declares its audit contract (required) and report (allowed); the handoff records
 Controller-01A accepted. Preview/visual lifecycle Policy 1 declares
-docs/methodology/preview-visual-policy.md (required).
+docs/methodology/preview-visual-policy.md (required); the handoff records Policy 1 accepted.
 """
 from __future__ import annotations
 
@@ -364,8 +364,10 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Controller-01A, with Controller-01, RT1 and Core 14 recorded",
-          "main @ 657388c558433df302bcf324db5c798afc08f659" in handoff
+    check("chat handoff records accepted main at preview/visual Policy 1, with Controller-01A, Controller-01, RT1 "
+          "and Core 14 recorded",
+          "main @ 262e4904df586f416131a26eb3bf9dfc22f049ba" in handoff
+          and "PREVIEW_VISUAL_LIFECYCLE_POLICY_1_ACCEPTED" in handoff
           and "CONTROLLER01A_TERMINAL_AUDIT_ACCEPTED" in handoff
           and "INTEGRATED_FOVEAL_CONTROLLER01_ACCEPTED" in handoff
           and "REPOSITORY_STAGE_TRANSITION_1_PRESERVES_SCIENTIFIC_BEHAVIOR" in handoff
