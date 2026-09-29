@@ -25,7 +25,8 @@ Controller-01A accepted. Preview/visual lifecycle Policy 1 declares
 docs/methodology/preview-visual-policy.md (required); the handoff records Policy 1 accepted. The
 Controller-01 visual retrofit declares its contract (required), report and generator (allowed); the
 handoff records the visual package accepted. Controller-01B declares its contract (required), report
-and tool (allowed); the handoff records Controller-01B accepted.
+and tool (allowed); the handoff records Controller-01B accepted. Controller-01C declares its audit
+contract (required), report and tool (allowed).
 """
 from __future__ import annotations
 
@@ -71,8 +72,12 @@ C01_VISUALS_ALLOWED = C01_VISUALS_REQUIRED | {"docs/controller/controller-01-vis
 CONTROLLER01B_REQUIRED = {"docs/controller/controller-01b-single-continuation-contract.md"}
 CONTROLLER01B_ALLOWED = CONTROLLER01B_REQUIRED | {"docs/controller/controller-01b-single-continuation-report.md",
                                                   "tools/controller/controller01b.py"}
+CONTROLLER01C_REQUIRED = {"docs/controller/controller-01c-frontier-action-correspondence-contract.md"}
+CONTROLLER01C_ALLOWED = CONTROLLER01C_REQUIRED | {"docs/controller/controller-01c-frontier-action-correspondence-report.md",
+                                                  "tools/controller/controller01c.py"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
-                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED)
+                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
+                 | CONTROLLER01C_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -297,6 +302,8 @@ def main() -> int:
     check("the Controller-01 visuals contract is tracked", not missing_v1, str(missing_v1))
     missing_b = sorted(CONTROLLER01B_REQUIRED - set(index))
     check("the Controller-01B contract is tracked", not missing_b, str(missing_b))
+    missing_c = sorted(CONTROLLER01C_REQUIRED - set(index))
+    check("the Controller-01C audit contract is tracked", not missing_c, str(missing_c))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
