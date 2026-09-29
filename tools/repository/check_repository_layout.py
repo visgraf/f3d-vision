@@ -22,8 +22,10 @@ new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the 
 as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescence claim).
 Controller-01A declares its audit contract (required) and report (allowed); the handoff records
 Controller-01A accepted. Preview/visual lifecycle Policy 1 declares
-docs/methodology/preview-visual-policy.md (required); the handoff records Policy 1 accepted.
-Controller-01B declares its contract (required), report and tool (allowed).
+docs/methodology/preview-visual-policy.md (required); the handoff records Policy 1 accepted. The
+Controller-01 visual retrofit declares its contract (required), report and generator (allowed); the
+handoff records the visual package accepted. Controller-01B declares its contract (required), report
+and tool (allowed).
 """
 from __future__ import annotations
 
@@ -63,11 +65,14 @@ CONTROLLER01_ALLOWED = CONTROLLER01_REQUIRED | {"docs/controller/controller-01-s
 CONTROLLER01A_REQUIRED = {"docs/controller/controller-01a-terminal-audit-contract.md"}
 CONTROLLER01A_ALLOWED = CONTROLLER01A_REQUIRED | {"docs/controller/controller-01a-terminal-audit-report.md"}
 POLICY1_REQUIRED = {"docs/methodology/preview-visual-policy.md"}
+C01_VISUALS_REQUIRED = {"docs/controller/controller-01-visuals-contract.md"}
+C01_VISUALS_ALLOWED = C01_VISUALS_REQUIRED | {"docs/controller/controller-01-visuals-report.md",
+                                              "tools/controller/visualize_controller01.py"}
 CONTROLLER01B_REQUIRED = {"docs/controller/controller-01b-single-continuation-contract.md"}
 CONTROLLER01B_ALLOWED = CONTROLLER01B_REQUIRED | {"docs/controller/controller-01b-single-continuation-report.md",
                                                   "tools/controller/controller01b.py"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
-                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | CONTROLLER01B_ALLOWED)
+                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -288,6 +293,8 @@ def main() -> int:
     check("the declared Controller-01A audit contract is tracked", not missing_c01a, str(missing_c01a))
     missing_p1 = sorted(POLICY1_REQUIRED - set(index))
     check("the preview/visual lifecycle policy document is tracked", not missing_p1, str(missing_p1))
+    missing_v1 = sorted(C01_VISUALS_REQUIRED - set(index))
+    check("the Controller-01 visuals contract is tracked", not missing_v1, str(missing_v1))
     missing_b = sorted(CONTROLLER01B_REQUIRED - set(index))
     check("the Controller-01B contract is tracked", not missing_b, str(missing_b))
     for d in ("docs", "tools", "scripts"):
@@ -370,9 +377,10 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at preview/visual Policy 1, with Controller-01A, Controller-01, RT1 "
-          "and Core 14 recorded",
-          "main @ 262e4904df586f416131a26eb3bf9dfc22f049ba" in handoff
+    check("chat handoff records accepted main at the Controller-01 visual package, with Policy 1, Controller-01A, "
+          "Controller-01, RT1 and Core 14 recorded",
+          "main @ ef7bd459624d60101d946f71439ae7f14fc95705" in handoff
+          and "CONTROLLER01_VISUAL_PACKAGE_ACCEPTED" in handoff
           and "PREVIEW_VISUAL_LIFECYCLE_POLICY_1_ACCEPTED" in handoff
           and "CONTROLLER01A_TERMINAL_AUDIT_ACCEPTED" in handoff
           and "INTEGRATED_FOVEAL_CONTROLLER01_ACCEPTED" in handoff
