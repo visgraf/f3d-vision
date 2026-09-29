@@ -555,6 +555,7 @@ def cmd_visual(a) -> int:
                  fs_pre["counts"] == [pre["summary"]["fsg6f"][k] for k in COUNT_KEYS]
                  and int(fs_pre["support"].sum()) == pre["fsg6f_selected"]["frontier_support_count"])
             prev_n = run.measured_points.get(OBJ, 0)
+            pre_gaze, pre_cal, hist_pre = ctx.gaze, ctx.calibration, list(ctx.history)
             with replay_renderer(out):
                 outcome = run.observe(GLOBAL_INDEX, pre_res.action, LOCAL_STEP)
             post = probe_record(run, run.probe(OBJ))
@@ -566,6 +567,25 @@ def cmd_visual(a) -> int:
             fs_post = frontier_state(ctx, geo_post, nxt if post["source"] == "fsg6f" else None)
             gate("visual: recomputed post-look frontier equals the recorded post-look probe",
                  fs_post["counts"] == [post["summary"]["fsg6f"][k] for k in COUNT_KEYS])
+            # Derived attribution (accepted frontier functions; not a policy): which look-25 ingredient changed
+            # the FSG6f frontier state?  FSG6f extracts its frontier around the current gaze, which moved.
+            def fstate(geo, gz, cal, hist):
+                fr = frontier.extract_frontier(geo, gz[0], gz[1], cal)
+                st = frontier.classify_frontier_state(fr, geo, hist)
+                return [st["raw_count"], st["open_count"], st["map_resolved_count"], st["boundary_resolved_count"]]
+            post_gaze, post_cal, hist_post = ctx.gaze, ctx.calibration, list(ctx.history)
+            attribution = {
+                "window": "raw/OPEN/map_resolved/boundary_resolved",
+                "post_window_actual (look-25 geometry + evidence)": fstate(geo_post, post_gaze, post_cal, hist_post),
+                "post_window_without_look25_evidence": fstate(geo_post, post_gaze, post_cal, hist_pre),
+                "post_window_without_look25_geometry": fstate(geo_pre, post_gaze, post_cal, hist_post),
+                "post_window_gaze_move_only": fstate(geo_pre, post_gaze, post_cal, hist_pre),
+                "pre_window_before_look25 (recorded pre)": fstate(geo_pre, pre_gaze, pre_cal, hist_pre),
+                "pre_window_after_look25": fstate(geo_post, pre_gaze, pre_cal, hist_post),
+            }
+            gate("visual: attribution reproduces the recorded pre and post counts",
+                 attribution["post_window_actual (look-25 geometry + evidence)"] == fs_post["counts"]
+                 and attribution["pre_window_before_look25 (recorded pre)"] == fs_pre["counts"])
             L = cv2.imread(str(out / f"objects/instance_{OBJ:04d}/benchmark/fix_{LOCAL_STEP:02d}_L.png"))[..., ::-1]
             R = cv2.imread(str(out / f"objects/instance_{OBJ:04d}/benchmark/fix_{LOCAL_STEP:02d}_R.png"))[..., ::-1]
             patch = npz(out / f"objects/instance_{OBJ:04d}/patches/fix_{LOCAL_STEP:02d}.npz")
@@ -624,7 +644,12 @@ def cmd_visual(a) -> int:
                       legend([(ORANGE, "OPEN"), (BLUE, "MAP_RESOLVED"), (AQUA, "BOUNDARY_RESOLVED"),
                               (INK, "ringed: OPEN support of the selected candidate")], ch.w)),
                "3. EPISTEMIC: FSG6f FRONTIER STATE, before -> after", "DERIVED",
-               [f"raw/OPEN/map/boundary {'/'.join(str(fpre[k]) for k in COUNT_KEYS)} -> {'/'.join(str(fpost[k]) for k in COUNT_KEYS)}",
+               [f"raw/OPEN/map/boundary {'/'.join(str(fpre[k]) for k in COUNT_KEYS)} -> {'/'.join(str(fpost[k]) for k in COUNT_KEYS)}"
+                " (FSG6f extracts its frontier around the current gaze)",
+                "derived attribution: previous window after look 25 = "
+                + "/".join(str(v) for v in attribution["pre_window_after_look25"])
+                + "; new window without look-25 geometry/evidence = "
+                + "/".join(str(v) for v in attribution["post_window_gaze_move_only"]),
                 "recomputed with the accepted frontier functions; counts equal the recorded probes"
                 + ("" if post["summary"]["cyclopean"] is None else
                    f"; Cyclopean eligible {post['summary']['cyclopean']['eligible_cells']}")])
@@ -662,6 +687,11 @@ def cmd_visual(a) -> int:
         y += h + 14
     vis.mkdir(parents=True, exist_ok=True)
     img.save(vis / "overview.png")
+    (vis / "frontier-attribution.json").write_text(json.dumps({
+        "truth": "DERIVED from controller-time data with the accepted frontier functions; not a policy", **attribution},
+        indent=1) + "\n")
+    for k, v in attribution.items():
+        print(f"{PREFIX} attribution {k}: {v}")
     print(f"{PREFIX} wrote {vis / 'overview.png'} sha256={sha(vis / 'overview.png')}")
     print(f"{PREFIX} visual checks {sum(r['ok'] for r in RESULTS)}/{len(RESULTS)}; firewall violations {len(fw.violations)}")
     return 0 if not fw.violations else 1
