@@ -2,12 +2,19 @@
 
 ## Accepted main
 
-    main @ ef7bd459624d60101d946f71439ae7f14fc95705
+    main @ b4d115d55fd922a4993dcd0c1d082c724fd84d56
 
 `origin/main` is fast-forwarded to the docs-only acceptance commit that adds this entry, whose parent
-is `ef7bd45` (the Controller-01 visual package report on branch `visuals/controller-01-retrofit`).
+is `b4d115d`: the forward merge of the accepted `main` (`a588fc8`, Controller-01 visual package accepted)
+into branch `controller/controller-01b-single-continuation` (report `f90d738`).
 
 Accepted milestones:
+- **Controller-01B**, one post-watchdog continuation look for object 210 (a bounded scientific step,
+  exactly one new OBSERVE):
+
+      CONTROLLER01B_SINGLE_CONTINUATION_ACCEPTED
+
+  The accepted measured result is `CONTROLLER01B_ONE_LOOK_REPROBE_ACTIONABLE`.
 - **Controller-01 visual package**, the first Level-B application of Policy 1 (visualization of
   accepted measurements, not a new experiment):
 
@@ -179,6 +186,42 @@ Accepted interpretation:
 - the unresolved behavior is genuinely inside the accepted local continuation/stopping behavior;
 - this does **not** yet prescribe a new stopping policy.
 
+## Controller-01B single post-watchdog continuation (accepted at `f90d738`)
+
+Controller-01B accepted.
+
+Record (branch `controller/controller-01b-single-continuation`, base `a60d448`; merged forward with the
+accepted `main` at `b4d115d`):
+- contract: `docs/controller/controller-01b-single-continuation-contract.md` (`bccd0cb`);
+- implementation: `tools/controller/controller01b.py` (`8e8af5a`; the derived attribution `ebbd93f`);
+- report: `docs/controller/controller-01b-single-continuation-report.md` (`f90d738`);
+- run: `/home/lvelho/rd/f3d-vision/previews/controller-01b-single-continuation`;
+- visual: `/home/lvelho/rd/f3d-vision/visuals/controller-01b/overview.png` (Level A).
+
+Accepted measured result:
+
+    CONTROLLER01B_ONE_LOOK_REPROBE_ACTIONABLE
+
+Key measurements (one OBSERVE only: target 210 `wall.008`, gaze [7.6, 18.2]):
+
+| quantity | value |
+|---|---|
+| target-valid points | 26,950 |
+| new surfels | 0 |
+| new head-depth cells | 0 |
+| new observation-footprint cells | 0 |
+| active map | 163,944 -> 163,944 |
+| effective geometry | 1,938,913 -> 1,965,863 |
+| pre | FSG6f `continue`; OPEN 52; candidates 1; proposal [7.6, 18.2] |
+| post | FSG6f `no_frontier`; OPEN 0; candidates 0; Cyclopean eligible 151; ACTIONABLE; proposal [-17.6, 18.9], **not executed** |
+
+Accepted derived attribution:
+- the previous FSG6f window still contains the original 52 OPEN frontier points after look 25;
+- the FSG6f transition to `no_frontier` came from the frontier window moving with the executed gaze,
+  not from new information resolving that previous frontier.
+
+No new stopping policy is stated.
+
 ## Controller-01 visual package (accepted at `ef7bd45`)
 
 Luiz and Chat inspected the generated images and accept the package as the first Level-B
@@ -236,6 +279,8 @@ Specification: `docs/methodology/preview-visual-policy.md` (`7b32d44`). Applicat
 Current-stage data:
 - `previews/controller-01-full` is the canonical Controller-01 run.
 - `visuals/controller-01/` is the accepted Controller-01 Level-B visual package.
+- `previews/controller-01b-single-continuation` and `visuals/controller-01b/overview.png` are the
+  accepted Controller-01B run and visual.
 - `previews/controller-01a-terminal-audit/audit.json` was re-established by re-running the
   accepted audit against it. The scientific fields are identical, and so is the result:
   `CONTROLLER01A_FINAL_REPROBE_ACTIONABLE`, prefix 58 OPEN / 1 candidate / `[7.6, 18.2]`,
@@ -359,13 +404,13 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-Controller-01A, Policy 1 and the Controller-01 visual package are accepted. The next activities
-are:
-- **Controller-01B** (branch `controller/controller-01b-single-continuation` @ `f90d738`), exactly
-  **one** post-watchdog continuation look for object 210, is accepted by Luiz and Chat. Its branch
-  merges this `main` forward and records the acceptance; `main` is then fast-forwarded to it.
-- **Controller-01C**, a read-only frontier/action correspondence audit of look 25. It makes no new
-  observation and changes no policy, and it is **not** Controller-02.
+Controller-01A, Policy 1, the Controller-01 visual package and Controller-01B are accepted. The
+authorized next activity is:
+- **Controller-01C — frontier/action correspondence audit** (branch
+  `controller/controller-01c-frontier-action-correspondence`), read-only: did look 25 actually acquire
+  evidence at the specific OPEN frontier support that caused FSG6f to choose [7.6, 18.2]? No Blender,
+  no render, no new OBSERVE, no policy change; it is **not** Controller-02. The Cyclopean proposal
+  [-17.6, 18.9] is not executed.
 
 ## Decision-critical open items
 
