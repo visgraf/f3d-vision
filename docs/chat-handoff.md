@@ -2,12 +2,17 @@
 
 ## Accepted main
 
-    main @ 262e4904df586f416131a26eb3bf9dfc22f049ba
+    main @ ef7bd459624d60101d946f71439ae7f14fc95705
 
-`origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent
-is `262e490` (the preview/visual policy commit on branch `policy/preview-visual-lifecycle-1`).
+`origin/main` is fast-forwarded to the docs-only acceptance commit that adds this entry, whose parent
+is `ef7bd45` (the Controller-01 visual package report on branch `visuals/controller-01-retrofit`).
 
 Accepted milestones:
+- **Controller-01 visual package**, the first Level-B application of Policy 1 (visualization of
+  accepted measurements, not a new experiment):
+
+      CONTROLLER01_VISUAL_PACKAGE_ACCEPTED
+
 - **Preview/visual lifecycle Policy 1**, a project policy accepted by Luiz and Chat (not a
   scientific step):
 
@@ -174,6 +179,35 @@ Accepted interpretation:
 - the unresolved behavior is genuinely inside the accepted local continuation/stopping behavior;
 - this does **not** yet prescribe a new stopping policy.
 
+## Controller-01 visual package (accepted at `ef7bd45`)
+
+Luiz and Chat inspected the generated images and accept the package as the first Level-B
+application of Policy 1.
+
+Record (branch `visuals/controller-01-retrofit`, base `a60d448`):
+- contract: `docs/controller/controller-01-visuals-contract.md` (`75f4aec`);
+- generator: `tools/controller/visualize_controller01.py` (`94ff223`);
+- report: `docs/controller/controller-01-visuals-report.md` (`ef7bd45`), with the file hashes and
+  the regeneration command;
+- output: `/home/lvelho/rd/f3d-vision/visuals/controller-01/` (`overview.png`, the event cards
+  `events/reactivation-0109.png`, `events/reactivation-0178.png`, `events/watchdog-0210.png`,
+  `scene-final.png`, supplementary diagnostics, active-map PLYs).
+
+Accepted strengths:
+- the scientific phenomena are visible, not merely controller bookkeeping;
+- the natural reactivations of 109 and 178 are causally inspectable;
+- the 210 watchdog / Controller-01A story is inspectable;
+- active fused maps and measurement memory are explicitly distinguished;
+- controller-time and derived information are labelled;
+- no evaluation truth is used (firewall: 0 violations).
+
+Future visual-style guidance (**non-blocking**; the accepted generator and report are not changed
+for it):
+- microscopic changes, such as 109's four points, benefit from a magnified inset;
+- scene views should make the meaning of white/void explicit;
+- repeated measurements must not visually imply new spatial support;
+- presentation-safe simplified variants may later accompany dense scientific figures.
+
 ## Preview/visual lifecycle Policy 1 (accepted)
 
 Specification: `docs/methodology/preview-visual-policy.md` (`7b32d44`). Application: `262e490`.
@@ -201,6 +235,7 @@ Specification: `docs/methodology/preview-visual-policy.md` (`7b32d44`). Applicat
 
 Current-stage data:
 - `previews/controller-01-full` is the canonical Controller-01 run.
+- `visuals/controller-01/` is the accepted Controller-01 Level-B visual package.
 - `previews/controller-01a-terminal-audit/audit.json` was re-established by re-running the
   accepted audit against it. The scientific fields are identical, and so is the result:
   `CONTROLLER01A_FINAL_REPROBE_ACTIONABLE`, prefix 58 OPEN / 1 candidate / `[7.6, 18.2]`,
@@ -324,12 +359,13 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-Controller-01A is accepted. The next activities are:
-- the official preview/visual lifecycle policy;
-- a visual retrofit of Controller-01 (visualization of accepted measurements);
-- **Controller-01B**, one bounded scientific step: exactly **one** post-watchdog continuation
-  look for object 210, the observation still requested by the unchanged accepted local policy.
-  It changes no threshold, scheduler, watchdog or stopping rule, and it is **not** Controller-02.
+Controller-01A, Policy 1 and the Controller-01 visual package are accepted. The next activities
+are:
+- **Controller-01B** (branch `controller/controller-01b-single-continuation` @ `f90d738`), exactly
+  **one** post-watchdog continuation look for object 210, is accepted by Luiz and Chat. Its branch
+  merges this `main` forward and records the acceptance; `main` is then fast-forwarded to it.
+- **Controller-01C**, a read-only frontier/action correspondence audit of look 25. It makes no new
+  observation and changes no policy, and it is **not** Controller-02.
 
 ## Decision-critical open items
 
