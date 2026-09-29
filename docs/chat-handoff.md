@@ -2,12 +2,17 @@
 
 ## Accepted main
 
-    main @ e3bf5e08f579104024036d94a2d97a9221ca82dd
+    main @ 657388c558433df302bcf324db5c798afc08f659
 
 `origin/main` is fast-forwarded to the docs-only acceptance commit that adds this entry, whose
-parent is `e3bf5e0`.
+parent is `657388c` (the Controller-01A report commit).
 
 Accepted milestones:
+- **Controller-01A terminal blocked-state audit**, accepted at `657388c` (a valid read-only audit):
+
+      CONTROLLER01A_TERMINAL_AUDIT_ACCEPTED
+
+  The accepted result is `CONTROLLER01A_FINAL_REPROBE_ACTIONABLE`.
 - **Integrated Foveal Controller 01**, accepted at `e3bf5e0` (implementation and measured
   scientific result):
 
@@ -128,6 +133,35 @@ including `controller-attention-timeline.png` and `controller-gaze-chart.png`. T
 hashes are `manifest.json` `d293a98f…`, `actions.json` `12cdbe4d…` and `evaluation.json`
 `76cb1e5d…`. The smoke runs are plumbing artifacts and were not archived.
 
+## Controller-01A terminal blocked-state audit (accepted at `657388c`)
+
+Luiz and Chat accept Controller-01A as a **valid read-only audit** of the preserved
+Controller-01 run.
+
+Record (branch `controller/controller-01a-terminal-audit`, base `e659ff1`):
+- contract: `docs/controller/controller-01a-terminal-audit-contract.md` (`e53c59f`);
+- report: `docs/controller/controller-01a-terminal-audit-report.md` (`657388c`);
+- tool: `tools/controller/check_controller01.py --terminal-reprobe RUN --object 210`.
+
+Accepted result:
+
+    CONTROLLER01A_FINAL_REPROBE_ACTIONABLE
+
+- **Watchdog, step 101.** The reconstruction reproduced the saved probe exactly: 24 own looks,
+  effective geometry 1,748,902, FSG6f `continue`, 58 OPEN, 1 candidate, proposed gaze
+  `[7.6, 18.2]`.
+- **Terminal scene state.** 190,011 later causal measurements of 210 had arrived, all from other
+  targets. Effective geometry was 1,938,913, and the active map was unchanged at 163,944 surfels.
+  FSG6f still continued, with 52 OPEN, 1 candidate and the same gaze `[7.6, 18.2]`.
+- Truth firewall: 0 violations. Reconstruction exact. 10/10 negative controls caught.
+
+Accepted interpretation:
+- later cross-target memory did **not** make 210 quiet;
+- therefore sticky BLOCKED semantics are **not** the explanation for Controller-01's failure to
+  reach global quiescence;
+- the unresolved behavior is genuinely inside the accepted local continuation/stopping behavior;
+- this does **not** yet prescribe a new stopping policy.
+
 ## Accepted scientific / architectural state
 
 The sealed scientific behavior is unchanged through Conceptual Cores 1–14 and Repository
@@ -241,11 +275,12 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-The next activity is **Controller-01A**, a **read-only terminal blocked-state audit** of object
-210, on branch `controller/controller-01a-terminal-audit`. It is **not** Controller-02. Its one
-question: at the final causal scene state, would 210 still be ACTIONABLE if only the sticky
-BLOCKED flag were ignored and the unchanged accepted local policy were asked again? It uses no
-Blender, no new observation, no policy change and no evaluation truth.
+Controller-01A is accepted. The next activities are:
+- the official preview/visual lifecycle policy;
+- a visual retrofit of Controller-01 (visualization of accepted measurements);
+- **Controller-01B**, one bounded scientific step: exactly **one** post-watchdog continuation
+  look for object 210, the observation still requested by the unchanged accepted local policy.
+  It changes no threshold, scheduler, watchdog or stopping rule, and it is **not** Controller-02.
 
 ## Decision-critical open items
 

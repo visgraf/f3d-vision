@@ -20,7 +20,8 @@ Controller 01 (docs/controller/controller-01-state-action-contract.md) accommoda
 layout narrowly: the controller stage directories, the declared Controller-01 files (the only
 new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the Chat Handoff
 as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescence claim).
-Controller-01A declares its audit contract (required) and report (allowed).
+Controller-01A declares its audit contract (required) and report (allowed); the handoff records
+Controller-01A accepted.
 """
 from __future__ import annotations
 
@@ -355,8 +356,9 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Integrated Foveal Controller 01, with RT1 and Core 14 recorded",
-          "main @ e3bf5e08f579104024036d94a2d97a9221ca82dd" in handoff
+    check("chat handoff records accepted main at Controller-01A, with Controller-01, RT1 and Core 14 recorded",
+          "main @ 657388c558433df302bcf324db5c798afc08f659" in handoff
+          and "CONTROLLER01A_TERMINAL_AUDIT_ACCEPTED" in handoff
           and "INTEGRATED_FOVEAL_CONTROLLER01_ACCEPTED" in handoff
           and "REPOSITORY_STAGE_TRANSITION_1_PRESERVES_SCIENTIFIC_BEHAVIOR" in handoff
           and "`296001e8683ba0b1ad62642811d3dea0e84b6566`" in handoff)
