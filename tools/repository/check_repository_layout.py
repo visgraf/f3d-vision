@@ -23,6 +23,7 @@ as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescenc
 Controller-01A declares its audit contract (required) and report (allowed); the handoff records
 Controller-01A accepted. Preview/visual lifecycle Policy 1 declares
 docs/methodology/preview-visual-policy.md (required); the handoff records Policy 1 accepted.
+Controller-01B declares its contract (required), report and tool (allowed).
 """
 from __future__ import annotations
 
@@ -62,8 +63,11 @@ CONTROLLER01_ALLOWED = CONTROLLER01_REQUIRED | {"docs/controller/controller-01-s
 CONTROLLER01A_REQUIRED = {"docs/controller/controller-01a-terminal-audit-contract.md"}
 CONTROLLER01A_ALLOWED = CONTROLLER01A_REQUIRED | {"docs/controller/controller-01a-terminal-audit-report.md"}
 POLICY1_REQUIRED = {"docs/methodology/preview-visual-policy.md"}
+CONTROLLER01B_REQUIRED = {"docs/controller/controller-01b-single-continuation-contract.md"}
+CONTROLLER01B_ALLOWED = CONTROLLER01B_REQUIRED | {"docs/controller/controller-01b-single-continuation-report.md",
+                                                  "tools/controller/controller01b.py"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
-                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED)
+                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | CONTROLLER01B_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -284,6 +288,8 @@ def main() -> int:
     check("the declared Controller-01A audit contract is tracked", not missing_c01a, str(missing_c01a))
     missing_p1 = sorted(POLICY1_REQUIRED - set(index))
     check("the preview/visual lifecycle policy document is tracked", not missing_p1, str(missing_p1))
+    missing_b = sorted(CONTROLLER01B_REQUIRED - set(index))
+    check("the Controller-01B contract is tracked", not missing_b, str(missing_b))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
