@@ -85,8 +85,12 @@ CLAUDE_REQUIRED = [
     "Science-led, engineering-disciplined project.",
     "ChatGPT's GitHub connection is **read-only**.",
     "Chat does **not** push commits, branches, updates, or pull requests.",
-    "An executed scientific/behavioral step must produce an inspectable visual and a measurable result, "
-    "together with its checks and a short summary.",
+    "An executed scientific/behavioral step must produce:",
+    "- its run evidence under `./previews`;",
+    "- at least one human-inspectable scientific visual under `./visuals`;",
+    "- fail-capable checks;",
+    "- a short Git-tracked report recording the result, the visual paths and the regeneration command.",
+    "Diagnostic plots alone need not satisfy the visual requirement",
     "Pure architectural/design steps may instead produce a reviewed specification or contract, "
     "together with a short summary.",
     "## Current project stage",

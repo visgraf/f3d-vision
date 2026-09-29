@@ -11,7 +11,8 @@
 # "Baseline files accounted" is relocation-aware (Repository Transition 1): every path tracked
 # at the baseline tag must be unchanged at its path, or relocated by the committed move map
 # (docs/repository/repository-transition-1-moves.json) as a pure or declared-repaired move,
-# or declared replaced.  The historical baseline's byte/path identity is not the current layout;
+# or declared replaced, or edited in place exactly as declared in check_baseline_files.py
+# (.gitignore: preview/visual lifecycle Policy 1).  The historical baseline's byte/path identity is not the current layout;
 # sealed scientific behavior is guarded by the checkers and the golden comparator.
 set -uo pipefail
 

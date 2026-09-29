@@ -14,7 +14,9 @@ accounted for by exactly one rule:
   pure       relocated by the move map, byte-identical to the tag blob at the new path;
   repaired   relocated by the move map, equal at the new path to the tag blob with exactly
              the declared literal edits applied (each 'before' occurring once);
-  replaced   declared replaced by the move map (README.md).
+  replaced   declared replaced by the move map (README.md);
+  edited     same path, equal to the tag blob with exactly the declared literal edits applied,
+             each declared below with the accepted decision that made it (IN_PLACE_EDITS).
 
 A relocated file's old path must be gone.  The tag must still name its original commit and
 be an ancestor of HEAD.  Sealed scientific behavior is guarded separately, by the checkers
@@ -35,6 +37,14 @@ MOVE_MAP = REPO / "docs/repository/repository-transition-1-moves.json"
 BASELINE_TAG = "baseline-classroom-oracle1-2026-09-25"
 BASELINE_COMMIT = "a980e59dfc453c590190f842c47c4588bc99989d"
 PREFIX = "[baseline-files]"
+# Declared in-place edits of baseline-tag files made after Repository Transition 1.  Each file must
+# equal its tag blob with exactly these literal edits applied (each 'before' occurring once).
+IN_PLACE_EDITS = {
+    ".gitignore": {
+        "decision": "Preview/visual lifecycle Policy 1 (docs/methodology/preview-visual-policy.md)",
+        "edits": [["previews/\nout/", "previews/\nvisuals/\nout/"]],
+    },
+}
 
 
 def git(*args: str) -> bytes:
@@ -52,13 +62,26 @@ def apply_edits(blob: bytes, edits: list[list[str]]) -> bytes | None:
 
 
 def account(tag_files: dict[str, bytes], tree: dict[str, bytes | None], moves: dict[str, dict],
-            replaced: set[str]) -> tuple[dict[str, int], list[str]]:
+            replaced: set[str], edited: dict[str, dict] | None = None) -> tuple[dict[str, int], list[str]]:
     """Classify every tag path; `tree` maps a path to its working-tree bytes, or None if absent."""
-    counts = {"unchanged": 0, "pure": 0, "repaired": 0, "replaced": 0}
+    edited = IN_PLACE_EDITS if edited is None else edited
+    counts = {"unchanged": 0, "pure": 0, "repaired": 0, "replaced": 0, "edited": 0}
     failures: list[str] = []
     for path, blob in sorted(tag_files.items()):
         if path in replaced:
             counts["replaced"] += 1
+            continue
+        if path in edited:
+            if path in moves:
+                failures.append(f"{path}: declared both moved and edited in place")
+                continue
+            expected = apply_edits(blob, edited[path]["edits"])
+            if expected is None:
+                failures.append(f"{path}: a declared in-place edit does not occur exactly once in the tag blob")
+            elif tree.get(path) != expected:
+                failures.append(f"{path}: differs from the tag blob + declared in-place edits")
+            else:
+                counts["edited"] += 1
             continue
         move = moves.get(path)
         if move is None:
@@ -121,14 +144,16 @@ def self_test() -> list[str]:
     base_moved = [p for p in sorted(moves) if p in tag_files]
     pure = next(p for p in base_moved if moves[p]["kind"] == "pure")
     rep = next(p for p in base_moved if moves[p]["kind"] == "repaired")
-    same = next(p for p in sorted(tag_files) if p not in moves and p not in replaced and p.endswith(".py"))
+    same = next(p for p in sorted(tag_files) if p not in moves and p not in replaced and p not in IN_PLACE_EDITS
+                and p.endswith(".py"))
+    ed = next(iter(sorted(IN_PLACE_EDITS)))
 
     def flip(b: bytes) -> bytes:
         return b[:-1] + bytes([b[-1] ^ 1])
 
-    def mutant(label, t=None, m=None, r=None):
+    def mutant(label, t=None, m=None, r=None, e=None):
         _, f = account(tag_files, t if t is not None else tree, m if m is not None else moves,
-                       r if r is not None else replaced)
+                       r if r is not None else replaced, e if e is not None else IN_PLACE_EDITS)
         if not f:
             bad.append(f"mutation not caught: {label}")
 
@@ -143,6 +168,10 @@ def self_test() -> list[str]:
     wrong = {**moves, rep: {**moves[rep], "edits": moves[rep]["edits"] + [["no such text", "x"]]}}
     mutant(f"declared edit absent from the tag blob of {rep}", m=wrong)
     mutant(f"pure relocation {pure} declared 'active'", m={**moves, pure: {**moves[pure], "kind": "active"}})
+    mutant(f"undeclared extra change in the in-place-edited {ed}", t={**tree, ed: tree[ed] + b"\n# unapproved\n"})
+    mutant(f"in-place edit of {ed} no longer declared", e={})
+    mutant(f"declared in-place edit absent from the tag blob of {ed}",
+           e={ed: {**IN_PLACE_EDITS[ed], "edits": IN_PLACE_EDITS[ed]["edits"] + [["no such text", "x"]]}})
     return bad
 
 
@@ -154,7 +183,7 @@ def main() -> int:
         bad = self_test()
         for b in bad:
             print(f"{PREFIX} self-test FAIL {b}")
-        print(f"{PREFIX} self-test {'FAILED' if bad else 'PASS'} (9 mutations)")
+        print(f"{PREFIX} self-test {'FAILED' if bad else 'PASS'} (12 mutations)")
         return 1 if bad else 0
     tag_files, tree, moves, replaced, problems = load()
     counts, failures = account(tag_files, tree, moves, replaced)

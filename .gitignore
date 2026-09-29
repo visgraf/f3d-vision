@@ -1,6 +1,7 @@
 # Regenerable: if a command made it, the command is the artifact.
 # Every path below is rebuilt by a command in docs/a1-scene-gathering.md.
 previews/
+visuals/
 out/
 *.part
 .venv/
