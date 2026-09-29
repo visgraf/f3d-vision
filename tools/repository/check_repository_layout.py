@@ -21,7 +21,8 @@ layout narrowly: the controller stage directories, the declared Controller-01 fi
 new fov3d/ files; every pre-existing fov3d/ file stays byte-identical), and the Chat Handoff
 as accepted for Integrated Foveal Controller 01 (INCOMPLETE; no global-quiescence claim).
 Controller-01A declares its audit contract (required) and report (allowed); the handoff records
-Controller-01A accepted.
+Controller-01A accepted. Preview/visual lifecycle Policy 1 declares
+docs/methodology/preview-visual-policy.md (required).
 """
 from __future__ import annotations
 
@@ -60,8 +61,9 @@ CONTROLLER01_REQUIRED = CONTROLLER01_FOV3D | {
 CONTROLLER01_ALLOWED = CONTROLLER01_REQUIRED | {"docs/controller/controller-01-state-action-report.md"}
 CONTROLLER01A_REQUIRED = {"docs/controller/controller-01a-terminal-audit-contract.md"}
 CONTROLLER01A_ALLOWED = CONTROLLER01A_REQUIRED | {"docs/controller/controller-01a-terminal-audit-report.md"}
+POLICY1_REQUIRED = {"docs/methodology/preview-visual-policy.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
-                 | CONTROLLER01A_ALLOWED)
+                 | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -276,6 +278,8 @@ def main() -> int:
     check("the declared Controller-01 files are tracked", not missing_c01, str(missing_c01))
     missing_c01a = sorted(CONTROLLER01A_REQUIRED - set(index))
     check("the declared Controller-01A audit contract is tracked", not missing_c01a, str(missing_c01a))
+    missing_p1 = sorted(POLICY1_REQUIRED - set(index))
+    check("the preview/visual lifecycle policy document is tracked", not missing_p1, str(missing_p1))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
