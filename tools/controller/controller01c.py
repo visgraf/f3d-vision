@@ -333,7 +333,8 @@ def compute(source: Path, audit_path: Path, c01b: Path, work: Path) -> tuple[dic
 
     # ---- known answers for the trace calibration (check 7)
     cal_trace, st_trace = cal25, st25
-    r25 = stereo.rectification(cal_trace)
+    # The full rectified labels come from look 25's own calibration, independently of the trace calibration.
+    r25 = stereo.rectification(cal25)
     obs25 = B.npz(adir / "oracle_observation.npz")
     full = {"crop": [int(v) for v in r25["crop_xywh"][:2]]}
     for side in ("L", "R"):
