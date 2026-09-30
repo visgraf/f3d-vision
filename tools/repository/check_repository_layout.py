@@ -26,7 +26,7 @@ docs/methodology/preview-visual-policy.md (required); the handoff records Policy
 Controller-01 visual retrofit declares its contract (required), report and generator (allowed); the
 handoff records the visual package accepted. Controller-01B declares its contract (required), report
 and tool (allowed); the handoff records Controller-01B accepted. Controller-01C declares its audit
-contract (required), report and tool (allowed).
+contract (required), report and tool (allowed); the handoff records Controller-01C accepted.
 """
 from __future__ import annotations
 
@@ -384,9 +384,11 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Controller-01B, with the Controller-01 visual package, Policy 1, "
-          "Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ b4d115d55fd922a4993dcd0c1d082c724fd84d56" in handoff
+    check("chat handoff records accepted main at Controller-01C, with Controller-01B, the Controller-01 visual package, "
+          "Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ bbc37b8b9b271371d6f9ec332e36b6f6154d2239" in handoff
+          and "CONTROLLER01C_FRONTIER_ACTION_AUDIT_ACCEPTED" in handoff
+          and "CONTROLLER01C_FRONTIER_ACTION_CORRESPONDENCE_AUDIT_COMPLETE" in handoff
           and "CONTROLLER01B_SINGLE_CONTINUATION_ACCEPTED" in handoff
           and "CONTROLLER01B_ONE_LOOK_REPROBE_ACTIONABLE" in handoff
           and "CONTROLLER01_VISUAL_PACKAGE_ACCEPTED" in handoff

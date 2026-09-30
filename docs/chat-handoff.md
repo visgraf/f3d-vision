@@ -2,13 +2,19 @@
 
 ## Accepted main
 
-    main @ b4d115d55fd922a4993dcd0c1d082c724fd84d56
+    main @ bbc37b8b9b271371d6f9ec332e36b6f6154d2239
 
 `origin/main` is fast-forwarded to the docs-only acceptance commit that adds this entry, whose parent
-is `b4d115d`: the forward merge of the accepted `main` (`a588fc8`, Controller-01 visual package accepted)
-into branch `controller/controller-01b-single-continuation` (report `f90d738`).
+is `bbc37b8` (the Controller-01C report on branch
+`controller/controller-01c-frontier-action-correspondence`).
 
 Accepted milestones:
+- **Controller-01C**, a valid read-only scientific audit of look 25's frontier/action correspondence:
+
+      CONTROLLER01C_FRONTIER_ACTION_AUDIT_ACCEPTED
+
+  The accepted result marker is `CONTROLLER01C_FRONTIER_ACTION_CORRESPONDENCE_AUDIT_COMPLETE`: the FSG6f
+  fixation did **not** service the frontier that requested it.
 - **Controller-01B**, one post-watchdog continuation look for object 210 (a bounded scientific step,
   exactly one new OBSERVE):
 
@@ -186,6 +192,52 @@ Accepted interpretation:
 - the unresolved behavior is genuinely inside the accepted local continuation/stopping behavior;
 - this does **not** yet prescribe a new stopping policy.
 
+## Controller-01C frontier/action correspondence audit (accepted at `bbc37b8`)
+
+Controller-01C is accepted as a valid read-only scientific audit (no render, no new OBSERVE, no policy
+change).
+
+Record (branch `controller/controller-01c-frontier-action-correspondence`, base `1ba2b59`):
+- contract: `docs/controller/controller-01c-frontier-action-correspondence-contract.md` (`5506aaa`);
+- implementation: `tools/controller/controller01c.py` (`dca972f`, `b6ae6ab`);
+- report: `docs/controller/controller-01c-frontier-action-correspondence-report.md` (`bbc37b8`);
+- output: `/home/lvelho/rd/f3d-vision/previews/controller-01c-frontier-action-correspondence/audit.json`;
+- visual: `/home/lvelho/rd/f3d-vision/visuals/controller-01c/frontier-action-correspondence.png`.
+
+Accepted result: **the FSG6f fixation did not service the frontier that requested it.**
+
+| measured quantity | value |
+|---|---|
+| selected FSG6f OPEN support | 30 elements |
+| inside either eye's look-25 depth-measuring core | 0 / 30 |
+| inside both raw tangent images | 30 / 30, all labelled object 210 |
+| valid target-depth measurements | 0 / 30 |
+| associated under the accepted 12 mm rule | 0 / 30 |
+| nearest look-25 target measurement | about 0.31–0.38 m away |
+| same original frontier window after the look | OPEN 30, resolved 0 |
+
+Four-way correspondence:
+
+| | remains OPEN | resolved |
+|---|---|---|
+| measured by look 25 | 0 | 0 |
+| not measured by look 25 | 30 | 0 |
+
+Accepted causal explanation: FSG6f selected the next fixation by taking a fixed 5° step toward the
+support direction rather than aiming the depth-measuring core at the unresolved support itself. In this
+case, the depth core stepped past the frontier strip.
+
+`predicted_new_angular_area_deg2` (about 45.67 deg²) is **not** a sensor-novelty prediction. It is the
+area of the candidate's 12° view box outside the 1–99 % yaw/pitch extent of the target's effective
+geometry. It uses no sensor model, no frontier elements and no observation footprint.
+
+Accepted evidence: truth firewall 0 violations; audit checks 42/42; mutants 25/25 caught; layout
+502/502; layout mutants 50/50; source previews unchanged.
+
+This limitation of the accepted local policy is **known and localized**: FSG6f action selection does
+not guarantee that the unresolved frontier support motivating an action enters the binocular
+depth-measuring core. It is documented, not scheduled for repair.
+
 ## Controller-01B single post-watchdog continuation (accepted at `f90d738`)
 
 Controller-01B accepted.
@@ -281,6 +333,9 @@ Current-stage data:
 - `visuals/controller-01/` is the accepted Controller-01 Level-B visual package.
 - `previews/controller-01b-single-continuation` and `visuals/controller-01b/overview.png` are the
   accepted Controller-01B run and visual.
+- `previews/controller-01c-frontier-action-correspondence/audit.json` and
+  `visuals/controller-01c/frontier-action-correspondence.png` are the accepted Controller-01C audit and
+  visual.
 - `previews/controller-01a-terminal-audit/audit.json` was re-established by re-running the
   accepted audit against it. The scientific fields are identical, and so is the result:
   `CONTROLLER01A_FINAL_REPROBE_ACTIONABLE`, prefix 58 OPEN / 1 candidate / `[7.6, 18.2]`,
@@ -404,13 +459,11 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-Controller-01A, Policy 1, the Controller-01 visual package and Controller-01B are accepted. The
-authorized next activity is:
-- **Controller-01C — frontier/action correspondence audit** (branch
-  `controller/controller-01c-frontier-action-correspondence`), read-only: did look 25 actually acquire
-  evidence at the specific OPEN frontier support that caused FSG6f to choose [7.6, 18.2]? No Blender,
-  no render, no new OBSERVE, no policy change; it is **not** Controller-02. The Cyclopean proposal
-  [-17.6, 18.9] is not executed.
+Controller-01, 01A, 01B and 01C, Policy 1 and the Controller-01 visual package are accepted; the
+Controller-01 investigation is closed. Luiz and Chat have signed **Foveal Controller Stage Charter 1**,
+which is next made durable in Git (`docs/methodology/foveal-controller-stage-charter-1.md`). Until then:
+no Controller-02 implementation, no FSG6f repair, no Natural Bootstrap implementation and no new
+scientific observation.
 
 ## Decision-critical open items
 
