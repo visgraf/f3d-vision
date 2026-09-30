@@ -896,14 +896,17 @@ def architecture() -> None:
     diff = subprocess.run(["git", "diff", "--name-status", BASE, "--", "fov3d"], cwd=REPO, capture_output=True,
                           text=True).stdout.split("\n")
     diff = [x for x in diff if x.strip()]
-    allowed = {"A\tfov3d/control/integrated.py", "A\tfov3d/experiments/classroom_oracle/controller01.py"}
+    # Controller-02 (docs/controller/controller-02-residual-closure-contract.md) declares exactly two more new
+    # fov3d modules; every pre-existing fov3d file must still be unchanged.
+    new_modules = {"fov3d/control/integrated.py", "fov3d/experiments/classroom_oracle/controller01.py",
+                   "fov3d/control/controller02.py", "fov3d/experiments/classroom_oracle/controller02.py"}
+    allowed = {f"A\t{m}" for m in new_modules}
     untracked = subprocess.run(["git", "ls-files", "--others", "--exclude-standard", "fov3d"], cwd=REPO,
                                capture_output=True, text=True).stdout.split()
     extra = [x for x in diff if x not in allowed] + [u for u in untracked if "__pycache__" not in u and
-                                                     u not in {"fov3d/control/integrated.py",
-                                                               "fov3d/experiments/classroom_oracle/controller01.py"}]
-    check("A8 every pre-existing fov3d file (including the Core-14 partition) is unchanged; only the two modules are new",
-          not extra, str(extra[:4]))
+                                                     u not in new_modules]
+    check("A8 every pre-existing fov3d file (including the Core-14 partition) is unchanged; only the two Controller-01 "
+          "and the two declared Controller-02 modules are new", not extra, str(extra[:4]))
 
 
 # ---------------------------------------------------------------- unit suite
