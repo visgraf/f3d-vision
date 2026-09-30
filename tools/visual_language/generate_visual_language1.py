@@ -1367,9 +1367,47 @@ def panorama_footprint(ctx: Ctx) -> tuple[Image.Image, dict]:
 
 
 def panorama_final_210(ctx: Ctx) -> tuple[Image.Image, dict]:
-    stages, meta = gate_stages(ctx)
-    return stages[-1], {k: meta[k] for k in ("support", "in_both_cores", "previously_interrogated", "novel_service_count",
-                                              "reason", "admissible")}
+    """210's final epistemic state over the whole controller domain: what stays unresolved at closure."""
+    g = gate_numbers(ctx)
+    dd = ctx.src.c02_residue[0]["detail"]
+    view = D.load_npz(ctx.cache / "final/view_0210.npz")["class_code"]
+    fr = D.load_npz(ctx.cache / "final/frontier_0210.npz")
+    ch = V.Chart(-25.0, 25.0, -20.0, 20.0, 40.0)
+    im = V.epistemic_image(ch, view, stipple_spacing=12)
+    V.grid_lines(im, ch, labels=True)
+    d = ImageDraw.Draw(im)
+    for yy, pp in fr["yaw_pitch"][fr["state"] == 0]:
+        x, y = ch.pt((yy, pp))
+        S.ring(d, x, y, r=5, color=S.OI_VERM, width=2)
+    for e in dd["elements"]:
+        x, y = ch.pt(e["x_yaw_pitch_deg"])
+        S.ring(d, x, y, r=9, color=S.OI_VERM, width=3)
+    looks = [a["gaze_deg"] for a in ctx.actions if a["target_id"] == 210]
+    for gz in looks:
+        x, y = ch.pt(gz)
+        S.xmark(d, x, y, r=6, color=S.INK, width=2)
+    x, y = ch.pt(g["current_gaze"])
+    S.crosshair(d, x, y, r=18, solid=True)
+    px_, py_ = ch.pt(g["gaze"])
+    S.crosshair(d, px_, py_, r=18, solid=False, color=S.FAINT)
+    d.line([px_ - 26, py_ - 26, px_ + 26, py_ + 26], fill=S.OI_VERM, width=6)
+    d.line([px_ - 26, py_ + 26, px_ + 26, py_ - 26], fill=S.OI_VERM, width=6)
+    out = Image.new("RGB", (ch.w + 40, ch.h + 200), S.SURFACE)
+    out.paste(im, (20, 170))
+    do = ImageDraw.Draw(out)
+    do.text((20, 16), "210 wall.008 at SCENE_CLOSED: final epistemic state (whole controller domain)", font=S.font(S.T_TITLE, True),
+            fill=S.INK)
+    n_open = int((fr["state"] == 0).sum())
+    do.text((20, 62), f"target support (sky) · FSG6f OPEN elements {n_open} (small vermillion rings) · the gate's "
+                      f"support {g['support']} (large rings) · {len(looks)} own looks (x)", font=S.font(S.T_BODY), fill=S.INK)
+    do.text((20, 96), f"last look {gaze_text(g['current_gaze'])} (solid) · final proposal {gaze_text(g['gaze'])} withdrawn "
+                      f"(struck): novel_service_count {g['novel_service_count']} → REJECT", font=S.font(S.T_BODY), fill=S.INK)
+    do.text((20, 130), "local state ACTIONABLE · FINALIZED: final_probe_rejected · the unresolved support is kept, "
+                       "not claimed resolved", font=S.font(S.T_BODY, True), fill=S.OI_VERM)
+    S.badge(out, out.width - 20, 16, "DERIVED")
+    S.badge(out, out.width - 20, 56, "CONTROLLER-TIME")
+    return out, {"support": g["support"], "open_elements": n_open, "own_looks": len(looks),
+                 "novel_service_count": g["novel_service_count"], "reason": g["reason"], "admissible": g["admissible"]}
 
 
 def write_ply(path: Path, xyz, rgb, extra: dict, comment: str) -> str:
