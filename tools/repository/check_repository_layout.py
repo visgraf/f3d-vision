@@ -53,7 +53,7 @@ PREFIX = "[repository-layout]"
 DOCS_DIRS = {"architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "methodology", "partition-graph", "repository"}
 TOOLS_DIRS = {"baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller", "partition_graph",
-              "repository"}
+              "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
 ADDED_REQUIRED = {
     "docs/repository/repository-transition-1-contract.md",
