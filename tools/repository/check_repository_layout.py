@@ -28,7 +28,8 @@ handoff records the visual package accepted. Controller-01B declares its contrac
 and tool (allowed); the handoff records Controller-01B accepted. Controller-01C declares its audit
 contract (required), report and tool (allowed); the handoff records Controller-01C accepted. Foveal
 Controller Stage Charter 1 declares docs/methodology/foveal-controller-stage-charter-1.md (required); the
-handoff records the charter accepted.
+handoff records the charter accepted. Controller-02 declares its contract (required), report and tools
+(allowed), and its two fov3d modules as allowed additions (every pre-existing fov3d file stays identical).
 """
 from __future__ import annotations
 
@@ -65,6 +66,11 @@ CONTROLLER01_REQUIRED = CONTROLLER01_FOV3D | {
     "tools/controller/plot_controller01.py",
 }
 CONTROLLER01_ALLOWED = CONTROLLER01_REQUIRED | {"docs/controller/controller-01-state-action-report.md"}
+CONTROLLER02_FOV3D = {"fov3d/control/controller02.py", "fov3d/experiments/classroom_oracle/controller02.py"}
+CONTROLLER02_REQUIRED = {"docs/controller/controller-02-residual-closure-contract.md"}
+CONTROLLER02_ALLOWED = CONTROLLER02_REQUIRED | {"docs/controller/controller-02-residual-closure-report.md",
+                                                "tools/controller/check_controller02.py",
+                                                "tools/controller/visualize_controller02.py"}
 CONTROLLER01A_REQUIRED = {"docs/controller/controller-01a-terminal-audit-contract.md"}
 CONTROLLER01A_ALLOWED = CONTROLLER01A_REQUIRED | {"docs/controller/controller-01a-terminal-audit-report.md"}
 POLICY1_REQUIRED = {"docs/methodology/preview-visual-policy.md"}
@@ -80,7 +86,7 @@ CONTROLLER01C_ALLOWED = CONTROLLER01C_REQUIRED | {"docs/controller/controller-01
                                                   "tools/controller/controller01c.py"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
-                 | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED)
+                 | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -309,6 +315,8 @@ def main() -> int:
     check("the Controller-01B contract is tracked", not missing_b, str(missing_b))
     missing_c = sorted(CONTROLLER01C_REQUIRED - set(index))
     check("the Controller-01C audit contract is tracked", not missing_c, str(missing_c))
+    missing_02 = sorted(CONTROLLER02_REQUIRED - set(index))
+    check("the Controller-02 contract is tracked", not missing_02, str(missing_02))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
@@ -316,13 +324,14 @@ def main() -> int:
     # ---- immutable fov3d/, tests/, scenes/
     for d in ("fov3d", "tests", "scenes"):
         if d == "fov3d":
-            diff = git("diff", BASE, "--", d, *[f":(exclude){f}" for f in sorted(CONTROLLER01_FOV3D)])
-            check("fov3d/ differs from the base only by the declared Controller-01 additions", len(diff) == 0,
+            declared = CONTROLLER01_FOV3D | CONTROLLER02_FOV3D
+            diff = git("diff", BASE, "--", d, *[f":(exclude){f}" for f in sorted(declared)])
+            check("fov3d/ differs from the base only by the declared Controller-01/02 additions", len(diff) == 0,
                   f"{len(diff)} diff bytes")
             at_base = set(git("ls-tree", "-r", "--name-only", BASE, "--", d).decode().split())
             new_fov3d = sorted({f for f in index if f.startswith("fov3d/")} - at_base)
-            check("the only new fov3d/ files are the declared Controller-01 modules, absent at the base",
-                  set(new_fov3d) <= CONTROLLER01_FOV3D and not (CONTROLLER01_FOV3D & at_base), str(new_fov3d))
+            check("the only new fov3d/ files are the declared Controller-01/02 modules, absent at the base",
+                  set(new_fov3d) <= declared and not (declared & at_base), str(new_fov3d))
         else:
             diff = git("diff", BASE, "--", d)
             check(f"{d}/ differs by zero bytes from the base", len(diff) == 0, f"{len(diff)} diff bytes")
