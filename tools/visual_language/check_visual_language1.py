@@ -222,7 +222,8 @@ def c11_truth(p, ctx):
 
 def c12_reference_isolated(p, ctx):
     probs = []
-    ref_file = Path(os.path.realpath(p.cache / "reference-render/reference.json"))  # the product itself, not a mirror link
+    # the reference product itself (resolved: a corruption mirror links binaries and copies only JSON)
+    ref_file = Path(os.path.realpath(p.cache / "reference-render/reference.npz"))
     fw = D.firewall()
     try:
         with fw:
