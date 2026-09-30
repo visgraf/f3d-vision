@@ -226,11 +226,20 @@ Refactoring must not silently become a scientific change.
 The Conceptual Core migration/refactoring through Core 14 is accepted
 and paused.
 
-The reusable substrate under `fov3d/` is now the basis for the next
-stage: architectural design and implementation of the Integrated
-Foveal Controller.
-
 Do not start another migration or cleanup Core automatically.
+
+The project is in the Integrated Foveal Controller stage, built on the
+`fov3d/` substrate and governed by Foveal Controller Stage Charter 1
+(`docs/methodology/foveal-controller-stage-charter-1.md`):
+
+- Controller-01 and its audits Controller-01A, 01B and 01C are accepted.
+- Controller-01 is frozen as the good-enough integrated-controller
+  baseline. Do not automatically refine its local policy; its known
+  limitations are documented, not repaired.
+- The next implementation target is Controller-02 loop semantics:
+  normal scene loop, deferred residue, one strict final residue probe.
+- Natural bootstrap (perceptual discovery without the Blender object
+  list) and cross-scene testing (Tabletop, no retuning) follow.
 
 For future behavior-preserving refactoring, the standing rule remains:
 

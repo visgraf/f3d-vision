@@ -91,3 +91,10 @@ The immediate architectural question is:
 
     given what the system currently knows,
     what should the eyes do next?
+
+Current status: Integrated Foveal Controller 01 is accepted and frozen as the
+good-enough baseline, with its audits 01A, 01B and 01C. Foveal Controller Stage
+Charter 1 (`docs/methodology/foveal-controller-stage-charter-1.md`) sets the next
+steps: Controller-02 loop semantics (deferred residue and one strict final look),
+Visual Language 1, natural perceptual bootstrap without the Blender object list, and
+a Tabletop transfer test with the same controller.
