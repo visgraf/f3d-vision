@@ -18,10 +18,12 @@ import argparse
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import random
 import subprocess
 import sys
+import tempfile
 import types
 
 sys.dont_write_bytecode = True
@@ -706,6 +708,70 @@ def run_checks(out: Path, source: Path, a01: Path | None, c01b: Path | None, c01
           "residuals FINALIZED and not QUIET; no deferred object left; no global quiescence)", consistent)
 
 
+def replay_guards(source: Path, c01b: Path | None) -> None:
+    """The replay refuses divergent or unevidenced actions and detects tampered source artifacts."""
+    acc = json.loads((source / "actions.json").read_text())["actions"]
+    a0 = acc[0]
+    right = ic.Observe(int(a0["target_id"]), tuple(a0["gaze_deg"]), V, F, a0["action_source"])
+    wrong = ic.Observe(int(a0["target_id"]), (a0["gaze_deg"][0], a0["gaze_deg"][1] + 0.05), V, F, a0["action_source"])
+
+    def step0(src: Path, action: ic.Observe, step: int = 0) -> list[str]:
+        with tempfile.TemporaryDirectory() as w:
+            rp = x2.AcceptedReplay(REPO, src, Path(w))
+            rp.observe(step, action, 0)
+            return [] if rp.verified_steps == 1 else ["step not verified"]
+
+    def refused(fn, exc) -> list[str]:
+        try:
+            fn()
+            return ["accepted"]
+        except exc:
+            return []
+    verified("R1 the replay accepts the accepted action and refuses a divergent gaze", lambda act: step0(source, act),
+             (right,), {"gaze +0.05 deg": (wrong,)})
+    check("R2 an action beyond the accepted 141 has no evidence and is refused (rendering not authorized)",
+          not refused(lambda: step0(source, right, 141), x2.NoAcceptedEvidence))
+
+    def fake_source(tamper: bool) -> Path:
+        root = Path(tempfile.mkdtemp(prefix="c02-fake-source-"))
+        rel = [f"objects/instance_{right.target_id:04d}/acquisitions/fix_00/{n}" for n in ("calibration.json", "oracle_observation.npz")]
+        rel += ["manifest.json", "actions.json", "bootstrap/seeds.json", "bootstrap/instance_catalog.json",
+                f"objects/instance_{right.target_id:04d}/maps/fix_00.npz"]
+        for r in rel:
+            (root / r).parent.mkdir(parents=True, exist_ok=True)
+            os.symlink(source / r, root / r)
+        pr = f"objects/instance_{right.target_id:04d}/patches/fix_00.npz"
+        (root / pr).parent.mkdir(parents=True, exist_ok=True)
+        z = c01._load_npz(source / pr)
+        if tamper:
+            v = np.argwhere(z["valid"])[0]
+            z["xyz_h"] = z["xyz_h"].copy()
+            z["xyz_h"][v[0], v[1], 2] += np.float32(0.001)
+        np.savez_compressed(root / pr, **z)
+        return root
+    def on_fake(tamper: bool) -> list[str]:
+        root = fake_source(tamper)
+        try:
+            return step0(root, right)
+        finally:
+            import shutil
+            shutil.rmtree(root, ignore_errors=True)
+    verified("R3 per-step verification detects a saved patch that differs by 1 mm in one point",
+             on_fake, (False,), {"tampered patch": (True,)})
+    if c01b is not None:
+        target = c01b / "objects/instance_0210/acquisitions/fix_24/calibration.json"
+
+        def read_under(pred) -> list[str]:
+            with ic.TruthFirewall(source, pred):
+                try:
+                    target.read_bytes()
+                    return ["read allowed"]
+                except PermissionError:
+                    return []
+        verified("R4 the replay firewall refuses reading the Controller-01B look", read_under,
+                 (x2.is_forbidden_during_replay,), {"evaluation-only firewall": (c01.is_evaluation_truth,)})
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--run", type=Path)
@@ -722,6 +788,7 @@ def main() -> int:
             ap.error("--run needs --source")
         try:
             run_checks(a.run.resolve(), a.source.resolve(), a.audit01a, a.c01b, a.c01c)
+            replay_guards(a.source.resolve(), a.c01b)
         except Exception as exc:  # noqa: BLE001
             check("run checks completed without error", False, f"{type(exc).__name__}: {exc}")
     print(f"{PREFIX} SUMMARY checked={checked} failed={failed}")
