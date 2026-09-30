@@ -2,12 +2,21 @@
 
 ## Accepted main
 
-    main @ 40426b2de24795a89e69b1110fbde8c1052fb259
+    main @ 746e90818aba1034e9cbfa4a94f86aea5f428640
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`40426b2` (the Stage Charter 1 application on branch `policy/foveal-controller-stage-charter-1`).
+`746e908` (the Controller-02 report on branch `controller/controller-02-residual-closure`).
 
 Accepted milestones:
+- **Controller-02 residual closure**, accepted by Luiz and Chat (implementation and measured scientific
+  result; its overview was inspected and accepted as satisfying the Level-A scientific-visual
+  requirement):
+
+      CONTROLLER02_RESIDUAL_CLOSURE_ACCEPTED
+
+  The accepted markers are `CONTROLLER02_IMPLEMENTATION_CHECKS_PASS` and
+  `CONTROLLER02_CLASSROOM_SCENE_CLOSED`: the scene terminated honestly as `SCENE_CLOSED`, which is not
+  global quiescence.
 - **Foveal Controller Stage Charter 1**, signed by Luiz and Chat (an architectural / scientific-direction
   decision, not an experiment):
 
@@ -196,6 +205,48 @@ Accepted interpretation:
   reach global quiescence;
 - the unresolved behavior is genuinely inside the accepted local continuation/stopping behavior;
 - this does **not** yet prescribe a new stopping policy.
+
+## Controller-02 residual closure (accepted at `746e908`)
+
+Controller-02 is accepted: the implementation, the measured scientific result and its Level-A visual.
+
+Record (branch `controller/controller-02-residual-closure`, base `6306458`):
+- contract: `docs/controller/controller-02-residual-closure-contract.md` (`620f776`);
+- implementation: `fov3d/control/controller02.py` (generic Disposition / ScenePhase / FinalProbeDecision /
+  SceneClosed and the loop) and `fov3d/experiments/classroom_oracle/controller02.py` (the no-render replay
+  adapter and the strict final-look gate v1) (`e027d84`); checks `tools/controller/check_controller02.py`
+  (`e027d84`, `8758790`); visual `tools/controller/visualize_controller02.py`;
+- report: `docs/controller/controller-02-residual-closure-report.md` (`746e908`);
+- output: `/home/lvelho/rd/f3d-vision/previews/controller-02-classroom-replay/`;
+- visual: `/home/lvelho/rd/f3d-vision/visuals/controller-02/overview.png` (Level A).
+
+Controller-01 stays frozen: `fov3d/control/integrated.py` and
+`fov3d/experiments/classroom_oracle/controller01.py` are byte-identical.
+
+Accepted measured result (a no-render replay of the accepted Controller-01 run):
+
+    CONTROLLER02_IMPLEMENTATION_CHECKS_PASS
+    CONTROLLER02_CLASSROOM_SCENE_CLOSED
+
+| quantity | value |
+|---|---|
+| ordinary observations | 141 / 141 reproduce Controller-01 behavior (each verified against the saved acquisition) |
+| deferral | 210 `wall.008` at global step 101: local ACTIONABLE at the 24-look ordinary budget → `DEFERRED` (not BLOCKED) |
+| end of the normal phase | 24 QUIET; 210 ACTIONABLE and DEFERRED; phase NORMAL → RESIDUE |
+| final proposal | the unchanged FSG6f proposal [7.6, 18.2], put to the strict final-look gate v1 |
+| final support | 30 OPEN elements; entering both predicted depth cores 0; previously interrogated 30 |
+| novel_service_count | 0 |
+| gate | REJECT (`no_novel_serviceable_support`); final residue observations 0 (no render, no OBSERVE) |
+| terminal | `SCENE_CLOSED`: 24 QUIET; residual 210 (ACTIONABLE, `FINALIZED: final_probe_rejected`); 209 unlocated |
+
+Evidence: checks 77/77; 17/17 output corruptions caught; truth firewall 0 violations; 0 process
+launches; the sensor model reproduces all 141 saved calibrations exactly; the source run is
+byte-identical.
+
+Accepted interpretation:
+- `SCENE_CLOSED != global quiescence`, and `residual != failure`;
+- 210 remains locally ACTIONABLE; it is an explicit residual, not complete;
+- the strict gate v1 is a conservative first predicate, not claimed optimal.
 
 ## Foveal Controller Stage Charter 1 (accepted)
 
@@ -508,21 +559,20 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package and Foveal Controller
-Stage Charter 1 are accepted. The Controller-01 investigation is closed, and Controller-01 is frozen as
-the good-enough baseline.
+Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
+Charter 1 and Controller-02 are accepted. The Controller-01 investigation is closed, and Controller-01 is
+frozen as the good-enough baseline.
 
-**Current next activity: Controller-02 architectural design / contract.** It covers the loop semantics
-of Charter 1: normal scene loop, deferred residue, and one strict final residue probe. Controller-02
-does not exist yet; nothing of it is implemented. FSG6f is not repaired, and Natural Bootstrap is not
-started.
+**Current next activity: Visual Language 1 + the full canonical Classroom demo** (a methodological /
+visualization milestone that changes no scientific behavior). FSG6f is not repaired, and Natural
+Bootstrap-1 is not started.
 
 ## Decision-critical open items
 
-1. Controller design is led by Luiz with Chat, under Stage Charter 1. For Controller-02: the name
-   and semantics of the deferred/residual state, the simplest defensible final-residue predicate,
-   and honest scene closure. Controller-01 (frozen) reuses the accepted local policy unchanged. Open
-   questions from its report:
+1. Controller design is led by Luiz with Chat, under Stage Charter 1. Controller-02 settled the
+   deferred/residual semantics and honest scene closure with a strict final-look gate v1 (not claimed
+   optimal; residual objects are not claimed complete). Controller-01 (frozen) keeps the accepted local
+   policy unchanged. Open questions from its report:
    - the adequacy of the 24-look watchdog under effective geometry;
    - target-local versus global observation evidence for the Cyclopean handoff (both natural
      reactivations came through it);

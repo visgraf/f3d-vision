@@ -29,7 +29,8 @@ and tool (allowed); the handoff records Controller-01B accepted. Controller-01C 
 contract (required), report and tool (allowed); the handoff records Controller-01C accepted. Foveal
 Controller Stage Charter 1 declares docs/methodology/foveal-controller-stage-charter-1.md (required); the
 handoff records the charter accepted. Controller-02 declares its contract (required), report and tools
-(allowed), and its two fov3d modules as allowed additions (every pre-existing fov3d file stays identical).
+(allowed), and its two fov3d modules as allowed additions (every pre-existing fov3d file stays identical);
+the handoff records Controller-02 accepted (SCENE_CLOSED, not global quiescence).
 """
 from __future__ import annotations
 
@@ -398,9 +399,12 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Stage Charter 1, with Controller-01C, Controller-01B, the Controller-01 "
-          "visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 40426b2de24795a89e69b1110fbde8c1052fb259" in handoff
+    check("chat handoff records accepted main at Controller-02, with Stage Charter 1, Controller-01C, Controller-01B, the "
+          "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ 746e90818aba1034e9cbfa4a94f86aea5f428640" in handoff
+          and "CONTROLLER02_RESIDUAL_CLOSURE_ACCEPTED" in handoff
+          and "CONTROLLER02_IMPLEMENTATION_CHECKS_PASS" in handoff
+          and "CONTROLLER02_CLASSROOM_SCENE_CLOSED" in handoff
           and "FOVEAL_CONTROLLER_STAGE_CHARTER_1_ACCEPTED" in handoff
           and "CONTROLLER01C_FRONTIER_ACTION_AUDIT_ACCEPTED" in handoff
           and "CONTROLLER01C_FRONTIER_ACTION_CORRESPONDENCE_AUDIT_COMPLETE" in handoff
@@ -414,6 +418,8 @@ def main() -> int:
           and "`296001e8683ba0b1ad62642811d3dea0e84b6566`" in handoff)
     check("chat handoff does not claim Controller-01 global quiescence (the measured outcome is INCOMPLETE)",
           "CONTROLLER01_GLOBAL_QUIESCENCE_REACHED" not in handoff)
+    check("chat handoff does not claim Controller-02 closure as global quiescence or record it NOT_CLOSED",
+          "CONTROLLER02_GLOBAL_QUIESCENCE" not in handoff and "CONTROLLER02_CLASSROOM_NOT_CLOSED" not in handoff)
     check("chat handoff records the transition as accepted, not proposed",
           "## Repository Stage Transition 1 (accepted at `b12bdef`)" in handoff
           and "proposed, not accepted" not in handoff)
