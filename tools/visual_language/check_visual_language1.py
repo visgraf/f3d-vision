@@ -290,7 +290,12 @@ def _gray_distinct(keys, level=24.0, frac=0.02):
     (A mean difference over the swatch is dominated by empty background: it would pass two
     near-identical large fills and fail a clear solid-vs-dashed glyph pair.)
     """
-    arrs = {k: np.asarray(S.swatch(k, 120, 44).convert("L"), np.float32) for k in keys}
+    draw = {r[1]: r[5] for r in S.ROLES}  # the declared renderers (not a cached copy)
+    arrs = {}
+    for k in keys:
+        img = Image.new("RGB", (120, 44), S.PANEL)
+        draw[k](img, (1, 1, 118, 42))
+        arrs[k] = np.asarray(img.convert("L"), np.float32)
     worst = (None, 1e9)
     for i, a in enumerate(keys):
         for b in keys[i + 1:]:
