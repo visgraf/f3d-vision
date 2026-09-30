@@ -27,7 +27,8 @@ Controller-01 visual retrofit declares its contract (required), report and gener
 handoff records the visual package accepted. Controller-01B declares its contract (required), report
 and tool (allowed); the handoff records Controller-01B accepted. Controller-01C declares its audit
 contract (required), report and tool (allowed); the handoff records Controller-01C accepted. Foveal
-Controller Stage Charter 1 declares docs/methodology/foveal-controller-stage-charter-1.md (required).
+Controller Stage Charter 1 declares docs/methodology/foveal-controller-stage-charter-1.md (required); the
+handoff records the charter accepted.
 """
 from __future__ import annotations
 
@@ -388,9 +389,10 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Controller-01C, with Controller-01B, the Controller-01 visual package, "
-          "Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ bbc37b8b9b271371d6f9ec332e36b6f6154d2239" in handoff
+    check("chat handoff records accepted main at Stage Charter 1, with Controller-01C, Controller-01B, the Controller-01 "
+          "visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ 40426b2de24795a89e69b1110fbde8c1052fb259" in handoff
+          and "FOVEAL_CONTROLLER_STAGE_CHARTER_1_ACCEPTED" in handoff
           and "CONTROLLER01C_FRONTIER_ACTION_AUDIT_ACCEPTED" in handoff
           and "CONTROLLER01C_FRONTIER_ACTION_CORRESPONDENCE_AUDIT_COMPLETE" in handoff
           and "CONTROLLER01B_SINGLE_CONTINUATION_ACCEPTED" in handoff

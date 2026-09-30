@@ -2,13 +2,18 @@
 
 ## Accepted main
 
-    main @ bbc37b8b9b271371d6f9ec332e36b6f6154d2239
+    main @ 40426b2de24795a89e69b1110fbde8c1052fb259
 
-`origin/main` is fast-forwarded to the docs-only acceptance commit that adds this entry, whose parent
-is `bbc37b8` (the Controller-01C report on branch
-`controller/controller-01c-frontier-action-correspondence`).
+`origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
+`40426b2` (the Stage Charter 1 application on branch `policy/foveal-controller-stage-charter-1`).
 
 Accepted milestones:
+- **Foveal Controller Stage Charter 1**, signed by Luiz and Chat (an architectural / scientific-direction
+  decision, not an experiment):
+
+      FOVEAL_CONTROLLER_STAGE_CHARTER_1_ACCEPTED
+
+- **Controller-01 frozen** as the good-enough integrated-controller baseline (Charter 1, section 1).
 - **Controller-01C**, a valid read-only scientific audit of look 25's frontier/action correspondence:
 
       CONTROLLER01C_FRONTIER_ACTION_AUDIT_ACCEPTED
@@ -191,6 +196,50 @@ Accepted interpretation:
   reach global quiescence;
 - the unresolved behavior is genuinely inside the accepted local continuation/stopping behavior;
 - this does **not** yet prescribe a new stopping policy.
+
+## Foveal Controller Stage Charter 1 (accepted)
+
+Charter: `docs/methodology/foveal-controller-stage-charter-1.md` (`9b9e710`). Application: `40426b2`,
+which updates `CLAUDE.md`'s current-project-stage section and adds a README status paragraph.
+
+    FOVEAL_CONTROLLER_STAGE_CHARTER_1_ACCEPTED
+
+- **Controller-01 baseline freeze.** Controller-01 is accepted and frozen as the good-enough
+  integrated-controller baseline. There is no automatic effort to perfect its local policy; known
+  limitations are documented rather than repaired. It stays available for comparison and may be
+  revisited only by an explicit future scientific decision. It is not claimed optimal or complete.
+  Its known limitation (from 01C) is that FSG6f action selection does not guarantee that the
+  unresolved frontier support motivating an action enters the binocular depth-measuring core. That
+  limitation is known and localized, and it is not repaired.
+- **Loop policy for the next generation.** The loop runs: normal scene loop → defer difficult local
+  residue → keep servicing the scene → final residue pass (at most one strictly justified final
+  observation per unresolved object) → scene closed, possibly with residual objects.
+  - `local unresolved != global failure`.
+  - A `DEFERRED` / `RESIDUAL` state exists conceptually; it is not yet in code and not yet named.
+  - The final probe's minimum principle is that the unresolved support must actually be placed inside
+    the binocular depth-measuring core. The exact predicate is left to Controller-02, which will use
+    the simplest defensible version.
+- **Blender object list.** It is to be retired as controller input, moving to reference / evaluation.
+  It is not removed yet.
+- **Natural Bootstrap-1.** Discover perceptual hypotheses and seed gazes from a low-resolution
+  observation, with no semantics; over-segmentation is acceptable. **Natural Bootstrap-2**, identity
+  persistence without Blender IDs, is a separate later question.
+- **Generality.** After Natural Bootstrap-1, transfer to **Tabletop** with the same controller and no
+  scene-specific retuning.
+- **Visual Language 1.** Stable visual semantics across experiments, keeping four distinctions:
+  measurement vs new geometry, visible vs depth measured, actionable vs worth one final look, and
+  residual vs failure.
+
+Signed near-term roadmap (directional; one causal question per executed experiment):
+
+    Controller-01C (accepted audit)
+      -> FREEZE Controller-01 (good-enough baseline)
+      -> Controller-02 (normal loop + deferred residue + one strict final residue probe)
+      -> Visual Language 1
+      -> Natural Bootstrap-1 (low-resolution perceptual discovery)
+      -> Classroom validation
+      -> Tabletop transfer (same controller, no scene-specific retuning)
+      -> Natural Bootstrap-2 (remove remaining oracle instance identity)
 
 ## Controller-01C frontier/action correspondence audit (accepted at `bbc37b8`)
 
@@ -459,16 +508,21 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 **The conceptual-core migration remains paused after Core 14.** Do not create Core 15
 automatically and do not create a new migration branch.
 
-Controller-01, 01A, 01B and 01C, Policy 1 and the Controller-01 visual package are accepted; the
-Controller-01 investigation is closed. Luiz and Chat have signed **Foveal Controller Stage Charter 1**,
-which is next made durable in Git (`docs/methodology/foveal-controller-stage-charter-1.md`). Until then:
-no Controller-02 implementation, no FSG6f repair, no Natural Bootstrap implementation and no new
-scientific observation.
+Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package and Foveal Controller
+Stage Charter 1 are accepted. The Controller-01 investigation is closed, and Controller-01 is frozen as
+the good-enough baseline.
+
+**Current next activity: Controller-02 architectural design / contract.** It covers the loop semantics
+of Charter 1: normal scene loop, deferred residue, and one strict final residue probe. Controller-02
+does not exist yet; nothing of it is implemented. FSG6f is not repaired, and Natural Bootstrap is not
+started.
 
 ## Decision-critical open items
 
-1. Controller design is led by Luiz with Chat. Controller-01 reuses the accepted local policy
-   unchanged. Open questions from its report:
+1. Controller design is led by Luiz with Chat, under Stage Charter 1. For Controller-02: the name
+   and semantics of the deferred/residual state, the simplest defensible final-residue predicate,
+   and honest scene closure. Controller-01 (frozen) reuses the accepted local policy unchanged. Open
+   questions from its report:
    - the adequacy of the 24-look watchdog under effective geometry;
    - target-local versus global observation evidence for the Cyclopean handoff (both natural
      reactivations came through it);
