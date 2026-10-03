@@ -33,7 +33,8 @@ handoff records the charter accepted. Controller-02 declares its contract (requi
 the handoff records Controller-02 accepted (SCENE_CLOSED, not global quiescence). Visual Language 1
 declares its contract (required), its methodology document, report and tools/visual_language/ tools (allowed).
 Breadth-1 declares its contract (required), report and five tools/classroom_oracle/breadth1_* / check tools
-(allowed).
+(allowed). Natural Bootstrap-1a adds the docs/natural-bootstrap/ and tools/natural_bootstrap/ directories and
+declares its contract (required), report and six tools (allowed).
 """
 from __future__ import annotations
 
@@ -53,7 +54,7 @@ LAYOUT = "docs/consolidation/consolidation-3-layout.json"
 PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
-             "controller", "methodology", "partition-graph", "repository"}
+             "controller", "methodology", "natural-bootstrap", "partition-graph", "repository"}
 TOOLS_DIRS = {"baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller", "partition_graph",
               "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
@@ -97,9 +98,14 @@ BREADTH1_REQUIRED = {"docs/classroom-oracle/breadth-1-spherical-glance-contract.
 BREADTH1_TOOLS = {f"tools/classroom_oracle/{n}" for n in ("breadth1_spec.py", "breadth1_render.py", "breadth1_glance.py",
                                                             "breadth1_visuals.py", "check_breadth1.py")}
 BREADTH1_ALLOWED = BREADTH1_REQUIRED | BREADTH1_TOOLS | {"docs/classroom-oracle/breadth-1-spherical-glance-report.md"}
+NB1A_REQUIRED = {"docs/natural-bootstrap/nb1a-range-connectivity-contract.md"}
+NB1A_TOOLS = {f"tools/natural_bootstrap/{n}" for n in ("nb1a_spec.py", "nb1a_guard.py", "nb1a_discovery.py",
+                                                         "nb1a_run.py", "nb1a_visuals.py", "check_nb1a.py")}
+NB1A_ALLOWED = NB1A_REQUIRED | NB1A_TOOLS | {"docs/natural-bootstrap/nb1a-range-connectivity-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
-                 | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED)
+                 | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
+                 | NB1A_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -334,6 +340,8 @@ def main() -> int:
     check("the Visual Language 1 contract is tracked", not missing_vl1, str(missing_vl1))
     missing_b1 = sorted(BREADTH1_REQUIRED - set(index))
     check("the Breadth-1 contract is tracked", not missing_b1, str(missing_b1))
+    missing_nb1a = sorted(NB1A_REQUIRED - set(index))
+    check("the NB1a contract is tracked", not missing_nb1a, str(missing_nb1a))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
