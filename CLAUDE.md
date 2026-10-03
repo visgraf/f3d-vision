@@ -242,12 +242,30 @@ roadmap decision recorded in `docs/chat-handoff.md`:
   Controller-02 stay frozen unless Luiz explicitly reopens them.
 - Visual Language 1 (`docs/methodology/visual-language-1.md`) is accepted
   and is the standing visual semantics for later experiments.
-- The next step is Breadth-1: Classroom-234 Spherical Glance, one
-  low-resolution global reference observation of the whole authored
-  Classroom before active foveation, closing the oracle-bootstrap era.
-- Natural Bootstrap-1 (perceptual discovery without the Blender object
-  list), Classroom validation, Tabletop transfer (same controller, no
-  scene-specific retuning) and Natural Bootstrap-2 follow.
+- Breadth-1: Classroom-234 Spherical Glance is accepted. It is one shallow
+  720 × 360 (0.5°) full-sphere reference observation from the fixed head,
+  closing the oracle-bootstrap era:
+  - 234 catalog objects = 126 visible + 108 with no first hit;
+  - the catalog is not an exhaustive inventory of rendered geometry:
+    15.4 % of the sphere carries no catalog id.
+- The next scientific design target is Natural Bootstrap-1:
+
+      low-resolution sensory observation
+        -> perceptual decomposition
+        -> temporary object hypotheses
+        -> representative seed gaze per hypothesis
+        -> active controller
+
+  - It must not use the Blender object list as controller initialization.
+  - No semantic classification is required initially.
+  - Preferred first cues: RGB continuity, range/depth continuity, depth
+    discontinuities, connectedness / region coherence.
+  - Over-segmentation is acceptable.
+  - Its design is discussed by Luiz and Chat before any implementation.
+- Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
+  - Tabletop transfer uses the same controller and bootstrap policy, with no
+    scene-specific retuning unless execution is impossible.
+  - Natural Bootstrap-2 (identity persistence) is a separate later problem.
 
 For future behavior-preserving refactoring, the standing rule remains:
 

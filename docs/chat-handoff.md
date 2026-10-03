@@ -2,13 +2,18 @@
 
 ## Accepted main
 
-    main @ e596a10a9eb129f704e87afbbf722b380642065e
+    main @ 40a1cb11b99324da125ed2464078d3ec19aca947
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`e596a10` (the Visual Language 1 acceptance commit on branch
-`methodology/visual-language-1-canonical-demo`).
+`40a1cb1` (the Breadth-1 acceptance commit on branch `classroom-oracle/breadth-1-spherical-glance`).
 
 Accepted milestones:
+- **Breadth-1: Classroom-234 Spherical Glance**, accepted by Luiz and Chat (the measured scientific result,
+  the final figures and the post-run seed-tie clarification):
+
+      BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_ACCEPTED
+
+  The accepted completion marker is `BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_COMPLETE`.
 - **Visual Language 1 + the full canonical Classroom demo**, accepted by Luiz and Chat as committed (a
   methodological / visualization milestone that changed no scientific behavior):
 
@@ -106,24 +111,98 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz, after Visual Language 1)
+## Current roadmap (Luiz, after Breadth-1)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
-      -> Breadth-1: Classroom-234 Spherical Glance
-      -> Natural Bootstrap-1
+      -> Breadth-1                                  ACCEPTED
+      -> Natural Bootstrap-1                        NEXT
       -> Classroom validation
-      -> Tabletop transfer, no scene-specific retuning
+      -> Tabletop transfer
+           same controller / bootstrap policy,
+           no scene-specific retuning unless execution is impossible
       -> Natural Bootstrap-2
 
-- This roadmap is a later explicit decision. It inserts Breadth-1 before Natural Bootstrap-1. The signed
+- This roadmap is a later explicit decision. It inserted Breadth-1 before Natural Bootstrap-1. The signed
   `docs/methodology/foveal-controller-stage-charter-1.md` keeps its historical roadmap and is not edited.
 - Controller-01 and Controller-02 remain frozen unless Luiz explicitly reopens them.
-- **Breadth-1** is a closing reference experiment for the oracle-bootstrap era: one low-resolution
-  (720 × 360, 0.5°) full-sphere Blender observation from the fixed cyclopean head origin, with no gaze,
-  no controller, no foveation and no stereo growth. It accounts for all 234 authored Classroom objects
-  (the accounting universe, not natural perceptual objects). It is descriptive: there is no minimum
-  visible count.
+- Visual Language 1 remains the standing visual semantics.
+- **Natural Bootstrap-1** (the next design target; not started) keeps a modest formulation:
+
+      low-resolution sensory observation
+        -> perceptual decomposition
+        -> temporary object hypotheses
+        -> representative seed gaze per hypothesis
+        -> active controller
+
+  - It must not use the Blender object list as controller initialization.
+  - No semantic classification is required initially.
+  - Preferred first cues: RGB continuity, range/depth continuity, depth discontinuities, connectedness /
+    region coherence.
+  - Over-segmentation is acceptable.
+  - Natural Bootstrap-2 (identity persistence) is a separate later problem.
+  - Its design is discussed by Luiz and Chat before any branch, contract or implementation.
+
+## Breadth-1: Classroom-234 Spherical Glance (accepted at `40a1cb1`)
+
+Luiz and Chat accept Breadth-1: the measured scientific result, the final overview and
+representative-seed panorama, and the post-run seed-tie numerical clarification.
+
+Record (branch `classroom-oracle/breadth-1-spherical-glance`, base `3aa0cc6`):
+- contract: `docs/classroom-oracle/breadth-1-spherical-glance-contract.md` (`d5b975b`). Section 11 is the
+  post-run seed-tie clarification (`8158809`, Option A: `SEED_TIE_DOT_EPS = 1e-12`, ties to the smaller row,
+  then column).
+- implementation: `tools/classroom_oracle/breadth1_{spec,render,glance,visuals}.py` and
+  `check_breadth1.py`. Frozen at `0106269` before the canonical run; presentation fix `0a78544`; seed-tie
+  repair `8158809`.
+- report: `docs/classroom-oracle/breadth-1-spherical-glance-report.md` (completion `e2e554e`, acceptance
+  `40a1cb1`).
+- run: `/home/lvelho/rd/f3d-vision/previews/breadth-1-classroom-234-spherical-glance/`. The single
+  canonical EXR is `render/canonical.exr`, sha256
+  `4ea036fc74eab3b3ab06a0c4470c2b01740c9322de0eea522f957ddfffa172f8`. Never re-render; re-analysis reads it.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/breadth-1-classroom-234-spherical-glance/`:
+  - `overview.png` `705265b0…`;
+  - `seed-direction-panorama.png` `02662754…`;
+  - the RGB, range, instance, boundary, histogram and scatter figures;
+  - `global-point-cloud.ply`.
+
+Accepted measured result:
+
+    BREADTH1_CHECKS_PASS        26 / 26 (at the acceptance commit `40a1cb1`)
+    BREADTH1_MUTATIONS_CAUGHT   29 / 29 (from a passing baseline)
+
+Checks 21–22 of `check_breadth1.py` are scoped to the Breadth-1 base `3aa0cc6`. On later commits,
+check 21 reports every later accepted change outside the Breadth-1 files as "undeclared". The first such
+change is this handoff's `CLAUDE.md` and `docs/chat-handoff.md`. That is the guard's scope, not a
+Breadth-1 regression; the frozen-output checks remain valid.
+
+| quantity | value |
+|---|---|
+| catalog objects | 234 |
+| visible at 0.5° / no first hit | 126 / 108 |
+| visible fragmented (> 1 component) | 59 |
+| authored cells / point-cloud points | 222,267 / 222,267 |
+| accepted localized 25 visible | 25 / 25 |
+| visible entirely outside the old Controller domain | 102 |
+| largest 1 / 5 / 25 objects | 24.7 % / 63.4 % / 78.6 % of the sphere |
+| catalog-labelled / noncatalog rendered / no geometry | 82.5 % / 15.4 % / 2.1 % |
+| seeds moved by the seed-tie clarification | only 102 `Rectangle018.002` (187, 63) → (187, 62) and 177 `post-it` (193, 463) → (193, 462) |
+
+Accepted interpretation (durable):
+1. Breadth-1 was **one shallow 720 × 360, 0.5° full-sphere reference observation** from the fixed
+   cyclopean head origin: exactly one canonical Classroom render.
+2. It ran **no controller, no active foveation and no per-object growth**.
+3. The **234 authored catalog objects are the accounting universe**: 126 visible, 108 with no first hit. A
+   missing first hit is a sampling outcome, not a claim of occlusion.
+4. The **catalog is not an exhaustive inventory of rendered scene geometry**. 15.4 % of the sphere is
+   rendered geometry with no catalog id. It is largely associated with collection-instanced scene
+   structure: 56 collection instancers, including 20 school desks, chairs and lamps. That association is
+   not verified cell by cell.
+5. The authored catalog is **oracle / reference information, not natural segmentation ground truth**.
+6. This discrepancy is an **input to Natural Bootstrap-1 design**, not something Breadth-1 repairs. No ids
+   were assigned to collection instances, and the catalog is unchanged.
+7. Controller-01 and Controller-02 remain frozen unless Luiz explicitly reopens them.
+8. Visual Language 1 remains the standing visual semantics.
 
 ## Visual Language 1 + canonical Classroom demo (accepted at `e596a10`)
 
@@ -617,13 +696,11 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02 and Visual Language 1 are accepted. The Controller-01 investigation is closed.
-Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
+Charter 1, Controller-02, Visual Language 1 and Breadth-1 are accepted. The Controller-01 investigation is
+closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Current next activity: Breadth-1: Classroom-234 Spherical Glance** (see "Current roadmap"), on branch
-`classroom-oracle/breadth-1-spherical-glance` from this accepted `main`, with its contract at
-`docs/classroom-oracle/breadth-1-spherical-glance-contract.md`. FSG6f is not repaired, and Natural
-Bootstrap-1 is not started.
+**Next scientific design target: Natural Bootstrap-1** (see "Current roadmap"). It begins only after Luiz
+and Chat discuss its design: no branch, contract or implementation exists yet. FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -661,5 +738,8 @@ Bootstrap-1 is not started.
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
-6. `README.md`'s status paragraph predates the Controller-02 and Visual Language 1 acceptances and the
-   revised roadmap. This handoff update did not touch it.
+6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1 and Breadth-1 acceptances
+   and the revised roadmap. These handoff updates did not touch it.
+7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
+   chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
+   evaluation. It is left for Natural Bootstrap and later evaluation design.
