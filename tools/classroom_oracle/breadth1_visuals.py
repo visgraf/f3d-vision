@@ -430,7 +430,7 @@ def support_histogram(d: Data) -> Image.Image:
             S.text(dr, (x + 4, y0 + 4), lab, size=SMALL - 2, fill=S.INK2, outline=None)
     S.text(dr, (x0 + pw / 2, y0 + ph + 44), "visible solid angle per object (steradian, log scale)", size=S.T_SMALL,
            fill=S.INK2, outline=None, anchor="ma")
-    S.text(dr, (40, y0 + ph / 2), "objects", size=S.T_SMALL, fill=S.INK2, outline=None, anchor="lm")
+    S.text(dr, (x0 - gap_w - 50, y0 - 18), "objects", size=S.T_SMALL, fill=S.INK2, outline=None, anchor="ld")
     s = d.summary
     lx, ly = x0, H - 90
     dr.rounded_rectangle([lx, ly, lx + 26, ly + 20], radius=4, fill=OTHER)
@@ -463,7 +463,10 @@ def support_vs_range(d: Data) -> Image.Image:
     xhi = 2.0 ** math.ceil(math.log2(max(xs))) if xs else 32
     if xhi <= xlo:
         xhi = xlo * 2
-    ylo, yhi = SP.SOLID_ANGLE_EDGES_SR[0], SP.SOLID_ANGLE_EDGES_SR[-1]
+    ylo = 10.0 ** math.floor(math.log10(min(ys))) if ys else SP.SOLID_ANGLE_EDGES_SR[0]
+    yhi = 10.0 ** math.ceil(math.log10(max(ys))) if ys else SP.SOLID_ANGLE_EDGES_SR[-1]
+    if yhi <= ylo:
+        yhi = ylo * 10
 
     def px(v):
         return x0 + (math.log2(v) - math.log2(xlo)) / (math.log2(xhi) - math.log2(xlo)) * pw
@@ -477,7 +480,7 @@ def support_vs_range(d: Data) -> Image.Image:
         dr.line([px(m), y0, px(m), y0 + ph], fill=S.GRID)
         S.text(dr, (px(m), y0 + ph + 8), f"{m:g}", size=SMALL, fill=S.INK2, outline=None, anchor="ma")
         m *= 2
-    for k in range(-7, 2):
+    for k in range(int(round(math.log10(ylo))), int(round(math.log10(yhi))) + 1):
         v = 10.0 ** k
         dr.line([x0, py(v), x0 + pw, py(v)], fill=S.GRID)
         S.text(dr, (x0 - 10, py(v)), f"1e{k}", size=SMALL, fill=S.INK2, outline=None, anchor="rm")
@@ -578,8 +581,9 @@ def overview(d: Data) -> Image.Image:
            size=SMALL, fill=S.INK2, outline=None)
     colorbar(img, r2x + 880, r2y + oy + PH + 34, 520, 18, lo, hi)
     dr = ImageDraw.Draw(img)
-    S.text(dr, (r3x, r3y + oy + PH + 34), "one colour per authored object; ink lines: identity changes; "
-           "numbers: catalog ids of the 15 largest supports", size=SMALL, fill=S.INK2, outline=None)
+    S.text(dr, (r3x, r3y + oy + PH + 34), "one colour per authored object; white: geometry without a catalog id "
+           "(Object Index 0); hatched: no geometry; ink: identity changes; numbers: ids of the 15 largest supports",
+           size=SMALL, fill=S.INK2, outline=None)
 
     # region 4: seeds mini-panorama, accounting waffle, key numbers
     sx, sy = r4x, r4y + oy
@@ -600,12 +604,17 @@ def overview(d: Data) -> Image.Image:
         ("visible, not in the accepted 25", f"{acc['visible_outside_accepted_25']}"),
         ("visible, entirely outside old domain", f"{dom['visible_entirely_outside']}"),
     ]
+    cells = s["cell_accounting"]
+    for lab, key in (("sphere: cells of the 234 catalog objects", "authored"),
+                     ("sphere: geometry without a catalog id (index 0)", "index0_noncatalog_geometry"),
+                     ("sphere: no geometry (index 0, Position 0)", "index0_no_geometry")):
+        lines.append((lab, f"{100 * cells[key]['solid_angle_sr'] / (4 * math.pi):.1f}%"))
     ky = sy + SP.HEIGHT + 50
     for k, (lab, val) in enumerate(lines):
         S.text(dr, (sx, ky + 34 * k), lab, size=S.T_SMALL, fill=S.INK2, outline=None)
         S.text(dr, (sx + 700, ky + 34 * k), val, size=S.T_SMALL, bold=True, outline=None, anchor="ra")
     tk = s["top_k_cumulative_support"]
-    S.text(dr, (sx, ky + 34 * 6 + 12), "largest K objects cover (of 4π): " + "   ".join(
+    S.text(dr, (sx, ky + 34 * len(lines) + 12), "largest K objects cover (of 4π): " + "   ".join(
         f"K={k}: {100 * tk[str(k)]['fraction_of_4pi']:.1f}%" for k in SP.TOP_K), size=S.T_SMALL, outline=None)
     wx, wy = r4x + 780, r4y + oy + 50
     S.text(dr, (wx, r4y + oy), f"{s['catalog_total']} = {s['visible_at_0p5_deg']} visible + "
@@ -650,7 +659,8 @@ def visualize(run: Path, vis: Path) -> dict:
     shutil.copyfile(run / "global-point-cloud.ply", vis / "global-point-cloud.ply")
     out["global-point-cloud.ply"] = {"sha256": sha256(vis / "global-point-cloud.ply"),
                                      "truth_badges": [REF, ORA], "copy_of": str(run / "global-point-cloud.ply")}
-    manifest = {"schema": "Breadth1-visuals-manifest-v1", "run": str(run), "sources": d.sources,
+    from breadth1_glance import code_state
+    manifest = {"schema": "Breadth1-visuals-manifest-v1", "run": str(run), "sources": d.sources, "code": code_state(),
                 "regenerate": f".venv/bin/python tools/classroom_oracle/breadth1_glance.py visualize --run {run} --visuals {vis}",
                 "products": out,
                 "glyphs": {"derived seed direction": "ink diamond with white halo",
