@@ -622,3 +622,62 @@ Unchanged by this step:
 
 No RGB gaze is executed. Controller integration, RGB segmentation, range-based reseeding and Natural Bootstrap-2
 are not started.
+
+## 23. Post-stop numerical clarification (authorized by Luiz and Chat before evaluation)
+
+This section is added after the canonical RGB selection and its STOP. Sections 1–22 above are preserved unchanged
+as committed at `9a862dc`.
+
+**What happened.**
+- The single canonical selection ran at `37c18d8` and was frozen (`selection/rgb-gaze-freeze.json`
+  `87a3bab01f55051316ac1eb45b48f394211f4c7a3a317fd0e61c0e52c36f9b37`).
+- In NMS round 2, the margin to the next eligible candidate was 1.616e-6.
+- Check 27, as implemented, treated twice the section-9 A correctness tolerance (2 × (1e-6 + 1e-9 |A|)) as the
+  ambiguity threshold between two competing scores. It flagged the round, and section 22's stop condition applied.
+- The STOP was legitimate under that conservative interpretation. It is part of the scientific record
+  (report `800af61`).
+
+**Decision (Luiz and Chat), taken before any reference or evaluation input was opened.** The selection is not
+numerically ambiguous. Section 9's `|ΔA| <= 1e-6 + 1e-9 |A|` is a deliberately loose pass / fail agreement bound
+between a stored value and its independent recomputation. It is not an ambiguity threshold between two competing
+scores. The two concepts are now separated:
+
+    E = max over the complete RGB-only raster | A_stored − A_independent |
+        (the checker's independent brute-force membership / two-pass implementation)
+
+    for an NMS round with selected score A_max and margin m to the best eligible candidate
+    outside the deterministic tie set:
+
+    T = SCORE_TIE_REL * max(1, |A_max|)
+    B = 2 E + T
+
+A round is **NUMERICALLY ROBUST** iff:
+1. the independent recomputation selects exactly the same candidate for that round; and
+2. m > B.
+
+It is **NUMERICALLY AMBIGUOUS** iff either condition fails. Section 22's stop condition "a selection decision whose
+margin lies within the declared numerical agreement tolerance (ambiguous)" now means: a round that is numerically
+ambiguous by this definition.
+
+Check 27 is repaired to implement this. It:
+- recomputes the complete score raster independently;
+- computes E;
+- recomputes the greedy NMS independently, and requires its six picks and order to equal the frozen six;
+- for every round, computes T and B and requires m > B whenever a runner-up exists. This holds for both the margin
+  replayed on the stored raster and the margin on the independent raster;
+- reports m, E, T, B and m / B for every round.
+
+The checker gains two probative corruptions:
+- E is raised until 2 E + T exceeds a round margin;
+- the independent recomputation is made to select a different round winner (checker-only, in-process).
+
+The observed winner and margin are not hard-coded.
+
+**Unchanged:**
+- the A correctness tolerance (`|ΔA| <= 1e-6 + 1e-9 |A|`; check 22);
+- `SCORE_TIE_REL = 1e-12`, every sensor radius, K = 6, the score and the NMS definitions;
+- every other check;
+- `nb1c_spec.py`, `nb1c_attention.py`, the frozen selection products and the six gaze positions and their order.
+
+This clarification concerns numerical reproducibility only. It does not alter the attention mechanism, and nothing
+is reselected.

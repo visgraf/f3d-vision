@@ -1,16 +1,13 @@
 # Natural Bootstrap-1c — RGB Candidate Gaze — report
 
-**Status: STOPPED AFTER THE RGB FREEZE, BEFORE EVALUATION — decision required (Luiz and Chat).**
+**Status: STOP RESOLVED BEFORE EVALUATION — evaluation pending.**
 
-No completion marker is written. The pure RGB selection ran once, as specified, and is frozen. A declared stop
-condition then triggered (contract section 22, "a selection decision whose margin lies within the declared numerical
-agreement tolerance"):
-- round 2 of the NMS chose between two adjacent cells whose scores differ by 1.6e-6;
-- that is less than twice the loose A tolerance the contract declared (1e-6 + 1e-9 |A|).
+No completion marker is written yet. The pure RGB selection ran once and is frozen. A declared stop condition then
+triggered on the NMS round-2 margin (see "The STOP"). Evaluation stayed closed.
 
-The measured numerical disagreement is 4.3e-14, so the decision is not numerically ambiguous in fact. The declared
-rule, however, flags it, and resolving that after seeing evaluation would contaminate the experiment. Evaluation,
-figures and the checker were therefore **not** run. No range, NB1a, NB1b or reference product was opened by NB1c.
+Luiz and Chat reviewed the pure-RGB numerical evidence and resolved the STOP before any evaluation input was opened
+(see "Stop resolution"). They kept the frozen six gazes and separated numerical ambiguity from the loose A
+correctness tolerance (contract section 23). No gaze and no scientific selection rule changed.
 
 > **Question.** Can sensor-scale center-surround contrast in one coarse spherical RGB observation, with no depth and
 > no Blender identity, nominate six spatially separated gaze directions that provide useful starting points for
@@ -28,7 +25,8 @@ Contract: `docs/natural-bootstrap/nb1c-rgb-candidate-gaze-contract.md`. MEASURED
 | contract | `9a862dc` *Contract NB1c RGB candidate gaze* |
 | implementation (frozen before the canonical selection) | `37c18d8` *Implement NB1c RGB candidate gaze* |
 | canonical run | `synthetic`, `select`, `freeze` at `37c18d8` (clean, pushed; `process-log.jsonl`) |
-| report | this commit |
+| STOP report | `800af61` *Report NB1c RGB selection; stop before evaluation* |
+| stop resolution (contract section 23, check-27 repair) | this commit |
 
 ## What ran, and what did not
 
@@ -180,21 +178,44 @@ to the RGB proxy only. No evaluation input was read.
 
   Only g2 moves, by one column (0.123°). The other five gazes and the order are unchanged.
 
-## Decision required (Luiz and Chat), before evaluation
+## Stop resolution (Luiz and Chat, before evaluation)
 
-1. **Recommended.** Confirm that round 2 is not ambiguous on the measured agreement (4.3e-14 ≪ 1.6e-6), and authorize,
-   before any evaluation, a narrow amendment of the ambiguity rule. Either:
-   - compare each margin with the measured stored-vs-independent disagreement (for example, margin > 2 × max |ΔA|
-     measured); or
-   - tighten the declared A tolerance (for example to 1e-9 + 1e-9 |A|; the measured maximum is 4.3e-14 absolute,
-     2.1e-12 relative).
+**Decision:** CONTINUE NB1c WITH THE EXISTING FROZEN SIX RGB GAZES.
+- No regeneration, no reselection, no gaze moved.
+- No change to K, a radius, the score, the tie rule or the NMS.
 
-   Then run `evaluate`, `visualize` and the checker with corruptions, and complete the report as the contract
-   specifies.
-2. Alternatively, declare round 2 ambiguous and specify a resolution rule now, before evaluation. Either resolution
-   changes only g2, by 0.123°.
+The STOP was correct under the conservative interpretation, and it stays in the record. The cause was a
+checker / contract numerical-semantics mismatch:
+- section 9's `|ΔA| <= 1e-6 + 1e-9 |A|` is a loose pass / fail agreement bound for one value;
+- check 27 had used twice that bound as the ambiguity threshold between two competing scores.
 
-The frozen selection is unchanged and must not be regenerated. `select` refuses to rerun.
+Contract section 23 now defines:
+- E = max |A_stored − A_independent| over the whole RGB-only raster;
+- per round, T = 1e-12 · max(1, |A_selected|) and B = 2 E + T;
+- a round is robust iff the independent recomputation selects the same candidate and its margin m > B.
+
+Check 27 is repaired accordingly. Only check 27 changed: the A correctness tolerance (check 22) and every other check
+are unchanged, and the checker gains two probative corruptions for the repaired rule.
+
+**Pre-evaluation record** (MEASURED with the repaired `check_nb1c.nms_robustness`, on the RGB proxy and the frozen
+score raster only, before any evaluation input was opened):
+
+    E = max |A_stored - A_independent| = 4.296563105299356e-14   (all 259,200 candidates)
+
+| round | frozen gaze | independent pick | runner-up | margin m | T | B = 2E + T | m / B | robust |
+|---|---|---|---|---|---|---|---|---|
+| 1 | (164, 513) | same | (164, 514) | 0.0329911 | 1.432e-12 | 1.518e-12 | 2.17e10 | yes |
+| **2** | **(28, 354)** | **same** | **(28, 355)** | **1.61588e-6** | **1.331e-12** | **1.417e-12** | **1.14e6** | **yes** |
+| 3 | (231, 510) | same | (231, 509) | 0.00227688 | 1.196e-12 | 1.282e-12 | 1.78e9 | yes |
+| 4 | (303, 436) | same | (303, 435) | 0.0104902 | 1.179e-12 | 1.265e-12 | 8.29e9 | yes |
+| 5 | (110, 719) | same | (111, 719) | 0.00474903 | 1.143e-12 | 1.229e-12 | 3.86e9 | yes |
+| 6 | (122, 47) | same | (122, 48) | 0.00286217 | 1.111e-12 | 1.197e-12 | 2.39e9 | yes |
+
+The margins replayed on the stored raster and computed on the independent raster agree to the printed precision.
+Every round is numerically robust, and the independent six picks equal the frozen six in order.
+
+The frozen selection was re-verified before the clarification. All 7 frozen files are byte-identical to
+`rgb-gaze-freeze.json` `87a3bab0…`.
 
 ## Deviation from the contract's numerical expectation
 

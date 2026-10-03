@@ -10,7 +10,10 @@ keeps its own literal constants and recomputes independently of the generator:
   over a provable superset box (rows within R in latitude; |d lambda| <= asin(sin R / cos phi) + 1 column, or the
   whole row near a pole), derived per candidate (process pool);
 - solid-angle weighted means and the TWO-PASS variance; D_RGB and A;
-- its own greedy NMS (chord-threshold suppression, its own tie rule);
+- its own greedy NMS (chord-threshold suppression, its own tie rule), and the numerical robustness of every NMS
+  round (post-stop clarification, contract section 23): E = max |A_stored - A_independent| over the whole raster,
+  T = SCORE_TIE_REL max(1, |A_selected|), B = 2 E + T; a round is robust iff the independent recomputation selects
+  the same candidate and its margin exceeds B;
 - the post-freeze evaluation descriptors from the pinned NB1a / NB1b products.
 
 ``--corruptions`` plants defects in throwaway mirrors (JSON copied, other files linked) or as in-process
@@ -345,13 +348,37 @@ def nms(scores: np.ndarray, cand: np.ndarray, k: int = K, d_min: float = D_MIN) 
         g = int(tie[0])
         sup = elig & (((c - c[g]) ** 2).sum(1) < thr)
         rest = np.setdiff1d(e, tie)
+        ru = int(rest[np.argmax(a[rest])]) if rest.size else None
         rounds.append({"round": rnd, "index": g, "score": float(a[g]), "tie_set_size": int(tie.size),
                        "eligible_before": int(e.size), "newly_suppressed": int(sup.sum()),
-                       "remaining": int(e.size - sup.sum()),
-                       "margin": float(a[g] - a[rest].max()) if rest.size else None})
+                       "remaining": int(e.size - sup.sum()), "runner_up": ru,
+                       "margin": float(a[g] - a[ru]) if rest.size else None})
         elig &= ~sup
         picks.append(g)
     return picks, rounds
+
+
+def nms_robustness(stored_a: np.ndarray, indep_a: np.ndarray, frozen: list[int]) -> dict:
+    """Contract section 23: E, and per round T, B = 2 E + T, the margins (stored-raster replay and independent
+    raster), whether the independent recomputation selects the frozen candidate, and robustness (m > B)."""
+    d = directions().reshape(-1, 3)
+    E = float(np.abs(np.asarray(stored_a, np.float64) - np.asarray(indep_a, np.float64)).max())
+    p_st, r_st = nms(stored_a, d)
+    p_in, r_in = nms(indep_a, d)
+    rounds = []
+    for k in range(K):
+        T = TIE * max(1.0, abs(r_st[k]["score"]))
+        B = 2.0 * E + T
+        ms, mi = r_st[k]["margin"], r_in[k]["margin"]
+        same = k < len(frozen) and p_in[k] == frozen[k] and p_st[k] == frozen[k]
+        robust = same and all(m is None or m > B for m in (ms, mi))
+        rounds.append({"round": k + 1, "frozen": frozen[k] if k < len(frozen) else None, "independent": p_in[k],
+                       "stored_replay": p_st[k], "same_candidate": bool(same), "margin_stored": ms,
+                       "margin_independent": mi, "runner_up_stored": r_st[k]["runner_up"], "E": E, "T": T, "B": B,
+                       "margin_over_B": (min(m for m in (ms, mi) if m is not None) / B) if ms is not None else None,
+                       "robust": bool(robust)})
+    return {"E": E, "picks_independent": p_in, "picks_stored_replay": p_st, "rounds": rounds,
+            "robust": all(r["robust"] for r in rounds) and p_in == list(frozen)}
 
 
 def alpha_chord(d_g: np.ndarray, d: np.ndarray) -> np.ndarray:
@@ -386,12 +413,13 @@ class Ctx:
         self.sensor_path = REPO / "tools/fsg_geometry.py"
         self.changed_files = None
         self.fov3d_changed = None
+        self.bf_override = None
         with np.load(self.rgb_path) as z:
             self.rgb_files = list(z.files)
             self.srgb8 = np.asarray(z["srgb8"])
 
     def bf(self) -> dict:
-        return brute(self.srgb8)
+        return self.bf_override if self.bf_override is not None else brute(self.srgb8)
 
     def eval_path(self, name: str) -> Path:
         root, rel, _h = EVAL_INPUTS[name]
@@ -719,15 +747,17 @@ def c26(ctx):
 
 def c27(ctx):
     b = ctx.bf()
-    picks, rounds = nms(b["A"], directions())
     lat, lon = lat_lon()
     stored = [g["row"] * W + g["col"] for g in ctx.gazes]
     yp = all(abs(g["yaw_deg"] - math.degrees(lon[g["col"]])) <= 1e-12 and abs(g["pitch_deg"] - math.degrees(lat[g["row"]]))
              <= 1e-12 for g in ctx.gazes)
-    tol = [TOL["A_abs"] + TOL["A_rel"] * abs(r["score"]) for r in rounds]
-    amb = [r["round"] for r, t in zip(rounds, tol) if r["margin"] is not None and r["margin"] <= 2 * t]
-    return picks == stored and yp and not amb, (f"own NMS on the independent raster {picks} vs stored {stored}; yaw / "
-                                                f"pitch {yp}; rounds with a margin inside the agreement tolerance {amb}")
+    rob = nms_robustness(ctx.A, b["A"], stored)
+    per = "; ".join((f"r{r['round']} m={r['margin_stored']:.4g} B={r['B']:.3g} m/B={r['margin_over_B']:.3g}"
+                     if r["margin_stored"] is not None else f"r{r['round']} no runner-up")
+                    + ("" if r["robust"] else " NOT ROBUST") for r in rob["rounds"])
+    ok = rob["robust"] and rob["picks_independent"] == stored and yp
+    return ok, (f"independent picks {rob['picks_independent']} vs frozen {stored}; yaw / pitch {yp}; "
+                f"E = max |A_stored - A_independent| = {rob['E']:.3g}; T = 1e-12 max(1, |A|); B = 2E + T; {per}")
 
 
 def c28(ctx):
@@ -1026,7 +1056,8 @@ CHECKS = [(f"{i:02d}", name, fn) for i, (name, fn) in enumerate([
     ("weighted center / surround means recompute", c19), ("V_C / V_S recompute (two-pass)", c20),
     ("D_RGB and A recompute", c21), ("entire score raster matches", c22), ("score-tie rule obeyed", c23),
     ("greedy spherical NMS recomputes exactly", c24), ("exactly K = 6 gazes", c25),
-    ("selected pair separations satisfy D_MIN", c26), ("selected rows / cols / directions / order match recomputation", c27),
+    ("selected pair separations satisfy D_MIN", c26),
+    ("selected gazes match the recomputation; every NMS round robust (margin > 2E + T)", c27),
     ("freeze verified before any evaluation read", c28), ("evaluation did not alter frozen products", c29),
     ("reference / range / NB1a / NB1b reads only after the freeze", c30), ("evaluation descriptors recompute", c31),
     ("no evaluation datum changes selection / order", c32), ("figures regenerate deterministically", c33),
@@ -1238,6 +1269,34 @@ def corruptions():
     def reg(**variant):
         return lambda m, v, c: regenerate(m, c, **variant)
 
+    def inflate_e(m, v, c):
+        """Stored raster offset at its lowest cell by 0.6 x the smallest round margin: no pick or round changes, but
+        E grows until 2E + T exceeds that margin (contract section 23 must then fail)."""
+        _p, rr = nms(c.A, directions())
+        mmin = min(r["margin"] for r in rr if r["margin"] is not None)
+        delta = 0.6 * mmin
+        low = int(np.argmin(c.A))
+
+        def fn(z):
+            arr = z["A"].reshape(-1).copy()
+            arr[low] += delta
+            z["A"] = arr.reshape(H, W)
+        edit_npz(m / "selection/attention-score.npz", fn)
+        refreeze(m, ["attention-score.npz"])
+        return {"note": f"delta {delta:.3g} at cell {divmod(low, W)} (smallest round margin {mmin:.3g}; broad A tolerance "
+                        f"1e-6 + 1e-9 |A|)"}
+
+    def other_winner(m, v, c):
+        """Checker-only, in-process: the independent raster's best non-tie competitor of the round with the smallest
+        margin is raised above that round's winner, so the independent recomputation selects a different candidate."""
+        _p, rr = nms(c.A, directions())
+        k = min((r for r in rr if r["margin"] is not None), key=lambda r: r["margin"])
+        b = dict(c.bf())
+        a = b["A"].reshape(-1).copy()
+        a[k["runner_up"]] = a[k["index"]] + 1e-3
+        b["A"] = a.reshape(H, W)
+        return {"bf_override": b, "note": f"round {k['round']}: competitor {divmod(k['runner_up'], W)} raised"}
+
     return [
         ("K altered from 6 (regenerated, K = 7)", ("25",), reg(k_budget=7)),
         ("R_CENTER altered (regenerated, 5.5 deg)", ("13", "17"), reg(r_center=math.radians(5.5))),
@@ -1275,6 +1334,8 @@ def corruptions():
         ("an evaluation descriptor altered", ("31",), eval_value),
         ("a synthetic known-answer case failed", ("36",), synth),
         ("tie-break reversed (regenerated)", ("36",), reg(tie_break=False)),
+        ("stored-vs-independent disagreement E raised until 2E + T exceeds a round margin", ("27",), inflate_e),
+        ("independent recomputation selects a different round winner (checker-only, in-process)", ("27",), other_winner),
     ]
 
 
