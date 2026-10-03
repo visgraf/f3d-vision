@@ -293,19 +293,30 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     scene. A few candidate gazes may be enough to bootstrap active
     discovery; their number is an attention budget, not an object-count
     estimate.
-  - Revised near-term chain:
+  - NB1c: RGB Candidate Gaze is accepted and complete. From one coarse
+    spherical RGB observation (no depth, no Blender identity), sensor-scale
+    center-surround contrast nominated six frozen gazes, accepted unchanged
+    in frozen order (freeze `87a3bab0`); gaze #1 is (+76.75°, +7.75°).
+    A candidate gaze is not a successful measurement. Three environment hits
+    are not a bootstrap failure. The mechanism is not retuned toward the
+    NB1b PRIMARY candidates, and later steps consume the frozen ordering
+    (no cherry-picking, e.g. of gaze 3).
+- Active Bootstrap begins after NB1c. NB1c is complete. The next experiment
+  executes RGB gaze #1 exactly once. Near-term chain:
 
         coarse spherical RGB
-          -> RGB candidate gazes
-          -> [future step, not run now] local foveation
-          -> local stereo depth / surface orientation
-          -> active surface growth using geometric continuity
+          -> RGB candidate gaze
+          -> local binocular RGB acquisition
+          -> natural local stereo geometry
+          -> [future, not yet] geometric active growth / controller
 
-  - The next bounded experiment is NB1c: RGB Candidate Gaze. It nominates
-    K = 6 spatially separated gaze directions from one coarse spherical RGB
-    observation by sensor-scale center-surround contrast, with no depth and
-    no Blender identity, and stops there: no gaze is executed, and no
-    controller integration is started.
+  - The next experiment is Active Bootstrap-1a: First Natural Stereo Look.
+    It executes RGB gaze #1 exactly once: one binocular RGB acquisition with
+    the accepted FSG instrument (baseline-projected tangent frame), RGB-only
+    local stereo with no identity, Position or range input, a measurement
+    freeze before any reference truth, then descriptive post-freeze
+    evaluation. No second gaze, no surface growth, no fusion and no
+    controller.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

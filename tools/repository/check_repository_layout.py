@@ -37,7 +37,8 @@ Breadth-1 declares its contract (required), report and five tools/classroom_orac
 declares its contract (required), report and six tools (allowed); the handoff records NB1a accepted.
 Natural Bootstrap-1b declares its contract (required), report and five tools/natural_bootstrap/ nb1b tools (allowed);
 the handoff records NB1b accepted and the post-NB1b pivot to NB1c. Natural Bootstrap-1c declares its contract
-(required), report and five tools/natural_bootstrap/ nb1c tools (allowed).
+(required), report and five tools/natural_bootstrap/ nb1c tools (allowed); the handoff records NB1c accepted and
+the start of Active Bootstrap (AB1a executes RGB gaze #1 exactly once).
 """
 from __future__ import annotations
 
@@ -438,10 +439,13 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at NB1b, with NB1a, Breadth-1, Visual Language 1, Controller-02, "
+    check("chat handoff records accepted main at NB1c, with NB1b, NB1a, Breadth-1, Visual Language 1, Controller-02, "
           "Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, Controller-01A, "
           "Controller-01, RT1 and Core 14 recorded",
-          "main @ 0238f007a505f38087c9e40442243003cd3716cc" in handoff
+          "main @ 6b0ba683555ccc99a7995537087a214b256b70dc" in handoff
+          and "NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_ACCEPTED" in handoff
+          and "NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_COMPLETE" in handoff
+          and "NB1c is complete. The next experiment executes RGB gaze #1 exactly once." in handoff
           and "NATURAL_BOOTSTRAP1B_FOVEAL_SERVICEABILITY_ACCEPTED" in handoff
           and "NATURAL_BOOTSTRAP1B_FOVEAL_SERVICEABILITY_COMPLETE" in handoff
           and "INITIAL BOOTSTRAP SHOULD NOT REQUIRE DEPTH." in handoff

@@ -2,12 +2,18 @@
 
 ## Accepted main
 
-    main @ 0238f007a505f38087c9e40442243003cd3716cc
+    main @ 6b0ba683555ccc99a7995537087a214b256b70dc
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`0238f00` (the NB1b acceptance commit on branch `natural-bootstrap/nb1b-foveal-serviceability`).
+`6b0ba68` (the NB1c acceptance commit on branch `natural-bootstrap/nb1c-rgb-candidate-gaze`).
 
 Accepted milestones:
+- **Natural Bootstrap-1c: RGB Candidate Gaze**, accepted by Luiz and Chat (the machine result, the six frozen RGB
+  gazes unchanged in frozen order, and the qualitative interpretation):
+
+      NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_ACCEPTED
+
+  The accepted completion marker is `NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_COMPLETE`. **NB1c is complete.**
 - **Scientific pivot after NB1b** (a decision by Luiz and Chat, not an experiment): **initial bootstrap should
   not require depth.** See "Current roadmap" for the durable record.
 - **Natural Bootstrap-1b: Foveal Serviceability**, accepted by Luiz and Chat as-is (the machine result, the
@@ -125,7 +131,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after NB1b)
+## Current roadmap (Luiz and Chat, after NB1c)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -133,7 +139,9 @@ Accepted milestones:
       -> Natural Bootstrap-1
            NB1a spherical range connectivity        ACCEPTED
            NB1b foveal serviceability               ACCEPTED
-           NB1c RGB candidate gaze                  NEXT
+           NB1c RGB candidate gaze                  ACCEPTED
+      -> Active Bootstrap
+           AB1a first natural stereo look           NEXT (RGB gaze #1, exactly once)
       -> Classroom validation
       -> Tabletop transfer
            same controller / bootstrap policy,
@@ -190,15 +198,94 @@ Revised near-term conceptual chain:
       -> local stereo depth / surface orientation
       -> active surface growth using geometric continuity
 
-- **NB1c: RGB Candidate Gaze** is the next bounded experiment. It asks whether sensor-scale center-surround
+- **NB1c: RGB Candidate Gaze** (accepted; see its section below) asked whether sensor-scale center-surround
   contrast in one coarse spherical RGB observation (the accepted NB1a RGB proxy), with no depth and no Blender
   identity, can nominate K = 6 spatially separated gaze directions that provide useful starting points for
   active foveal scene discovery. Its angular scales derive from the accepted 12° core (`CORE_FOV_DEG` of the
-  sealed `tools/fsg_geometry.py`). It stops after producing and evaluating the six directions:
-  - no Blender, no stereo, no new depth and no controller; no gaze is executed;
+  sealed `tools/fsg_geometry.py`). It stopped after producing and evaluating the six directions:
+  - no Blender, no stereo, no new depth and no controller; no gaze was executed;
   - no RGB segmentation, no semantics, and no NB1a / NB1b / identity data in selection;
-  - range, NB1a and NB1b products are read only after the RGB result is frozen, for descriptive evaluation;
+  - range, NB1a and NB1b products were read only after the RGB result was frozen, for descriptive evaluation;
   - K = 6 is an attention budget, not an object count.
+
+### Active Bootstrap after NB1c (Luiz and Chat)
+
+**NB1c is complete. The next experiment executes RGB gaze #1 exactly once.**
+
+Near-term chain:
+
+    coarse spherical RGB
+      -> RGB candidate gaze
+      -> local binocular RGB acquisition
+      -> natural local stereo geometry
+      -> [future, not yet] geometric active growth / controller
+
+- **AB1a: First Natural Stereo Look** (branch `active-bootstrap/ab1a-first-natural-stereo-look`, contract
+  `docs/active-bootstrap/ab1a-first-natural-stereo-look-contract.md`) asks whether the eye, starting from the
+  first frozen RGB candidate gaze and the fixed binocular instrument alone, obtains useful local metric geometry
+  from binocular RGB without depth, Blender identity or scene segmentation.
+  - The action is already frozen: NB1c RGB gaze #1, (+76.75°, +7.75°), consumed as-is (no recomputation, no
+    movement, no snapping, no cherry-picking of another gaze).
+  - Instrument: the accepted FSG geometry, profile `full`, 12° core, 256 × 256, IPD 0.063 m, vergence 2.10 m,
+    `baseline_projected` tangent frame, z_rect search [0.75, 4.5] m, OPTIX, 256 spp, fixed head.
+  - One binocular RGB pair; the natural matcher reads only the calibration and the RGB pair (no Object Index,
+    no Position, no range); the measurement is frozen before any reference truth is opened; evaluation is
+    descriptive.
+  - No second gaze, no surface map, no fusion, no FSG6f, no controller. A poor stereo result is the result,
+    not a failure.
+
+## Natural Bootstrap-1c: RGB Candidate Gaze (accepted at `6b0ba68`)
+
+Luiz and Chat accept NB1c: the machine result, the six frozen RGB gazes unchanged in frozen order, and the
+qualitative interpretation.
+
+Record (branch `natural-bootstrap/nb1c-rgb-candidate-gaze`, base `7d1c1b9`):
+- contract: `docs/natural-bootstrap/nb1c-rgb-candidate-gaze-contract.md` (`9a862dc`); section 23 is the
+  pre-evaluation numerical-robustness clarification (`c7d04db`).
+- implementation: `tools/natural_bootstrap/nb1c_{spec,attention,run,visuals}.py` and `check_nb1c.py`. Frozen at
+  `37c18d8` before the canonical selection; check-27 repair `c7d04db`.
+- report: `docs/natural-bootstrap/nb1c-rgb-candidate-gaze-report.md` (STOP report `800af61`, completion `8c7cabf`,
+  acceptance `6b0ba68`).
+- run: `/home/lvelho/rd/f3d-vision/previews/natural-bootstrap-1c-rgb-candidate-gaze/`. The selection is frozen:
+  `selection/rgb-gaze-freeze.json` `87a3bab01f55051316ac1eb45b48f394211f4c7a3a317fd0e61c0e52c36f9b37`;
+  `selection/candidate-gazes.json` `8041b954f7b63d97f060a41aaca5db1ec6e0c2295381523026e98d11f8a5b621`. `select`
+  refuses to rerun; later steps read the frozen products.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/natural-bootstrap-1c-rgb-candidate-gaze/` (`overview.png`
+  `9b79b362…`, the RGB input, attention map, candidate gazes and crops, evaluation and NB1b comparison figures).
+
+Accepted measured result:
+
+    NATURAL_BOOTSTRAP1C_CHECKS_PASS        36 / 36
+    NATURAL_BOOTSTRAP1C_MUTATIONS_CAUGHT   38 / 38 (from a passing baseline)
+
+Check 35 of `check_nb1c.py` is scoped to the NB1c base `7d1c1b9`. On later commits it reports every later
+accepted change outside the NB1c files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 35/36, only check 35). That is the guard's scope, not an NB1c regression; the
+frozen-product checks remain valid.
+
+| rank | row, col | yaw, pitch (°) | A |
+|---|---|---|---|
+| 1 | 164, 513 | +76.75, +7.75 | 1.432258 |
+| 2 | 28, 354 | −2.75, +75.75 | 1.331223 |
+| 3 | 231, 510 | +75.25, −25.75 | 1.196390 |
+| 4 | 303, 436 | +38.25, −61.75 | 1.179161 |
+| 5 | 110, 719 | +179.75, +34.75 | 1.142861 |
+| 6 | 122, 47 | −156.25, +28.75 | 1.110885 |
+
+The round-2 STOP (margin 1.616e-6 against the loose single-value tolerance) was correct under the conservative
+interpretation and stays in the record. It was resolved before evaluation by contract section 23 (E = 4.3e-14;
+B = 2E + T; every round robust; identical independent picks); no gaze, order or selection rule changed.
+
+Accepted interpretation (durable):
+1. The RGB-only center-surround mechanism produces meaningful, spatially diverse visual invitations rather than
+   obvious noise extrema.
+2. A candidate gaze is not a successful measurement.
+3. Three environment hits are not a bootstrap failure: coarse RGB knows visual distinctiveness, not foreground
+   identity.
+4. The mechanism must not be retuned to recover the NB1b PRIMARY candidates.
+5. Gaze 3 independently chooses a much better location on H0004 than the old graph-clearance NB1a seed; this
+   must not be used to cherry-pick gaze 3.
+6. Execution consumes the already frozen RGB ordering.
 
 ## Natural Bootstrap-1b: Foveal Serviceability (accepted at `0238f00`)
 
@@ -861,15 +948,15 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a and NB1b are accepted. The Controller-01
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b and NB1c are accepted. The Controller-01
 investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Current next activity: Natural Bootstrap-1c — RGB Candidate Gaze** (see "Current roadmap" and the
-scientific pivot), on branch `natural-bootstrap/nb1c-rgb-candidate-gaze` from this accepted `main`, with its
-contract at `docs/natural-bootstrap/nb1c-rgb-candidate-gaze-contract.md`. Selection reads only the accepted
-NB1a RGB proxy; range, NB1a and NB1b products are read only after the RGB freeze, for evaluation. No gaze is
-executed. Range-based reseeding, controller integration, RGB segmentation and Natural Bootstrap-2 are not
-started. FSG6f is not repaired.
+**Current next activity: Active Bootstrap-1a — First Natural Stereo Look** (see "Active Bootstrap after NB1c"),
+on branch `active-bootstrap/ab1a-first-natural-stereo-look` from this accepted `main`, with its contract at
+`docs/active-bootstrap/ab1a-first-natural-stereo-look-contract.md`. It executes the frozen NB1c RGB gaze #1
+exactly once: one binocular RGB pair, RGB-only stereo, a measurement freeze before reference truth, then
+descriptive evaluation. No second gaze, no surface growth or fusion, no FSG6f and no controller. Range-based
+reseeding, RGB segmentation and Natural Bootstrap-2 are not started. FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -907,8 +994,9 @@ started. FSG6f is not repaired.
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
-6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a and NB1b
-   acceptances, the revised roadmap and the post-NB1b pivot. These handoff updates did not touch it.
+6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b and NB1c
+   acceptances, the revised roadmap, the post-NB1b pivot and the start of Active Bootstrap. These handoff updates
+   did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.
