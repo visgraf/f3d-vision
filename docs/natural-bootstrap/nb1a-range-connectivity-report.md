@@ -1,11 +1,12 @@
 # Natural Bootstrap-1a — Spherical Range Connectivity — report
 
-**Marker.**
+**Markers.**
 
     NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_COMPLETE
+    NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat review coherence, seedability and plausibility for later active
-interrogation. No ACCEPTED marker is written, and the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted the machine result, the qualitative and scientific
+interpretation and the final figures after review (see "Acceptance record" at the end).
 
 > **Question.** Can local 3-D range continuity alone turn the accepted broad spherical glance into a useful
 > set of connected perceptual hypotheses and representative seed directions, without using Blender object
@@ -403,7 +404,53 @@ Possible next questions, for Luiz and Chat only:
 
 ## Unresolved decisions
 
-1. Qualitative and scientific review: coherence, seedability, plausibility for later active interrogation.
-2. The next cue, if any (RGB continuity, orientation / crease), or controller integration. Not started.
+1. ~~Qualitative and scientific review: coherence, seedability, plausibility for later active interrogation.~~
+   **ACCEPTED** (see "Acceptance record").
+2. ~~The next cue, if any (RGB continuity, orientation / crease), or controller integration.~~ **Decided:** the
+   next question is sensor-qualified look-worthiness, not further segmentation. The next bounded experiment
+   is Natural Bootstrap-1b — Foveal Serviceability. No new cue is added, and controller integration is not
+   started.
 
-NB1b, Controller-02 integration and Natural Bootstrap-2 are not started.
+Controller-02 integration and Natural Bootstrap-2 are not started.
+
+## Acceptance record
+
+Luiz and Chat completed the qualitative and scientific review and **accept NB1a** as committed at `a0c98be`:
+
+    NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_ACCEPTED
+
+- **Machine result accepted:**
+  - `NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_COMPLETE`;
+  - `NATURAL_BOOTSTRAP1A_CHECKS_PASS` 33/33;
+  - `NATURAL_BOOTSTRAP1A_MUTATIONS_CAUGHT` 29/29, from a passing baseline;
+  - no Blender process ran, and no controller ran.
+- **Accepted interpretation** (qualitative and scientific):
+  1. Range continuity discovers useful foreground proto-objects.
+  2. The largest near-foreground hypotheses are coherent and seedable. Their deep-interior seeds have roughly
+     5–13° of clearance.
+  3. A dominant structural shell, H0001, occupies 82.6 % of the sphere.
+  4. The shell is not automatically a segmentation failure. It is a plausible environment / scene-shell
+     representation.
+  5. The long tail of small pieces and singletons exposes thin, grazing and boundary-dominated geometry.
+  6. The count of 453 must not be read as "453 objects".
+  7. The RGB diagnostics show additional appearance structure inside range-derived hypotheses. NB1a does
+     **not** establish that RGB should immediately be added to segmentation.
+  8. The next question is **sensor-qualified look-worthiness**, not further segmentation.
+- **Final figures accepted**, as drawn at `8cc368d` (the full set is in "Visual products"):
+
+  | figure | sha256 |
+  |---|---|
+  | `overview.png` | `eb3348767ce0bbb80c6edd623f051bd1e98aac4172eb4d687318a66dc2e19140` |
+  | `hypothesis-panorama.png` | `c0471cf98e02dd3f97c9486a32073c0c3722faaf80f25324456ded1e887f7b28` |
+  | `seed-panorama.png` | `f4b853a900f0be0f0eefe78d55b71634bdc03c30370886cc10e505cb35492fd7` |
+  | `rgb-edge-contrast.png` | `2ed52df43cdf16a14639534b1842e80d657fe22fd8c77e9f70529d8f276c4ecc` |
+
+- **The frozen discovery products are the accepted NB1a result.** The freeze record is
+  `discovery/bootstrap-freeze.json` `c0236d0424a7724bfe57bf0a19bdf56899b7eadf5e059c9537e785f3a08b826a`. Later
+  steps read them; they are not regenerated.
+- **Naming.** "Possible next questions" above used "NB1b" for RGB continuity. That name now belongs to
+  Natural Bootstrap-1b — Foveal Serviceability, which tests the existing NB1a seeds against the nominal foveal
+  measurement footprint. RGB continuity is not scheduled.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It
+  changed only this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout
+  checker's handoff assertion.
