@@ -249,6 +249,7 @@ def raw_tangent(d: Data, side: str, size: int) -> Image.Image:
     pad = 5
     dr.rectangle([x0 - pad, y0 - pad, x1 + pad, y1 + pad], outline=S.WHITE, width=5)
     dr.rectangle([x0 - pad, y0 - pad, x1 + pad, y1 + pad], outline=S.INK, width=2)
+    S.text(dr, (x0 - pad - 4, y1 + pad + 6), "rectified-core source", size=max(12, size // 40), plate=S.WHITE, anchor="ra")
     ex, ey = epipole_px(d.c, 0 if side == "L" else 1)
     ex, ey = ex * k, ey * k
     if 0 <= ex <= size and 0 <= ey <= size:
@@ -464,6 +465,11 @@ def ev_lines(d: Data) -> list[str]:
         out += ["no overlap pixels: no 3-D or radial error is defined"]
     out += [f"natural-valid composition: catalog {comp['catalog']:,}, O_0 {comp['O_0_noncatalog_geometry']:,}, "
             f"no geometry {comp['no_geometry']:,}"]
+    rc = d.ev["reference_composition"]
+    out += [f"rectified core in reference terms: catalog {rc['core_left_catalog_pixels']:,}, O_0 "
+            f"{rc['core_left_O_0_pixels']:,}, no geometry {k['core_pixels'] - rc['core_left_geometry_pixels']:,}",
+            f"camera model: Position within ±0.5 px ({'yes' if d.ev['camera_model']['ok'] else 'NO'}; max "
+            f"{max(d.ev['camera_model'][s]['max_abs_residual_px'] or 0 for s in ('L', 'R')):.4f} px)"]
     return out
 
 
@@ -635,7 +641,10 @@ def natural_validity(d: Data) -> Image.Image:
            [f"valid = AND of nine terms; natural-valid {d.n_valid:,} / {d.valid.size:,}"], [DER])
     dr = ImageDraw.Draw(img)
     big = 440
-    img.paste(nearest(mask_layer(d.valid), big), (60, 160))
+    if d.n_valid:
+        img.paste(nearest(mask_layer(d.valid), big), (60, 160))
+    else:
+        statement(img, 60, 160, big, big, ["0 natural-valid pixels", f"all {d.valid.size:,} invalid"], hatch=False)
     dr = ImageDraw.Draw(img)
     frame(dr, 60, 160, big, big)
     caption(dr, 60, 160 + big + 8, f"natural-valid mask ({d.n_valid:,} px, dark)", size=15)
@@ -711,13 +720,19 @@ def reference_error(d: Data) -> Image.Image:
     size = 440
     img.paste(nearest(lay["composition"], size), (60, 160))
     hatch_mask(img, 60, 160, size, lay["nogeom"])
+    if lay["nogeom"].all():
+        S.text(ImageDraw.Draw(img), (60 + size / 2, 160 + size / 2), "no geometry in the whole core", size=SMALL,
+               bold=True, plate=EMPTY, anchor="mm")
     dr = ImageDraw.Draw(img)
     frame(dr, 60, 160, size, size)
     rc = d.ev["reference_composition"]
     caption(dr, 60, 160 + size + 8, f"left reference at the core: catalog {rc['core_left_catalog_pixels']:,}, O_0 "
                                     f"{rc['core_left_O_0_pixels']:,} (orange)", size=14)
     caption(dr, 60, 160 + size + 28, f"no geometry {d.valid.size - rc['core_left_geometry_pixels']:,} (pale)", size=14)
-    img.paste(nearest(lay["categories"], size), (540, 160))
+    if (d.valid | d.orc["valid"].astype(bool)).any():
+        img.paste(nearest(lay["categories"], size), (540, 160))
+    else:
+        statement(img, 540, 160, size, size, ["0 natural-valid, 0 reference-valid", "no support to compare"], hatch=False)
     dr = ImageDraw.Draw(img)
     frame(dr, 540, 160, size, size)
     k = d.ev["counts"]
@@ -869,7 +884,10 @@ def overview(d: Data) -> Image.Image:
     lay, (lo, hi) = disparity_layer(d, d.valid)
     valid_or_empty(img, x0, cy0 + 70, s, d, lay, ["0 natural-valid pixels", "no disparity"])
     caption(ImageDraw.Draw(img), x0, cy0 + 70 + s + 4, "disparity (natural-valid)" + (f" {lo:.0f}–{hi:.0f} px" if lay is not None else ""), size=13, fill=S.INK2)
-    img.paste(nearest(mask_layer(d.valid), s), (x0 + s + 30, cy0 + 70))
+    if d.n_valid:
+        img.paste(nearest(mask_layer(d.valid), s), (x0 + s + 30, cy0 + 70))
+    else:
+        statement(img, x0 + s + 30, cy0 + 70, s, s, ["valid mask", f"all {d.valid.size:,} pixels invalid"], hatch=False)
     frame(ImageDraw.Draw(img), x0 + s + 30, cy0 + 70, s, s)
     caption(ImageDraw.Draw(img), x0 + s + 30, cy0 + 70 + s + 4, f"valid mask: {d.n_valid:,} / {d.valid.size:,}", size=13,
             fill=S.INK2)
@@ -886,10 +904,14 @@ def overview(d: Data) -> Image.Image:
     region(img, ax, dy0, aw, dh, "D", "REFERENCE / EVALUATION (post-freeze)", [REF])
     lay = ref_layers(d)
     s = 380
-    img.paste(nearest(lay["categories"], s), (ax + 20, dy0 + 70))
+    img.paste(nearest(lay["composition"], s), (ax + 20, dy0 + 70))
+    hatch_mask(img, ax + 20, dy0 + 70, s, lay["nogeom"])
+    if lay["nogeom"].all():
+        S.text(ImageDraw.Draw(img), (ax + 20 + s / 2, dy0 + 70 + s / 2), "no geometry in the whole core", size=SMALL,
+               bold=True, plate=EMPTY, anchor="mm")
     frame(ImageDraw.Draw(img), ax + 20, dy0 + 70, s, s)
-    caption(ImageDraw.Draw(img), ax + 20, dy0 + 70 + s + 4, "overlap ink; natural-only vermilion; reference-only sky",
-            size=13, fill=S.INK2)
+    caption(ImageDraw.Draw(img), ax + 20, dy0 + 70 + s + 4, "reference at the rectified core (Object Index / Position); "
+            "hatched: no geometry", size=13, fill=S.INK2)
     ov = d.orc["overlap"].astype(bool)
     if ov.any():
         rad = d.orc["radial_signed_m"]
