@@ -143,6 +143,9 @@ smallest `(row, column)` cell. The seed record says whether the fallback was use
 For the accepted 25, the angular separation between this seed and the accepted `seed_gaze_deg` is also
 reported, as a descriptive DERIVED comparison.
 
+*Post-run clarification:* section 11 defines the numerical tie semantics of step 3. The rule above is kept
+as originally frozen.
+
 ### 4.6 Range
 
 `range = ‖position_w − head_origin_w_m‖`, in float64, from the float32 Position pass and the seeds
@@ -306,7 +309,8 @@ union-find).
 10. Connected components recompute with the seam-aware rule (count, cells and solid angle of each, order).
 11. Range values recompute from Position and the cyclopean origin.
 12. Per-object min / median / max range recompute.
-13. Every seed lies on its object's largest component and reproduces the frozen selection rule.
+13. Every seed lies on its object's largest component and reproduces the frozen selection rule, with the
+    numerical tie semantics of section 11.
 14. The old Controller-domain flags recompute.
 15. The accepted-25 membership flags reproduce the accepted sources (both must agree).
 16. The rankings reproduce the raw supports.
@@ -406,3 +410,52 @@ Permitted fixes:
 
 The accepted Visual Language 1 renderer, `fov3d/`, the controllers and the accepted helpers are not
 modified.
+
+## 11. Post-run numerical clarification: representative-seed ties (2026-10-03)
+
+**Authorized by Luiz/Chat on 2026-10-03, after the valid canonical observation** (Option A of the Breadth-1
+report's check-13 decision). This is a numerical clarification of section 4.5 step 3, not a new
+observation and not scientific retuning.
+
+**Why.** The frozen rule picks the maximum float64 dot product, with ties to the smaller row, then the
+smaller column. Its tie-break applies only to bitwise-equal values, and no summation order is fixed. For
+mathematically mirror-symmetric components, two cells are exactly equidistant from the mean, but their
+dot products differ by about 1 ulp, so the outcome depended on arithmetic order. The independent checker
+and the generator disagreed on 3 of 126 canonical seeds.
+
+**Rule.**
+
+    SEED_TIE_DOT_EPS = 1e-12
+
+After computing the dot products of the support cells to the normalized solid-angle-weighted mean, every
+cell with `max_dot - dot <= SEED_TIE_DOT_EPS` is numerically tied. The tied set is resolved by the smaller
+row, then the smaller column. The fallback (norm below 1e-9) is unchanged. The constant lives in
+`tools/classroom_oracle/breadth1_spec.py`, and the checker keeps an independent literal copy.
+
+**Scope.**
+- It repairs floating-point ambiguity in mathematically symmetric cases.
+- It may change only the DERIVED representative seed.
+- It changes nothing else:
+  - the observation;
+  - visibility;
+  - components;
+  - support;
+  - range;
+  - rank;
+  - catalog accounting;
+  - the renderer configuration.
+- **No new Blender render is authorized.** The seeds are re-derived from the saved canonical EXR (sha256
+  `4ea036fc74eab3b3ab06a0c4470c2b01740c9322de0eea522f957ddfffa172f8`) by `analyze`, `visualize` and the
+  checker only.
+
+**Checks.**
+- Check 13 applies this rule independently. It keeps its own cell geometry, spherical-weight expression,
+  BFS components and weighted mean, and shares only the epsilon.
+- Known-answer controls on exactly mirror-symmetric synthetic components (no Blender) exercise the rule
+  in both the generator and the checker:
+  - a two-cell row where exact float64 equality would pick the larger column;
+  - a four-way tie straddling the equator;
+  - a four-way tie across the longitude seam.
+- The corruption suite adds a seed moved to another numerically tied cell, which only the tie-break can
+  reject.
+- Corruptions count as demonstrated only from a passing uncorrupted baseline.

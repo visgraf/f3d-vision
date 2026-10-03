@@ -76,6 +76,11 @@ REQUIRED_BADGES = {"rgb-panorama.png": "REFERENCE / EVALUATION", "range-panorama
                    "instance-panorama.png": "ORACLE INPUT", "seed-direction-panorama.png": "DERIVED",
                    "support-size-histogram.png": "DERIVED", "support-vs-range.png": "DERIVED"}
 RTOL = 1e-12
+# contract section 11 (post-run numerical clarification): literal copies, not imported from the generator
+SEED_TIE_DOT_EPS = 1e-12
+SEED_TIE_CONTROLS = [([(60, 28), (60, 29)], (60, 28)),
+                     ([(179, 359), (179, 360), (180, 359), (180, 360)], (179, 359)),
+                     ([(179, 719), (179, 0), (180, 719), (180, 0)], (179, 0))]
 _CACHE: dict = {}
 
 
@@ -133,6 +138,45 @@ def bfs_components(mask: np.ndarray, wrap: bool = True) -> list[list[tuple[int, 
                         q.append((rr, cc))
         comps.append(cells)
     return comps
+
+
+def seed_of(comps: list[dict], dirs: np.ndarray, wts: np.ndarray) -> tuple[tuple[int, int], bool, int | None]:
+    """Contract 4.5 + section 11, independently: largest component, weighted mean, ties within the epsilon."""
+    big = comps[0]
+    dd = dirs[big["rows"], big["cols"]]
+    m = (dd * wts[big["rows"]][:, None]).sum(0)
+    nm = float(np.linalg.norm(m))
+    if nm < 1e-9:
+        return tuple(big["min_rc"]), True, None
+    dots = dd @ (m / nm)
+    tied = np.flatnonzero(dots.max() - dots <= SEED_TIE_DOT_EPS)
+    return min((int(big["rows"][k]), int(big["cols"][k])) for k in tied), False, int(len(tied))
+
+
+def ordered_bfs(mask: np.ndarray, wts: np.ndarray) -> list[dict]:
+    comps = []
+    for cells in bfs_components(mask):
+        rr = np.array([c[0] for c in cells]); cc = np.array([c[1] for c in cells])
+        comps.append({"rows": rr, "cols": cc, "cells": len(cells),
+                      "omega": float(np.bincount(rr, minlength=H) @ wts), "min_rc": list(min(cells))})
+    comps.sort(key=lambda c: (-c["omega"], -c["cells"], c["min_rc"][0], c["min_rc"][1]))
+    return comps
+
+
+def tie_controls() -> list[tuple[tuple[int, int], tuple[int, int], int | None, int]]:
+    """Known-answer controls on exactly mirror-symmetric synthetic components: (want, got, tied, n)."""
+    wts = weights_independent()
+    yc, pc = centres()
+    dirs = unit(*np.meshgrid(yc, pc))
+    out = []
+    for cells, want in SEED_TIE_CONTROLS:
+        mask = np.zeros((H, W), bool)
+        for r, c in cells:
+            mask[r, c] = True
+        comps = ordered_bfs(mask, wts)
+        got, _fb, tied = seed_of(comps, dirs, wts)
+        out.append((want, got, tied, len(comps)))
+    return out
 
 
 # ------------------------------------------------------------------ context
@@ -201,24 +245,10 @@ class Ctx:
                 objs[oid] = {"cells": 0}
                 continue
             omega = float((mask.sum(axis=1) * wts).sum())
-            comps = []
-            for cells in bfs_components(mask):
-                rr = np.array([c[0] for c in cells]); cc = np.array([c[1] for c in cells])
-                comps.append({"rows": rr, "cols": cc, "cells": len(cells),
-                              "omega": float(np.bincount(rr, minlength=H) @ wts), "min_rc": list(min(cells))})
-            comps.sort(key=lambda c: (-c["omega"], -c["cells"], c["min_rc"][0], c["min_rc"][1]))
-            big = comps[0]
-            dd = dirs[big["rows"], big["cols"]]
-            m = (dd * wts[big["rows"]][:, None]).sum(0)
-            nm = float(np.linalg.norm(m))
-            if nm < 1e-9:
-                seed = tuple(big["min_rc"]); fb = True
-            else:
-                dots = dd @ (m / nm)
-                cand = [(int(big["rows"][k]), int(big["cols"][k])) for k in np.flatnonzero(dots == dots.max())]
-                seed = min(cand); fb = False
+            comps = ordered_bfs(mask, wts)
+            seed, fb, tied = seed_of(comps, dirs, wts)
             r = rng[mask]
-            objs[oid] = {"cells": n, "omega": omega, "comps": comps, "seed": seed, "fallback": fb,
+            objs[oid] = {"cells": n, "omega": omega, "comps": comps, "seed": seed, "fallback": fb, "tied": tied,
                          "range": (float(np.min(r)), float(np.median(r)), float(np.max(r))),
                          "intersects": bool((mask & in_dom).any()), "outside": int((mask & ~in_dom).sum())}
         out = {"weights": wts, "cls": cls, "range": rng, "objs": objs, "yc": yc, "pc": pc}
@@ -442,11 +472,20 @@ def c13(ctx):
         big = r["comps"][0]
         on_big = any(int(rr) == rc[0] and int(cc) == rc[1] for rr, cc in zip(big["rows"], big["cols"]))
         if (ctx.instance[rc] != oid or not on_big or rc != r["seed"] or s["fallback"] != r["fallback"]
+                or s.get("tied_candidates") != r["tied"] or so.get("tied_candidates") != r["tied"]
                 or (so["row"], so["col"]) != rc or s["yaw_deg"] != float(yc[rc[1]]) or s["pitch_deg"] != float(pc[rc[0]])
                 or so["yaw_deg"] != s["yaw_deg"] or so["pitch_deg"] != s["pitch_deg"]):
             bad.append((oid, f"seed {rc} vs {r['seed']}"))
-    ok = not bad and len(seeds) == nvis
-    return ok, f"{nvis} seeds; {len(bad)} wrong {bad[:3]}"
+    eps_ok = (ctx.seeds.get("tie_semantics", {}).get("SEED_TIE_DOT_EPS") == SEED_TIE_DOT_EPS
+              and ctx.manifest.get("seed_tie_rule", {}).get("SEED_TIE_DOT_EPS") == SEED_TIE_DOT_EPS
+              and all(c["ok"] for c in ctx.manifest["seed_tie_rule"]["control"]))
+    controls = tie_controls()
+    ctl_ok = all(got == want and comps == 1 and tied == len(cells)
+                 for (want, got, tied, comps), (cells, _w) in zip(controls, SEED_TIE_CONTROLS))
+    ties = sum(1 for v in rec.values() if v["cells"] and (v["tied"] or 0) > 1)
+    ok = not bad and len(seeds) == nvis and eps_ok and ctl_ok
+    return ok, (f"{nvis} seeds ({ties} with numerically tied candidates); {len(bad)} wrong {bad[:3]}; "
+                f"declared epsilon {eps_ok}; independent tie controls {ctl_ok} {[c[:2] for c in controls]}")
 
 
 def c14(ctx):
@@ -833,6 +872,33 @@ def corruptions():
         s["row"], s["col"] = int(rr[k]), int(cc[k])
         (m / "seed-directions.json").write_text(json.dumps(d))
 
+    def seed_other_tie(m, v, c):
+        """Move one seed to another numerically tied cell: on support, on the largest component, equally near
+        the mean; only the declared tie-break (smaller row, then column) rejects it."""
+        rec = c.recompute()["objs"]
+        wts = weights_independent()
+        yc, pc = centres()
+        dirs = unit(*np.meshgrid(yc, pc))
+        for oid in sorted(rec):
+            v_ = rec[oid]
+            if not v_["cells"] or (v_["tied"] or 0) < 2:
+                continue
+            big = v_["comps"][0]
+            dd = dirs[big["rows"], big["cols"]]
+            mu = (dd * wts[big["rows"]][:, None]).sum(0); mu /= np.linalg.norm(mu)
+            dots = dd @ mu
+            tied = sorted((int(big["rows"][k]), int(big["cols"][k])) for k in np.flatnonzero(dots.max() - dots <= SEED_TIE_DOT_EPS))
+            other = tied[-1]
+            for name in ("seed-directions.json", "object-stats.json"):
+                d = json.loads((m / name).read_text())
+                for s in (d["seeds"] if name.startswith("seed") else [o["seed"] for o in d["objects"] if o["instance_id"] == oid]):
+                    if s is not None and s.get("instance_id", oid) == oid:
+                        s["row"], s["col"] = other
+                        s["yaw_deg"], s["pitch_deg"] = float(yc[other[1]]), float(pc[other[0]])
+                (m / name).write_text(json.dumps(d))
+            return {"note": f"object {oid}: {tied[0]} -> {other}"}
+        return {"not_applicable": "no numerically tied seed"}
+
     def median(d):
         first_visible(d)["range_m"]["median"] += 0.01
 
@@ -918,6 +984,7 @@ def corruptions():
         ("broken seam/component count", "10", split_component),
         ("components counted without the longitude wrap", "10", no_wrap),
         ("seed moved off support", "13", seed_off),
+        ("seed moved to another numerically tied cell (tie-break)", "13", seed_other_tie),
         ("altered range statistic", "12", stats(median)),
         ("flipped old-domain flag", "14", stats(flip_domain)),
         ("flipped accepted-25 flag", "15", stats(flip_25)),
@@ -943,6 +1010,7 @@ def corruptions():
 
 def corruption_suite(run: Path, vis: Path) -> tuple[int, int]:
     caught = total = 0
+    results = []
     suite = corruptions()
     for name, target, fn in suite:
         with tempfile.TemporaryDirectory(prefix="breadth1-corrupt-") as td:
@@ -952,6 +1020,7 @@ def corruption_suite(run: Path, vis: Path) -> tuple[int, int]:
                 print(f"{PREFIX} corruption N/A [{target}] {name}: {overrides['not_applicable']}")
                 continue
             total += 1
+            note = overrides.pop("note", "")
             ctx = Ctx(m, v)
             for attr, value in overrides.items():
                 setattr(ctx, attr, value)
@@ -960,8 +1029,10 @@ def corruption_suite(run: Path, vis: Path) -> tuple[int, int]:
             failed = {r["check"] for r in res if not r["ok"]}
             hit = target in failed
             caught += hit
-            print(f"{PREFIX} corruption {'CAUGHT' if hit else 'MISSED'} [{target}] {name} (failed: {sorted(failed)})")
-    return caught, total
+            results.append({"name": name, "target": target, "caught": bool(hit), "failed": sorted(failed), "note": note})
+            print(f"{PREFIX} corruption {'CAUGHT' if hit else 'MISSED'} [{target}] {name}"
+                  + (f" ({note})" if note else "") + f" (failed: {sorted(failed)})")
+    return caught, total, results
 
 
 def main(argv=None) -> int:
@@ -980,10 +1051,11 @@ def main(argv=None) -> int:
         print(f"{PREFIX} BREADTH1_CHECKS_PASS")
     out = {"schema": "Breadth1-check-summary-v1", "checks": res, "passed": ok, "code": git("rev-parse", "HEAD").strip()}
     if a.corruptions:
-        caught, total = corruption_suite(run, vis)
-        out["corruptions"] = {"caught": caught, "total": total}
-        print(f"{PREFIX} CORRUPTIONS caught={caught}/{total}")
-        if caught == total:
+        caught, total, results = corruption_suite(run, vis)
+        probative = ok  # a corruption only demonstrates its check when the uncorrupted baseline passes
+        out["corruptions"] = {"caught": caught, "total": total, "baseline_passing": probative, "results": results}
+        print(f"{PREFIX} CORRUPTIONS caught={caught}/{total}" + ("" if probative else " (NOT PROBATIVE: baseline failing)"))
+        if caught == total and probative:
             print(f"{PREFIX} BREADTH1_MUTATIONS_CAUGHT")
         ok = ok and caught == total
     if a.write_summary:

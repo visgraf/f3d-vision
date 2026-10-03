@@ -47,6 +47,20 @@ SOURCES = {
 DOMAIN_YAW_DEG = (-25.0, 25.0)
 DOMAIN_PITCH_DEG = (-20.0, 20.0)
 SEED_FALLBACK_NORM = 1e-9
+# Post-run numerical clarification of the representative-seed rule (contract section 11), authorized by
+# Luiz/Chat on 2026-10-03 after the valid canonical observation.  Support cells whose float64 dot product
+# to the normalized solid-angle-weighted mean satisfies max_dot - dot <= SEED_TIE_DOT_EPS are numerically
+# tied and resolved by smaller row, then smaller column.  It removes round-off ambiguity in mathematically
+# mirror-symmetric components; it changes only the DERIVED representative seed, never the observation,
+# visibility, components, supports, ranges, ranks or accounting.
+SEED_TIE_DOT_EPS = 1e-12
+# Known-answer controls of that rule (exact mirror symmetry; contract section 11): (name, cells, seed).
+# In the first, exact float64 equality would pick (60, 29): the round-off favours the larger column.
+SEED_TIE_CONTROLS = [
+    ("two-cell row, round-off favours the larger column", [(60, 28), (60, 29)], (60, 28)),
+    ("four-way tie straddling the equator", [(179, 359), (179, 360), (180, 359), (180, 360)], (179, 359)),
+    ("four-way tie across the longitude seam", [(179, 719), (179, 0), (180, 719), (180, 0)], (179, 0)),
+]
 SOLID_ANGLE_EDGES_SR = [10.0 ** (k / 2.0) for k in range(-14, 3)]
 CELL_COUNT_EDGES = [2 ** k for k in range(0, 19)]
 RANGE_EDGES_M = [0.0] + [2.0 ** (k / 2.0) for k in range(-6, 13)] + [math.inf]

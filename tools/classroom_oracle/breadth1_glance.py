@@ -200,24 +200,42 @@ def ordered_components(mask: np.ndarray, weights: np.ndarray) -> list[dict]:
 
 
 def representative_seed(comp: dict, dirs: np.ndarray, weights: np.ndarray) -> dict:
-    """Contract 4.5: the support cell nearest the solid-angle-weighted mean direction."""
+    """Contract 4.5 with the section-11 tie semantics: the support cell nearest the solid-angle-weighted
+    mean direction; cells within SEED_TIE_DOT_EPS of the maximum dot product are tied (row, then column)."""
     rows, cols = comp["rows"], comp["cols"]
     d = dirs[rows, cols]
     m = (d * weights[rows][:, None]).sum(axis=0)
     norm = float(np.linalg.norm(m))
     if norm < SP.SEED_FALLBACK_NORM:
         r, c = comp["min_rc"]
-        fallback, dot = True, None
+        fallback, dot, tied = True, None, None
     else:
         m = m / norm
         dots = d @ m
-        best = np.flatnonzero(dots == dots.max())
+        best = np.flatnonzero(dots.max() - dots <= SP.SEED_TIE_DOT_EPS)
         k = best[np.lexsort((cols[best], rows[best]))[0]]
         r, c = int(rows[k]), int(cols[k])
-        fallback, dot = False, float(dots[k])
+        fallback, dot, tied = False, float(dots[k]), int(len(best))
     return {"row": int(r), "col": int(c), "yaw_deg": float(SP.yaw_centers_deg()[c]),
             "pitch_deg": float(SP.pitch_centers_deg()[r]), "fallback": fallback,
-            "mean_norm": norm, "dot_to_mean": dot}
+            "mean_norm": norm, "dot_to_mean": dot, "tied_candidates": tied}
+
+
+def seed_tie_control() -> list[dict]:
+    """Known-answer controls of the section-11 tie rule on exactly mirror-symmetric synthetic components."""
+    weights, dirs = SP.row_weights(), SP.cell_directions_h()
+    out = []
+    for name, cells, want in SP.SEED_TIE_CONTROLS:
+        mask = np.zeros((SP.HEIGHT, SP.WIDTH), bool)
+        for r, c in cells:
+            mask[r, c] = True
+        comps = ordered_components(mask, weights)
+        seed = representative_seed(comps[0], dirs, weights)
+        got = (seed["row"], seed["col"])
+        out.append({"name": name, "cells": [list(c) for c in cells], "expected": list(want), "got": list(got),
+                    "components": len(comps), "tied_candidates": seed["tied_candidates"],
+                    "ok": got == tuple(want) and len(comps) == 1 and seed["tied_candidates"] == len(cells)})
+    return out
 
 
 def angular_distance_deg(a: np.ndarray, b: np.ndarray) -> float:
@@ -273,6 +291,9 @@ def analyze(run: Path) -> dict:
     if len(catalog) != SP.CATALOG_COUNT:
         raise SystemExit(f"{PREFIX} STOP catalog has {len(catalog)} objects")
     acc25, acc_seed = accepted_25()
+    tie_control = seed_tie_control()
+    if not all(c["ok"] for c in tie_control):
+        raise SystemExit(f"{PREFIX} STOP the seed tie-rule control failed: {tie_control}")
 
     g = extract_exr(exr)
     inst, pos, rgb = g["instance"], g["position_w"], g["rgb"]
@@ -357,6 +378,8 @@ def analyze(run: Path) -> dict:
         "head_R_wh": r_wh.tolist(), "head_origin_w_m": o_w.tolist(),
         "processes": [json.loads(l) for l in (run / "process-log.jsonl").read_text().splitlines() if l.strip()],
         "orientation": orient,
+        "seed_tie_rule": {"SEED_TIE_DOT_EPS": SP.SEED_TIE_DOT_EPS, "control": tie_control,
+                          "note": "post-run numerical clarification, contract section 11; seeds only"},
         "truth": {"render/canonical.exr": "REFERENCE / EVALUATION (Combined, Position) + ORACLE INPUT (Object Index)",
                   "glance.npz": "REFERENCE / EVALUATION (rgb, position_w) + ORACLE INPUT (instance)",
                   "range.npz": "REFERENCE / EVALUATION (range from Position) + DERIVED (weights, classes)",
@@ -469,6 +492,9 @@ def run_outputs(run, g, rng, weights, cls, comp_raster, objects, comps_out, seed
         "note": "analysis only; no seed causes an observation",
         "rule": "largest component; solid-angle-weighted mean of cell-centre directions; nearest support cell "
                 "(max dot, ties row then col); fallback below norm 1e-9: smallest (row, col) cell",
+        "tie_semantics": {"SEED_TIE_DOT_EPS": SP.SEED_TIE_DOT_EPS,
+                          "rule": "cells with max_dot - dot <= SEED_TIE_DOT_EPS are tied; smaller row, then column",
+                          "status": "post-run numerical clarification (contract section 11), authorized 2026-10-03"},
         "seeds": seeds_out})
     write_json(run / "summary.json", summary)
     with open(run / "object-stats.csv", "w", newline="") as f:
