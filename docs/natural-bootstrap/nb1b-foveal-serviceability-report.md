@@ -1,11 +1,12 @@
 # Natural Bootstrap-1b — Foveal Serviceability — report
 
-**Marker.**
+**Markers.**
 
     NATURAL_BOOTSTRAP1B_FOVEAL_SERVICEABILITY_COMPLETE
+    NATURAL_BOOTSTRAP1B_FOVEAL_SERVICEABILITY_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat review the result. No ACCEPTED marker is written, and the branch is not
-merged.
+**Status: ACCEPTED.** Luiz and Chat accepted the machine result, the measured classification and queues, the
+qualitative and scientific interpretation and the figures after review (see "Acceptance record" at the end).
 
 > **Question.** Which frozen NB1a natural hypotheses have an existing deep-interior seed that can safely
 > accommodate the current foveal measurement footprint?
@@ -423,11 +424,65 @@ angular clearance, or treat such seeds differently, is a decision for Luiz and C
 
 ## Unresolved decisions
 
-1. Qualitative and scientific review of NB1b and its figures (Luiz and Chat).
-2. Whether seed selection should later use an angular (footprint-based) clearance, given the H0004 / H0042 /
-   H0013 finding. NB1a seeds were kept fixed here by contract.
-3. What, if anything, follows for the 81 MARGINAL hypotheses and the environment candidate. They are out of scope
-   for NB1b.
+1. ~~Qualitative and scientific review of NB1b and its figures (Luiz and Chat).~~ **ACCEPTED** (see "Acceptance
+   record").
+2. ~~Whether seed selection should later use an angular (footprint-based) clearance, given the H0004 / H0042 /
+   H0013 finding.~~ **Decided:** the project does not proceed next with range-based, sensor-aware reseeding. The
+   terminology is fixed instead: NB1a "clearance" is **graph-interior clearance** (see "Acceptance record").
+3. ~~What, if anything, follows for the 81 MARGINAL hypotheses and the environment candidate.~~ **Decided:** not
+   pursued as a range-based next step. The next bounded experiment is Natural Bootstrap-1c — RGB Candidate Gaze
+   (see "Acceptance record").
 
-NB1b is not merged. No PRIMARY or SECONDARY look was executed. Controller-02 integration, RGB segmentation and
-Natural Bootstrap-2 are not started.
+No PRIMARY or SECONDARY look was executed. Controller-02 integration, RGB segmentation and Natural Bootstrap-2 are
+not started.
+
+## Acceptance record
+
+Luiz and Chat completed the qualitative and scientific review and **accept NB1b** as committed at `e6ff9e4`:
+
+    NATURAL_BOOTSTRAP1B_FOVEAL_SERVICEABILITY_ACCEPTED
+
+- **Machine result accepted:**
+  - `NATURAL_BOOTSTRAP1B_FOVEAL_SERVICEABILITY_COMPLETE`;
+  - `NATURAL_BOOTSTRAP1B_CHECKS_PASS` 33/33;
+  - `NATURAL_BOOTSTRAP1B_MUTATIONS_CAUGHT` 30/30, from a passing baseline;
+  - no Blender process ran, and no controller ran.
+- **Measured classification accepted** (453 hypotheses in total):
+
+  | class | hypotheses |
+  |---|---|
+  | `ENVIRONMENT_CANDIDATE` | 1 |
+  | `PRIMARY_LOOK` | 2 |
+  | `SECONDARY_LOOK` | 3 |
+  | `MARGINAL` | 81 |
+  | `EDGE_ONLY` | 366 |
+
+- **Queues accepted:**
+  - PRIMARY: P1 H0002, P2 H0003;
+  - SECONDARY: S1 H0009, S2 H0006, S3 H0007.
+- **Figures accepted** (qualitative figures include; the full set is in "Visual products"):
+
+  | figure | sha256 |
+  |---|---|
+  | `overview.png` | `417084b6542c3a474c6f9cef463c65e18b480769da9d5f9aa18624fb70e7abb5` |
+  | `serviceability-panorama.png` | `f6a25f5da37611a23a2fffa94d60673515372b1629c74bd32a0640cffd602ee1` |
+  | `footprint-examples.png` | `bab8bb95177e5dc62d9e6d53205e430cb072a87a399b0b5beb1e7b67a02c201b` |
+
+- **Qualitative acceptance:**
+  1. The sensor-serviceability categories are visually meaningful.
+  2. P1 and P2 are coherent, robust foreground candidates.
+  3. The SECONDARY distinction is visibly explained by the full footprint crossing neighbouring structure.
+  4. The > 2π rule cleanly isolates the large environment / scene shell.
+  5. H0004 visibly confirms an important metric distinction: NB1a graph-interior clearance is **not** direct
+     angular room around the sensor.
+  6. The minor presentation issues (the truncated O_0 label, the thin small-count bars) are non-blocking.
+- **Terminology, going forward.** NB1a "clearance" means **graph-interior clearance**: multi-source Dijkstra
+  distance along retained continuity edges from label-boundary cells. It must not be described as direct angular
+  depth inside a region.
+- **NB1b is accepted as-is.** The frozen selection is the accepted result: freeze record
+  `selection/serviceability-freeze.json` `f99b7cae02498feb21ae1d80978b57c877c44984067d55c7fd2bbe189efb6e9a`.
+  Later steps read it; it is not regenerated, and nothing is reseeded or modified.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It changed
+  only this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's
+  handoff assertion, which record the decision that follows NB1b: initial natural bootstrap no longer assumes
+  broad dense depth, and the next bounded experiment is Natural Bootstrap-1c — RGB Candidate Gaze.
