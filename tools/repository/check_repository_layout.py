@@ -32,6 +32,8 @@ handoff records the charter accepted. Controller-02 declares its contract (requi
 (allowed), and its two fov3d modules as allowed additions (every pre-existing fov3d file stays identical);
 the handoff records Controller-02 accepted (SCENE_CLOSED, not global quiescence). Visual Language 1
 declares its contract (required), its methodology document, report and tools/visual_language/ tools (allowed).
+Breadth-1 declares its contract (required), report and five tools/classroom_oracle/breadth1_* / check tools
+(allowed).
 """
 from __future__ import annotations
 
@@ -91,9 +93,13 @@ VL1_TOOLS = {f"tools/visual_language/{n}" for n in ("style.py", "vl1_data.py", "
                                                       "render_reference_view.py", "check_visual_language1.py")}
 VL1_ALLOWED = VL1_REQUIRED | VL1_TOOLS | {"docs/methodology/visual-language-1.md",
                                          "docs/methodology/visual-language-1-report.md"}
+BREADTH1_REQUIRED = {"docs/classroom-oracle/breadth-1-spherical-glance-contract.md"}
+BREADTH1_TOOLS = {f"tools/classroom_oracle/{n}" for n in ("breadth1_spec.py", "breadth1_render.py", "breadth1_glance.py",
+                                                            "breadth1_visuals.py", "check_breadth1.py")}
+BREADTH1_ALLOWED = BREADTH1_REQUIRED | BREADTH1_TOOLS | {"docs/classroom-oracle/breadth-1-spherical-glance-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
-                 | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED)
+                 | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -326,6 +332,8 @@ def main() -> int:
     check("the Controller-02 contract is tracked", not missing_02, str(missing_02))
     missing_vl1 = sorted(VL1_REQUIRED - set(index))
     check("the Visual Language 1 contract is tracked", not missing_vl1, str(missing_vl1))
+    missing_b1 = sorted(BREADTH1_REQUIRED - set(index))
+    check("the Breadth-1 contract is tracked", not missing_b1, str(missing_b1))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
