@@ -276,8 +276,8 @@ def bars(img, d_bins: dict, title_x: str, x0, y0, pw, ph, stacks, labels_fmt, ze
         for counts, col, hat in stacks:
             n = counts[k]
             if n:
-                yt = yb - n / top * ph
-                dr.rounded_rectangle([bx0, yt, bx1, yb - 2], radius=3, fill=col)
+                yt = min(yb - n / top * ph, yb - 4)   # a non-zero count stays visible
+                dr.rounded_rectangle([bx0, yt, bx1, yb - 2], radius=1, fill=col)
                 if hat:
                     S.hatch(img, [bx0, yt, bx1, yb - 2], S.WHITE, spacing=7, width=2)
                     dr = ImageDraw.Draw(img)
@@ -359,12 +359,12 @@ def overlap_fig(d: Data) -> Image.Image:
         cols.remove(0)
     cols = cols[:22] + [0]
     cw, rh, x0, y0 = 46, 30, 230, 330
-    W = x0 + cw * len(cols) + 360
-    img = Image.new("RGB", (max(W, 1400), y0 + rh * len(top) + 140), S.SURFACE)
-    B.header(img, "Reference / evaluation: natural hypotheses versus authored identity (descriptive)",
-             ["fraction of each natural hypothesis's spherical support falling in each authored Object Index "
-              "(columns; O_0 = valid geometry without a catalog id)",
-              "rows: the 25 largest natural hypotheses; not a ground-truth confusion matrix, no accuracy implied"],
+    W = x0 + cw * len(cols) + 380
+    img = Image.new("RGB", (max(W, 1240), y0 + rh * len(top) + 90), S.SURFACE)
+    B.header(img, "Natural hypotheses versus authored identity",
+             ["percent of each natural hypothesis's support in each authored Object Index",
+              "(columns; O_0 = valid geometry without a catalog id); rows: the 25 largest hypotheses",
+              "descriptive reference comparison: not a ground-truth confusion matrix, no accuracy implied"],
              BADGES["overlap-matrix.png"])
     dr = ImageDraw.Draw(img)
     names = {r["o"]: r["name"] for r in d.ov["per_reference_id"]}
@@ -400,8 +400,8 @@ def overlap_fig(d: Data) -> Image.Image:
 
 
 def rgb_contrast(d: Data) -> Image.Image:
-    img = Image.new("RGB", (110 + PW + 40, 1700), S.SURFACE)
-    B.header(img, "RGB diagnostic (post-freeze): colour change across retained versus cut range edges",
+    img = Image.new("RGB", (110 + PW + 40, 1560), S.SURFACE)
+    B.header(img, "RGB diagnostic (post-freeze): colour change across range edges",
              ["contrast = || sRGB-decoded linear rgb_i - rgb_j || over each neighbour pair; no threshold; RGB caused "
               "no merge, split, seed change or deletion",
               "top: distribution per edge class (declared bins, fraction of edges); bottom: strongest colour change on "
@@ -532,8 +532,10 @@ def overview(d: Data) -> Image.Image:
     B.hatch_cells(img, (qx, qy + oy), ~d.valid, 1)
     dr = ImageDraw.Draw(img)
     dr.rectangle([qx - 1, qy + oy - 1, qx + 720, qy + oy + 360], outline=S.INK2)
-    S.text(dr, (qx, qy + oy + 372), "ink: natural boundaries; brown: authored Object Index boundaries; tan: O_0 "
-           "(geometry without a catalog id)", size=SMALL - 1, fill=S.INK2, outline=None)
+    S.text(dr, (qx, qy + oy + 372), "ink: natural boundaries; brown: authored Object Index boundaries;",
+           size=SMALL - 1, fill=S.INK2, outline=None)
+    S.text(dr, (qx, qy + oy + 394), "tan: O_0 (geometry without a catalog id); hatched: no geometry",
+           size=SMALL - 1, fill=S.INK2, outline=None)
     bx0, by0 = qx + 760, qy + oy
     S.text(dr, (bx0, by0), "composition of the 12 largest hypotheses", size=S.T_SMALL, bold=True, outline=None)
     S.text(dr, (bx0, by0 + 28), "by authored Object Index (dominant 2 named) and O_0", size=SMALL - 1, fill=S.INK2, outline=None)
@@ -563,14 +565,14 @@ def overview(d: Data) -> Image.Image:
     ex = d.ov["examples"]
     one = ex["one_natural_to_many_authored"][0]
     many = ex["many_natural_to_one_authored"][0]
-    S.text(dr, (qx, qy + oy + 420 + 12 * 0), "Descriptive relations (reference only; no accuracy implied):", size=S.T_SMALL,
+    S.text(dr, (qx, qy + oy + 436), "Descriptive relations (reference only; no accuracy implied):", size=S.T_SMALL,
            bold=True, outline=None)
     rel = [f"catalog cells {a['catalog_cells']:,} / O_0 cells {a['O0_cells']:,} (equal to Breadth-1: {a['matches_breadth1']})",
            f"{d.ov['hypotheses_touching_O0']:,} hypotheses touch O_0; {d.ov['authored_ids_touched']} authored ids touched",
            f"one natural -> many authored: {one['id']} spans {one['authored_ids_intersected']} authored ids",
            f"many natural -> one authored: {many['name']} ({many['o']}) meets {many['hypotheses_intersecting']:,} hypotheses"]
     for k, ln in enumerate(rel):
-        S.text(dr, (qx, qy + oy + 456 + 30 * k), ln, size=SMALL, outline=None)
+        S.text(dr, (qx, qy + oy + 472 + 30 * k), ln, size=SMALL, outline=None)
     return img
 
 
