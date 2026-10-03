@@ -1,11 +1,14 @@
 # Active Bootstrap-1a — First Natural Stereo Look — report
 
-**Marker.**
+**Markers.**
 
     ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_COMPLETE
+    ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide what the measured result means. No ACCEPTED marker is written, and
-the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted AB1a as an **accepted negative experiment** after scientific and
+qualitative review (see "Acceptance record" at the end). The conclusion is about the measurement representation, not
+about the fixation: the accepted planar rectification plus the fixed central rectified core does not measure the
+intended fixation at this near-baseline gaze. The incidents below remain part of the historical record.
 
 > **Question.** Can the eye, starting from the FIRST frozen RGB candidate gaze and the fixed binocular instrument
 > alone, obtain useful local metric geometry from binocular RGB without using depth, Blender identity or scene
@@ -359,14 +362,64 @@ Known answers before the canonical look (MEASURED at `a3caaef`; synthetic data o
 
 ## Unresolved decisions (Luiz and Chat)
 
-1. Qualitative and scientific review of AB1a and its figures.
-2. The measured result is "no metric geometry at gaze #1 with the accepted instrument". The pre-look geometry shows
-   the mechanism: with `baseline_projected` at 15° from the baseline, the accepted planar rectification
-   (`CALIB_ZERO_DISPARITY`, `alpha = -1`, a central crop) samples a sliver about 1° from the epipole, about 14° from
-   the fixation. Here that sliver had no geometry. Whether and how the instrument should be adapted for
-   large-eccentricity looks is a design question; nothing was changed here.
-   - Options include a rectification core centred on the fixation, a different crop, or a look restricted by
-     leverage.
-   - The saved raw L / R pair contains the fixated window region, and a later step could re-analyse it without
-     re-rendering.
-3. What, if anything, AB1a implies for the next action. It executed no second gaze and asked no controller.
+1. ~~Qualitative and scientific review of AB1a and its figures.~~ **ACCEPTED** (see "Acceptance record").
+2. ~~Whether and how the instrument should be adapted for large-eccentricity looks (the pre-look geometry shows the
+   planar-rectification mechanism; options included a fixation-centred rectification core, a different crop or a
+   leverage-restricted look).~~
+
+   **Decided:** the failure is recorded as a failure of the measurement representation (planar rectification plus a
+   fixed central rectified crop), not of the fixation and not of correspondence. The next experiment, Active
+   Bootstrap-1b — Gaze-Centered Spherical Epipolar Geometry, re-analyses the saved raw L / R pair (no re-render) with
+   direct spherical epipolar ray geometry and perfect / oracle correspondence (see "Acceptance record").
+3. ~~What, if anything, AB1a implies for the next action. It executed no second gaze and asked no controller.~~
+
+   **Decided:** no second gaze and no controller. AB1b reuses the exact AB1a observation.
+
+## Acceptance record
+
+Luiz and Chat completed the scientific and qualitative review and **accept AB1a** as committed at `753e911`:
+
+    ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_ACCEPTED
+
+- **Machine result accepted:**
+  - `ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_COMPLETE`;
+  - `ACTIVE_BOOTSTRAP1A_CHECKS_PASS` 42/42;
+  - `ACTIVE_BOOTSTRAP1A_MUTATIONS_CAUGHT` 51/51, from a passing baseline.
+- **Accepted action:** the frozen NB1c RGB gaze #1, yaw **+76.75°**, pitch **+7.75°**, executed **exactly once**
+  (one binocular pair; `acquisition/rgb-observation.npz`
+  `eb84831aee9676e011651821197812c81e7d51d76ab2cecfea609d3a8dd4268d`; measurement freeze
+  `53dc5ff2985cfda4ed0ef0ed13f10be12a33e1c7693942dcf9101a2d1448243e`).
+- **Accepted measured result (an ACCEPTED NEGATIVE EXPERIMENT):**
+  - natural RGB-only stereo valid: **0 / 65,536**;
+  - post-freeze perfect-reference valid: **0 / 65,536**.
+- **Accepted scientific conclusion:**
+  - AB1a does **not** establish that RGB gaze #1 is intrinsically unmeasurable.
+  - It establishes that, at this gaze, the accepted conventional planar rectification plus the fixed central
+    rectified-core measurement **does not measure the intended fixation**.
+  - The raw L / R tangent images contain the intended bright, structured, textured window fixation.
+  - The mechanism (calibration-only, recorded before the acquisition; see "PRE-LOOK GEOMETRY"):
+    - the gaze is 15.315° from the physical baseline; L = 0.2641255292; B⊥ = 16.64 mm;
+    - the accepted planar rectification rotates the cameras by about 75°;
+    - the rectified principal point lies about −66,000 px from a 640-px raster;
+    - the 256 × 256 rectified core is sourced from about a 0.09 × 4.8 raw-pixel sliver;
+    - that sliver lies about 14.26° from the intended fixation and about 1.05° from the baseline axis;
+    - in Classroom that sliver contains no geometry.
+  - The camera model itself is valid at the rendered gaze (about 0.001 px projection residual), so the empty result
+    is not a camera-model error.
+  - **Do not record this as** "SGBM failed on the window" or "stereo is impossible at gaze #1". **Record it as:** the
+    existing planar rectification / central-crop measurement representation fails to preserve the intended foveal
+    support at this near-baseline gaze.
+- **The inherited-EXR-pass incident stays in the record, resolved** (incident 3 and contract section 23): the 11
+  inherited Classroom lighting / material passes stayed in `evaluation_only/`, were never copied into the RGB
+  observation and were never opened by the matcher (0 truth-firewall violations). They did **not** contaminate
+  inference.
+- **AB1a is complete.** Its run is the accepted record. Later steps read the saved observation; gaze #1 is not
+  re-rendered.
+- **Next.** Active Bootstrap-1b — Gaze-Centered Spherical Epipolar Geometry. It deliberately returns to perfect /
+  oracle correspondence, to separate binocular **representation** geometry from **correspondence** estimation: it
+  re-analyses the exact saved AB1a pair (no Blender, no re-render, no new gaze, no controller) and asks whether direct
+  gaze-centered spherical epipolar ray geometry preserves the intended foveal region and recovers correct metric 3-D
+  when correspondence is assumed perfect. It is not a matcher, SGBM or global spherical-warp experiment.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It changed only
+  this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff
+  assertion.
