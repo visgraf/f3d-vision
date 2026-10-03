@@ -497,3 +497,23 @@ and is unlikely to coincide with reference geometry, whose same-instance reproje
 inside the right core. The expected scientific outcome is therefore little or no usable metric geometry at gaze #1
 with this instrument. This expectation is stated so that it cannot be confused with the measurement; it changes
 nothing in the procedure.
+
+## 22. Implementation-time clarification (before any Classroom acquisition; synthetic data only)
+
+**Synthetic case 5 (section 15).** The declared expectation "planes at `z_rect` 0.5 m and 8 m: rejected (0 valid)"
+was wrong for the accepted instrument at 0.5 m. MEASURED on the analytic textured plane (forward gaze): the true
+disparity, 153.4 px, lies beyond the 112-level search, and **4,151 in-range false matches (6.3 % of the core) survive
+every inherited gate** (uniqueness, LR, texture, `z_rect`), with `z_rect` 0.75–4.50 m (median 1.65 m). The 8 m plane
+is rejected entirely (0 valid). The instrument and the matcher are not changed. Case 5 now asserts what the
+inherited bound guarantees: at 0.5 m the true geometry is never admitted (0 valid pixels within 20 % of 0.5 m; true
+disparity > search), the false-match count is recorded, and at 8 m nothing is valid. This bears on reading the
+canonical result: wherever the true disparity exceeds the search (section 5 places the rectified core centre there at
+gaze #1), any natural-valid pixel is necessarily such an in-range false match.
+
+**Corruption semantics (section 17).** The probes that disable the LR or texture gate regenerate the measurement and
+also scrub the variant from the recorded configuration, so only the independent recomputation can expose them; they
+are reported as not applicable when that gate already passes on every core pixel (disabling it then changes
+nothing). The checker's own synthetic cases (check 39) include a differential test: with an uninformative
+(constant, everywhere-interior) identity, the accepted truth-assisted `fsg_stereo.compute` returns exactly the AB1a
+natural valid mask, disparity and XYZ, so the natural matcher differs from the accepted instrument only by the
+identity guard.

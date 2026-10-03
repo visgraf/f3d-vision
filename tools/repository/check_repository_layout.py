@@ -61,8 +61,8 @@ PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "methodology", "natural-bootstrap", "partition-graph", "repository"}
-TOOLS_DIRS = {"baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller", "natural_bootstrap",
-              "partition_graph", "repository", "visual_language"}
+TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
+              "natural_bootstrap", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
 ADDED_REQUIRED = {
     "docs/repository/repository-transition-1-contract.md",
