@@ -248,7 +248,7 @@ roadmap decision recorded in `docs/chat-handoff.md`:
   - 234 catalog objects = 126 visible + 108 with no first hit;
   - the catalog is not an exhaustive inventory of rendered geometry:
     15.4 % of the sphere carries no catalog id.
-- The next scientific design target is Natural Bootstrap-1:
+- Natural Bootstrap-1 proceeds as bounded experiments:
 
       low-resolution sensory observation
         -> perceptual decomposition
@@ -258,10 +258,20 @@ roadmap decision recorded in `docs/chat-handoff.md`:
 
   - It must not use the Blender object list as controller initialization.
   - No semantic classification is required initially.
-  - Preferred first cues: RGB continuity, range/depth continuity, depth
-    discontinuities, connectedness / region coherence.
   - Over-segmentation is acceptable.
-  - Its design is discussed by Luiz and Chat before any implementation.
+  - Each step is designed by Luiz and Chat and committed as a contract
+    before implementation.
+  - NB1a: Spherical Range Connectivity is accepted. Range continuity on the
+    accepted Breadth-1 proxy gives 453 temporary hypotheses (not 453
+    objects): coherent, seedable near-foreground proto-objects (seeds about
+    5–13° deep), one structural shell H0001 (82.6 % of the sphere, a
+    plausible environment / scene shell rather than a segmentation failure)
+    and a long boundary-dominated tail. NB1a does not establish that RGB
+    should be added to segmentation.
+  - The next bounded experiment is NB1b: Foveal Serviceability, a read-only
+    test of which frozen NB1a hypotheses have an existing seed that safely
+    accommodates the nominal 12° foveal measurement core. Controller
+    integration is not started.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

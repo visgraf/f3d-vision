@@ -34,7 +34,7 @@ the handoff records Controller-02 accepted (SCENE_CLOSED, not global quiescence)
 declares its contract (required), its methodology document, report and tools/visual_language/ tools (allowed).
 Breadth-1 declares its contract (required), report and five tools/classroom_oracle/breadth1_* / check tools
 (allowed). Natural Bootstrap-1a adds the docs/natural-bootstrap/ and tools/natural_bootstrap/ directories and
-declares its contract (required), report and six tools (allowed).
+declares its contract (required), report and six tools (allowed); the handoff records NB1a accepted.
 """
 from __future__ import annotations
 
@@ -423,10 +423,12 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Breadth-1, with Visual Language 1, Controller-02, Stage Charter 1, "
+    check("chat handoff records accepted main at NB1a, with Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, "
           "Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 "
           "and Core 14 recorded",
-          "main @ 40a1cb11b99324da125ed2464078d3ec19aca947" in handoff
+          "main @ dcd294fc7dead16e9d492e8c0fd03a3e3df11e02" in handoff
+          and "NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_ACCEPTED" in handoff
+          and "NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_COMPLETE" in handoff
           and "BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_ACCEPTED" in handoff
           and "BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_COMPLETE" in handoff
           and "VISUAL_LANGUAGE_1_ACCEPTED" in handoff

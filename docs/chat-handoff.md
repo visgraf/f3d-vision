@@ -2,12 +2,18 @@
 
 ## Accepted main
 
-    main @ 40a1cb11b99324da125ed2464078d3ec19aca947
+    main @ dcd294fc7dead16e9d492e8c0fd03a3e3df11e02
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`40a1cb1` (the Breadth-1 acceptance commit on branch `classroom-oracle/breadth-1-spherical-glance`).
+`dcd294f` (the NB1a acceptance commit on branch `natural-bootstrap/nb1a-range-connectivity`).
 
 Accepted milestones:
+- **Natural Bootstrap-1a: Spherical Range Connectivity**, accepted by Luiz and Chat (the machine result, the
+  qualitative and scientific interpretation and the final figures):
+
+      NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_ACCEPTED
+
+  The accepted completion marker is `NATURAL_BOOTSTRAP1A_RANGE_CONNECTIVITY_COMPLETE`.
 - **Breadth-1: Classroom-234 Spherical Glance**, accepted by Luiz and Chat (the measured scientific result,
   the final figures and the post-run seed-tie clarification):
 
@@ -111,12 +117,14 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz, after Breadth-1)
+## Current roadmap (Luiz, after NB1a)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
       -> Breadth-1                                  ACCEPTED
-      -> Natural Bootstrap-1                        NEXT
+      -> Natural Bootstrap-1
+           NB1a spherical range connectivity        ACCEPTED
+           NB1b foveal serviceability               NEXT
       -> Classroom validation
       -> Tabletop transfer
            same controller / bootstrap policy,
@@ -127,7 +135,7 @@ Accepted milestones:
   `docs/methodology/foveal-controller-stage-charter-1.md` keeps its historical roadmap and is not edited.
 - Controller-01 and Controller-02 remain frozen unless Luiz explicitly reopens them.
 - Visual Language 1 remains the standing visual semantics.
-- **Natural Bootstrap-1** (the next design target; not started) keeps a modest formulation:
+- **Natural Bootstrap-1** proceeds as bounded experiments and keeps a modest formulation:
 
       low-resolution sensory observation
         -> perceptual decomposition
@@ -137,11 +145,73 @@ Accepted milestones:
 
   - It must not use the Blender object list as controller initialization.
   - No semantic classification is required initially.
-  - Preferred first cues: RGB continuity, range/depth continuity, depth discontinuities, connectedness /
-    region coherence.
   - Over-segmentation is acceptable.
   - Natural Bootstrap-2 (identity persistence) is a separate later problem.
-  - Its design is discussed by Luiz and Chat before any branch, contract or implementation.
+  - Each step is designed by Luiz and Chat and committed as a contract before implementation.
+- **NB1a** (accepted; see its section below) answered the decomposition question with range continuity.
+- **NB1b: Foveal Serviceability** is the next bounded experiment. It asks which frozen NB1a hypotheses have
+  an existing deep-interior seed that can safely accommodate the nominal 12° foveal measurement core
+  (`CORE_FOV_DEG` of the sealed `tools/fsg_geometry.py`). It is read-only on the accepted NB1a products:
+  - no scene observation, no Blender and no controller;
+  - no reseeding and no change to the NB1a hypotheses;
+  - no RGB and no Blender identity in candidate selection;
+  - no semantic classification; a sensor-qualified candidate is not asserted to be an object.
+
+## Natural Bootstrap-1a: Spherical Range Connectivity (accepted at `dcd294f`)
+
+Luiz and Chat accept NB1a: the machine result, the qualitative and scientific interpretation, and the final
+figures.
+
+Record (branch `natural-bootstrap/nb1a-range-connectivity`, base `0fe83af`):
+- contract: `docs/natural-bootstrap/nb1a-range-connectivity-contract.md` (`f4fa2c3`).
+- implementation: `tools/natural_bootstrap/nb1a_{spec,guard,discovery,run,visuals}.py` and `check_nb1a.py`.
+  Frozen at `6b63cdc` before the canonical discovery; presentation fix `8cc368d` (figures only).
+- report: `docs/natural-bootstrap/nb1a-range-connectivity-report.md` (completion `a0c98be`, acceptance
+  `dcd294f`).
+- run: `/home/lvelho/rd/f3d-vision/previews/natural-bootstrap-1a-range-connectivity/`. The discovery is
+  frozen: `discovery/bootstrap-freeze.json`
+  `c0236d0424a7724bfe57bf0a19bdf56899b7eadf5e059c9537e785f3a08b826a`. `discover` refuses to rerun; later
+  steps read the frozen products. The only scene evidence is the Breadth-1 canonical EXR (never re-rendered).
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/natural-bootstrap-1a-range-connectivity/`:
+  - `overview.png` `eb334876…`;
+  - `hypothesis-panorama.png` `c0471cf9…`, `seed-panorama.png` `f4b853a9…`;
+  - `rgb-edge-contrast.png` `2ed52df4…`;
+  - the range, continuity, histogram and overlap figures.
+
+Accepted measured result:
+
+    NATURAL_BOOTSTRAP1A_CHECKS_PASS        33 / 33 (at `8cc368d`)
+    NATURAL_BOOTSTRAP1A_MUTATIONS_CAUGHT   29 / 29 (from a passing baseline)
+
+Checks 30–31 of `check_nb1a.py` are scoped to the NB1a base `0fe83af`. On later commits, check 31 reports
+every later accepted change outside the NB1a files as "undeclared". The first such change is this handoff's
+`CLAUDE.md` and `docs/chat-handoff.md`. That is the guard's scope, not an NB1a regression; the
+frozen-product checks remain valid.
+
+| quantity | value |
+|---|---|
+| continuity rule | retain iff C ≤ sec 75° (the single declared parameter; not tuned) |
+| valid / invalid cells | 255,758 / 3,442 |
+| retained / cut edges | 972,192 / 45,080 |
+| hypotheses / singletons | 453 / 137 |
+| largest hypothesis H0001 | 10.3815 sr, 82.6 % of the sphere; 123 authored ids (evaluation) |
+| near foreground H0002–H0007 | 0.45–1.5 m; seed clearance 5.3–13.1°; 100 % O_0 (evaluation) |
+| zero-clearance seeds / no-boundary fallbacks | 366 / 0 |
+
+Accepted interpretation (durable):
+1. Range continuity discovers useful foreground proto-objects.
+2. The largest near-foreground hypotheses are coherent and seedable; their deep-interior seeds have roughly
+   5–13° of clearance.
+3. A dominant structural shell, H0001, occupies 82.6 % of the sphere.
+4. The shell is not automatically a segmentation failure: it is a plausible environment / scene-shell
+   representation.
+5. The long tail of small pieces and singletons exposes thin, grazing and boundary-dominated geometry.
+6. The count of 453 must not be read as "453 objects".
+7. The RGB diagnostics show additional appearance structure inside range-derived hypotheses, but NB1a does
+   not establish that RGB should immediately be added to segmentation.
+8. The next question is sensor-qualified look-worthiness, not further segmentation.
+9. Range is a controlled sensory proxy (Blender Position), not stereo; NB1a removed Blender object identity
+   from discovery, nothing more.
 
 ## Breadth-1: Classroom-234 Spherical Glance (accepted at `40a1cb1`)
 
@@ -696,11 +766,14 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1 and Breadth-1 are accepted. The Controller-01 investigation is
-closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
+Charter 1, Controller-02, Visual Language 1, Breadth-1 and NB1a are accepted. The Controller-01
+investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Next scientific design target: Natural Bootstrap-1** (see "Current roadmap"). It begins only after Luiz
-and Chat discuss its design: no branch, contract or implementation exists yet. FSG6f is not repaired.
+**Current next activity: Natural Bootstrap-1b — Foveal Serviceability** (see "Current roadmap"), on branch
+`natural-bootstrap/nb1b-foveal-serviceability` from this accepted `main`, with its contract at
+`docs/natural-bootstrap/nb1b-foveal-serviceability-contract.md`. It is read-only on the accepted NB1a
+products. Controller integration, RGB segmentation and Natural Bootstrap-2 are not started. FSG6f is not
+repaired.
 
 ## Decision-critical open items
 
@@ -738,8 +811,8 @@ and Chat discuss its design: no branch, contract or implementation exists yet. F
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
-6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1 and Breadth-1 acceptances
-   and the revised roadmap. These handoff updates did not touch it.
+6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1 and NB1a
+   acceptances and the revised roadmap. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.
