@@ -38,7 +38,9 @@ declares its contract (required), report and six tools (allowed); the handoff re
 Natural Bootstrap-1b declares its contract (required), report and five tools/natural_bootstrap/ nb1b tools (allowed);
 the handoff records NB1b accepted and the post-NB1b pivot to NB1c. Natural Bootstrap-1c declares its contract
 (required), report and five tools/natural_bootstrap/ nb1c tools (allowed); the handoff records NB1c accepted and
-the start of Active Bootstrap (AB1a executes RGB gaze #1 exactly once).
+the start of Active Bootstrap (AB1a executes RGB gaze #1 exactly once). Active Bootstrap-1a adds the
+docs/active-bootstrap/ and tools/active_bootstrap/ directories and declares its contract (required), report and six
+tools/active_bootstrap/ ab1a tools (allowed).
 """
 from __future__ import annotations
 
@@ -57,7 +59,7 @@ MOVE_MAP = "docs/repository/repository-transition-1-moves.json"
 LAYOUT = "docs/consolidation/consolidation-3-layout.json"
 PREFIX = "[repository-layout]"
 
-DOCS_DIRS = {"architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
+DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "methodology", "natural-bootstrap", "partition-graph", "repository"}
 TOOLS_DIRS = {"baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller", "natural_bootstrap",
               "partition_graph", "repository", "visual_language"}
@@ -114,10 +116,14 @@ NB1C_REQUIRED = {"docs/natural-bootstrap/nb1c-rgb-candidate-gaze-contract.md"}
 NB1C_TOOLS = {f"tools/natural_bootstrap/{n}" for n in ("nb1c_spec.py", "nb1c_attention.py", "nb1c_run.py",
                                                          "nb1c_visuals.py", "check_nb1c.py")}
 NB1C_ALLOWED = NB1C_REQUIRED | NB1C_TOOLS | {"docs/natural-bootstrap/nb1c-rgb-candidate-gaze-report.md"}
+AB1A_REQUIRED = {"docs/active-bootstrap/ab1a-first-natural-stereo-look-contract.md"}
+AB1A_TOOLS = {f"tools/active_bootstrap/{n}" for n in ("ab1a_spec.py", "ab1a_render.py", "ab1a_stereo.py", "ab1a_run.py",
+                                                      "ab1a_visuals.py", "check_ab1a.py")}
+AB1A_ALLOWED = AB1A_REQUIRED | AB1A_TOOLS | {"docs/active-bootstrap/ab1a-first-natural-stereo-look-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
-                 | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED)
+                 | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -358,6 +364,8 @@ def main() -> int:
     check("the NB1b contract is tracked", not missing_nb1b, str(missing_nb1b))
     missing_nb1c = sorted(NB1C_REQUIRED - set(index))
     check("the NB1c contract is tracked", not missing_nb1c, str(missing_nb1c))
+    missing_ab1a = sorted(AB1A_REQUIRED - set(index))
+    check("the AB1a contract is tracked", not missing_ab1a, str(missing_ab1a))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
