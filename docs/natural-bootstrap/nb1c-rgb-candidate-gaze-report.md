@@ -1,11 +1,13 @@
 # Natural Bootstrap-1c — RGB Candidate Gaze — report
 
-**Marker.**
+**Markers.**
 
     NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_COMPLETE
+    NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat review the result. No ACCEPTED marker is written, and the branch is not
-merged.
+**Status: ACCEPTED.** Luiz and Chat accepted the machine result, the six frozen RGB gazes (unchanged) and the
+qualitative interpretation after review (see "Acceptance record" at the end). The round-2 STOP and its resolution
+below remain part of the historical record.
 
 Every check passed (36/36), and every corruption was caught from a passing baseline (38/38). No RGB gaze was
 executed.
@@ -506,10 +508,59 @@ Before the contract commit, layout 537/537.
 
 ## Unresolved decisions
 
-1. Qualitative and scientific review of NB1c and its figures (Luiz and Chat).
-2. Whether and how the six RGB proposals should lead to the next step (local foveation), given that:
+1. ~~Qualitative and scientific review of NB1c and its figures (Luiz and Chat).~~ **ACCEPTED** (see "Acceptance
+   record").
+2. ~~Whether and how the six RGB proposals should lead to the next step (local foveation), given that:~~
    - three land on the environment shell;
    - none lands on the NB1b PRIMARY foreground;
    - one coincides with the NB1b SECONDARY light.
 
-NB1c is not merged. No ACCEPTED marker is written.
+   **Decided:** the frozen RGB ordering is consumed as-is. The next experiment, Active Bootstrap-1a — First Natural
+   Stereo Look, executes RGB gaze #1 exactly once (see "Acceptance record").
+
+No RGB gaze was executed by NB1c.
+
+## Acceptance record
+
+Luiz and Chat completed the machine and qualitative review and **accept NB1c** as committed at `8c7cabf`:
+
+    NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_ACCEPTED
+
+- **Machine result accepted:**
+  - `NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_COMPLETE`;
+  - `NATURAL_BOOTSTRAP1C_CHECKS_PASS` 36/36;
+  - `NATURAL_BOOTSTRAP1C_MUTATIONS_CAUGHT` 38/38, from a passing baseline;
+  - no Blender process ran, no controller ran and no gaze was executed.
+- **The six frozen RGB gazes are accepted unchanged**, in the frozen order (freeze record
+  `selection/rgb-gaze-freeze.json` `87a3bab01f55051316ac1eb45b48f394211f4c7a3a317fd0e61c0e52c36f9b37`):
+
+  | rank | row, col | yaw, pitch (°) |
+  |---|---|---|
+  | 1 | 164, 513 | +76.75, +7.75 |
+  | 2 | 28, 354 | −2.75, +75.75 |
+  | 3 | 231, 510 | +75.25, −25.75 |
+  | 4 | 303, 436 | +38.25, −61.75 |
+  | 5 | 110, 719 | +179.75, +34.75 |
+  | 6 | 122, 47 | −156.25, +28.75 |
+
+- **Qualitative acceptance:**
+  1. The RGB-only center-surround mechanism produces meaningful, spatially diverse visual invitations rather
+     than obvious noise extrema.
+  2. A candidate gaze is not a successful measurement.
+  3. Three environment hits are not a bootstrap failure: coarse RGB knows visual distinctiveness, not foreground
+     identity.
+  4. The mechanism must **not** be retuned to recover the NB1b PRIMARY candidates.
+  5. Gaze 3 is scientifically notable: it independently chooses a much better location on H0004 than the old
+     graph-clearance NB1a seed. This information must **not** be used to cherry-pick gaze 3 now.
+  6. Execution must consume the already frozen RGB ordering.
+- **The round-2 STOP and its resolution stay in the record** ("The STOP" and "Stop resolution" above): the STOP
+  was correct under the conservative interpretation; contract section 23 and the check-27 repair (`c7d04db`)
+  resolved it before evaluation, with no gaze, order or selection rule changed.
+- **NB1c is complete.** The frozen selection is the accepted result. Later steps read it; it is not regenerated,
+  reselected, retuned or reordered.
+- **Next.** Active Bootstrap-1a — First Natural Stereo Look executes **RGB gaze #1 exactly once**: one binocular
+  RGB acquisition at (+76.75°, +7.75°), RGB-only local stereo, a measurement freeze before any reference truth, then
+  descriptive post-freeze evaluation. No second gaze and no controller.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It changed
+  only this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff
+  assertion.
