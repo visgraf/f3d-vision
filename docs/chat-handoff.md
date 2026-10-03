@@ -2,12 +2,21 @@
 
 ## Accepted main
 
-    main @ 746e90818aba1034e9cbfa4a94f86aea5f428640
+    main @ e596a10a9eb129f704e87afbbf722b380642065e
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`746e908` (the Controller-02 report on branch `controller/controller-02-residual-closure`).
+`e596a10` (the Visual Language 1 acceptance commit on branch
+`methodology/visual-language-1-canonical-demo`).
 
 Accepted milestones:
+- **Visual Language 1 + the full canonical Classroom demo**, accepted by Luiz and Chat as committed (a
+  methodological / visualization milestone that changed no scientific behavior):
+
+      VISUAL_LANGUAGE_1_ACCEPTED
+
+  The accepted implementation marker is `VISUAL_LANGUAGE_1_CANONICAL_DEMO_COMPLETE`.
+- **Revised roadmap** (an explicit later decision by Luiz): Breadth-1 comes before Natural Bootstrap-1.
+  The signed Stage Charter 1 is not rewritten.
 - **Controller-02 residual closure**, accepted by Luiz and Chat (implementation and measured scientific
   result; its overview was inspected and accepted as satisfying the Level-A scientific-visual
   requirement):
@@ -96,6 +105,54 @@ Accepted milestones:
   falsifiable redesign, preserving every accepted historical observable and separating one
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
+
+## Current roadmap (Luiz, after Visual Language 1)
+
+    Controller-02                                   ACCEPTED
+      -> Visual Language 1                          ACCEPTED
+      -> Breadth-1: Classroom-234 Spherical Glance
+      -> Natural Bootstrap-1
+      -> Classroom validation
+      -> Tabletop transfer, no scene-specific retuning
+      -> Natural Bootstrap-2
+
+- This roadmap is a later explicit decision. It inserts Breadth-1 before Natural Bootstrap-1. The signed
+  `docs/methodology/foveal-controller-stage-charter-1.md` keeps its historical roadmap and is not edited.
+- Controller-01 and Controller-02 remain frozen unless Luiz explicitly reopens them.
+- **Breadth-1** is a closing reference experiment for the oracle-bootstrap era: one low-resolution
+  (720 × 360, 0.5°) full-sphere Blender observation from the fixed cyclopean head origin, with no gaze,
+  no controller, no foveation and no stereo growth. It accounts for all 234 authored Classroom objects
+  (the accounting universe, not natural perceptual objects). It is descriptive: there is no minimum
+  visible count.
+
+## Visual Language 1 + canonical Classroom demo (accepted at `e596a10`)
+
+Luiz and Chat accept Visual Language 1 and the canonical demo as committed at `578a4f8`.
+
+Record (branch `methodology/visual-language-1-canonical-demo`, base `1e0584b`):
+- contract: `docs/methodology/visual-language-1-contract.md` (`095f48a`);
+- implementation: `tools/visual_language/` (`300d7c4`; later fixes `89f66ac`, `2320e5b`, `a30d453`);
+- the language: `docs/methodology/visual-language-1.md`; the single source of its vocabulary is
+  `tools/visual_language/style.py`;
+- report: `docs/methodology/visual-language-1-report.md` (`578a4f8`); acceptance record `e596a10`;
+- cache: `/home/lvelho/rd/f3d-vision/previews/visual-language-1-classroom/`;
+- package: `/home/lvelho/rd/f3d-vision/visuals/visual-language-1/` (`overview.png`,
+  `legend/visual-language-1.png`, the 1440p and 1080p demo videos, 141 cockpit frames, events,
+  panoramas, PLYs, narration).
+
+Accepted measured result (report):
+- the 251.30 s demo shows each of the 141 accepted looks exactly once as a four-panel cockpit frame
+  (BEFORE / OBSERVATION / AFTER semantics), with the seven special events slowed down;
+- the causal state was reproduced from the saved runs and matched every logged per-step record; no
+  controller was rerun and nothing was observed;
+- truth firewall 0 violations; `fov3d/` byte-identical; one static Blender REFERENCE hero view only;
+- checker 25/25 (`VISUAL_LANGUAGE_1_CHECKS_PASS`); corruptions 33/33 caught.
+
+Accepted interpretation:
+- Visual Language 1 is the standing visual semantics for later experiments. Truth/provenance classes
+  carry a non-color cue: CONTROLLER-TIME, DERIVED, REFERENCE / EVALUATION, ORACLE INPUT.
+- The known cosmetic issues (a clipped defer label, truncated long tile names, a sparse early 3-D view)
+  are non-blocking and not repaired.
 
 ## Repository Stage Transition 1 (accepted at `b12bdef`)
 
@@ -560,11 +617,12 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1 and Controller-02 are accepted. The Controller-01 investigation is closed, and Controller-01 is
-frozen as the good-enough baseline.
+Charter 1, Controller-02 and Visual Language 1 are accepted. The Controller-01 investigation is closed.
+Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Current next activity: Visual Language 1 + the full canonical Classroom demo** (a methodological /
-visualization milestone that changes no scientific behavior). FSG6f is not repaired, and Natural
+**Current next activity: Breadth-1: Classroom-234 Spherical Glance** (see "Current roadmap"), on branch
+`classroom-oracle/breadth-1-spherical-glance` from this accepted `main`, with its contract at
+`docs/classroom-oracle/breadth-1-spherical-glance-contract.md`. FSG6f is not repaired, and Natural
 Bootstrap-1 is not started.
 
 ## Decision-critical open items
@@ -603,3 +661,5 @@ Bootstrap-1 is not started.
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
+6. `README.md`'s status paragraph predates the Controller-02 and Visual Language 1 acceptances and the
+   revised roadmap. This handoff update did not touch it.

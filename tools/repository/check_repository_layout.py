@@ -407,9 +407,11 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at Controller-02, with Stage Charter 1, Controller-01C, Controller-01B, the "
-          "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 746e90818aba1034e9cbfa4a94f86aea5f428640" in handoff
+    check("chat handoff records accepted main at Visual Language 1, with Controller-02, Stage Charter 1, Controller-01C, "
+          "Controller-01B, the Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ e596a10a9eb129f704e87afbbf722b380642065e" in handoff
+          and "VISUAL_LANGUAGE_1_ACCEPTED" in handoff
+          and "VISUAL_LANGUAGE_1_CANONICAL_DEMO_COMPLETE" in handoff
           and "CONTROLLER02_RESIDUAL_CLOSURE_ACCEPTED" in handoff
           and "CONTROLLER02_IMPLEMENTATION_CHECKS_PASS" in handoff
           and "CONTROLLER02_CLASSROOM_SCENE_CLOSED" in handoff

@@ -230,16 +230,24 @@ Do not start another migration or cleanup Core automatically.
 
 The project is in the Integrated Foveal Controller stage, built on the
 `fov3d/` substrate and governed by Foveal Controller Stage Charter 1
-(`docs/methodology/foveal-controller-stage-charter-1.md`):
+(`docs/methodology/foveal-controller-stage-charter-1.md`) and by the later
+roadmap decision recorded in `docs/chat-handoff.md`:
 
 - Controller-01 and its audits Controller-01A, 01B and 01C are accepted.
 - Controller-01 is frozen as the good-enough integrated-controller
   baseline. Do not automatically refine its local policy; its known
   limitations are documented, not repaired.
-- The next implementation target is Controller-02 loop semantics:
-  normal scene loop, deferred residue, one strict final residue probe.
-- Natural bootstrap (perceptual discovery without the Blender object
-  list) and cross-scene testing (Tabletop, no retuning) follow.
+- Controller-02 (normal scene loop, deferred residue, one strict final
+  residue probe, honest scene closure) is accepted. Controller-01 and
+  Controller-02 stay frozen unless Luiz explicitly reopens them.
+- Visual Language 1 (`docs/methodology/visual-language-1.md`) is accepted
+  and is the standing visual semantics for later experiments.
+- The next step is Breadth-1: Classroom-234 Spherical Glance, one
+  low-resolution global reference observation of the whole authored
+  Classroom before active foveation, closing the oracle-bootstrap era.
+- Natural Bootstrap-1 (perceptual discovery without the Blender object
+  list), Classroom validation, Tabletop transfer (same controller, no
+  scene-specific retuning) and Natural Bootstrap-2 follow.
 
 For future behavior-preserving refactoring, the standing rule remains:
 
