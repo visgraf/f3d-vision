@@ -4,7 +4,8 @@
 
     VISUAL_LANGUAGE_1_CANONICAL_DEMO_COMPLETE
 
-**Qualitative status: REVIEW PENDING.** Visual Language 1 is not accepted. Luiz and Chat decide after
+**Qualitative status: ACCEPTED** (`VISUAL_LANGUAGE_1_ACCEPTED`; see "Acceptance record" at the end).
+When this report was first committed the status was REVIEW PENDING: Luiz and Chat decided after
 inspecting the demo, against this question:
 
 > Can a technically literate viewer understand what the system sees, knows, chooses, changes, defers and
@@ -371,3 +372,21 @@ sampling was needed; the files total 177 MB.
 - Any revision of roles, pacing or layout requested in the review.
 
 This branch is not merged, `docs/chat-handoff.md` is unchanged, and Natural Bootstrap-1 is not started.
+
+## Acceptance record
+
+Luiz and Chat inspected the canonical demo and accept Visual Language 1 and the canonical Classroom demo
+**as committed** at `578a4f8`:
+
+    VISUAL_LANGUAGE_1_ACCEPTED
+
+- The package under `/home/lvelho/rd/f3d-vision/visuals/visual-language-1/` is accepted as-is. Every
+  measured statement and hash above is unchanged.
+- The known cosmetic issues listed above are **non-blocking**. They are not repaired.
+- The acceptance step performed no regeneration, no rerender, no controller execution and no scientific
+  observation. It changed only this status record, the status line of
+  `docs/methodology/visual-language-1.md`, and (in the next commit) the stage description and the Chat
+  Handoff.
+- The earlier "REVIEW PENDING" mentions and "Unresolved decisions" above are the status at report time;
+  this record resolves the acceptance question. Accepting the demo as committed keeps the reference hero
+  view in the intro and outro.

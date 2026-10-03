@@ -1,7 +1,9 @@
 # Visual Language 1
 
-**Status: REVIEW PENDING.** Luiz and Chat accept or revise it after inspecting the canonical demo
-qualitatively.
+**Status: ACCEPTED.** Luiz and Chat inspected the canonical demo qualitatively and accepted Visual
+Language 1 and the demo as committed (report: "Acceptance record").
+
+    VISUAL_LANGUAGE_1_ACCEPTED
 
 This document describes what the generated Controller-02 Classroom demo **actually uses**. The single
 source of truth is `tools/visual_language/style.py`: the legend, the frames and the checker all read it,
