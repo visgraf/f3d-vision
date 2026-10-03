@@ -248,7 +248,8 @@ roadmap decision recorded in `docs/chat-handoff.md`:
   - 234 catalog objects = 126 visible + 108 with no first hit;
   - the catalog is not an exhaustive inventory of rendered geometry:
     15.4 % of the sphere carries no catalog id.
-- Natural Bootstrap-1 proceeds as bounded experiments:
+- Natural Bootstrap-1 proceeds as bounded experiments. NB1a and NB1b
+  followed the original formulation:
 
       low-resolution sensory observation
         -> perceptual decomposition
@@ -263,15 +264,48 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     before implementation.
   - NB1a: Spherical Range Connectivity is accepted. Range continuity on the
     accepted Breadth-1 proxy gives 453 temporary hypotheses (not 453
-    objects): coherent, seedable near-foreground proto-objects (seeds about
-    5–13° deep), one structural shell H0001 (82.6 % of the sphere, a
-    plausible environment / scene shell rather than a segmentation failure)
-    and a long boundary-dominated tail. NB1a does not establish that RGB
-    should be added to segmentation.
-  - The next bounded experiment is NB1b: Foveal Serviceability, a read-only
-    test of which frozen NB1a hypotheses have an existing seed that safely
-    accommodates the nominal 12° foveal measurement core. Controller
-    integration is not started.
+    objects): coherent, seedable near-foreground proto-objects (seed
+    graph-interior clearance about 5–13°), one structural shell H0001
+    (82.6 % of the sphere, a plausible environment / scene shell rather than
+    a segmentation failure) and a long boundary-dominated tail. NB1a does
+    not establish that RGB should be added to segmentation.
+  - NB1b: Foveal Serviceability is accepted. At the unchanged NB1a seeds,
+    the nominal 12° square core classifies the 453 hypotheses as
+    1 environment candidate (H0001, the only one above 2π sr), 2 PRIMARY
+    (H0002, H0003), 3 SECONDARY (H0009, H0006, H0007), 81 MARGINAL and
+    366 EDGE_ONLY.
+  - Terminology: NB1a "clearance" means graph-interior clearance (distance
+    along retained continuity edges from a label boundary). It is not
+    direct angular room around the sensor (NB1b, H0004).
+- Scientific pivot after NB1b (Luiz and Chat): **initial bootstrap should not
+  require depth.**
+  - NB1a and NB1b remain accepted studies of what geometry can do.
+  - The project does not proceed next with range-based, sensor-aware
+    reseeding.
+  - Initial natural bootstrap assumes broad dense depth is not available.
+    Coarse RGB proposes a small number of places worth interrogating.
+  - Accurate depth and surface orientation are intended to become local
+    active measurements, acquired after foveation.
+  - Range continuity, depth discontinuity and surface-normal continuity
+    remain important principles, but primarily during active local
+    exploration / growth, not as prerequisites for initial attention.
+  - The initial RGB bootstrap need not discover all objects or segment the
+    scene. A few candidate gazes may be enough to bootstrap active
+    discovery; their number is an attention budget, not an object-count
+    estimate.
+  - Revised near-term chain:
+
+        coarse spherical RGB
+          -> RGB candidate gazes
+          -> [future step, not run now] local foveation
+          -> local stereo depth / surface orientation
+          -> active surface growth using geometric continuity
+
+  - The next bounded experiment is NB1c: RGB Candidate Gaze. It nominates
+    K = 6 spatially separated gaze directions from one coarse spherical RGB
+    observation by sensor-scale center-surround contrast, with no depth and
+    no Blender identity, and stops there: no gaze is executed, and no
+    controller integration is started.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.
