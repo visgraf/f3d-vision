@@ -1,11 +1,12 @@
 # Breadth-1: Classroom-234 Spherical Glance — report
 
-**Marker.**
+**Markers.**
 
     BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_COMPLETE
+    BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat perform the qualitative and scientific review. No ACCEPTED marker
-is written, and the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted the measured scientific result and the final figures after
+qualitative and scientific review (see "Acceptance record" at the end).
 
 The single canonical Classroom observation is valid and fully analyzed. Every required product exists.
 Checks pass **26/26** (`BREADTH1_CHECKS_PASS`). The corruption suite, run from that passing baseline, catches
@@ -621,9 +622,54 @@ The old ±25° × ±20° Controller window contains support from only 24 visible
 
 ## Unresolved decisions
 
-1. Qualitative and scientific review of the glance and its figures (Luiz and Chat).
-2. Whether instanced Classroom geometry (desks, chairs, lamps, …), outside the accepted 234-object
+1. ~~Qualitative and scientific review of the glance and its figures (Luiz and Chat).~~ **ACCEPTED** (see
+   "Acceptance record").
+2. **Open:** whether instanced Classroom geometry (desks, chairs, lamps, …), outside the accepted 234-object
    catalog, should enter later reference or evaluation universes. Breadth-1 leaves the catalog unchanged
    and assigns no retroactive ids.
 
-The branch is not merged. Natural Bootstrap-1 is not started.
+Natural Bootstrap-1 is not started.
+
+## Acceptance record
+
+Luiz and Chat completed the qualitative and scientific review and **accept Breadth-1** as committed at
+`e2e554e`:
+
+    BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_ACCEPTED
+
+- **Measured scientific result accepted.**
+  - catalog 234; visible at 0.5° 126; no first hit 108; visible fragmented 59;
+  - authored cells 222,267; point-cloud points 222,267;
+  - accepted localized 25 visible 25 / 25; visible entirely outside the old Controller domain 102;
+  - the largest 1 / 5 / 25 objects cover 24.7 % / 63.4 % / 78.6 % of the sphere;
+  - catalog-labelled geometry 82.5 %, noncatalog rendered geometry 15.4 %, no geometry 2.1 %;
+  - machine evidence: `BREADTH1_CHECKS_PASS` (26/26), and `BREADTH1_MUTATIONS_CAUGHT` (29/29 from a passing
+    baseline);
+  - exactly one canonical Classroom render, EXR sha256
+    `4ea036fc74eab3b3ab06a0c4470c2b01740c9322de0eea522f957ddfffa172f8`.
+- **Final figures accepted qualitatively:**
+
+  | figure | sha256 |
+  |---|---|
+  | `overview.png` | `705265b08fda43f7c532341fee97486d2f3e494fdcf25d85365e010244454f02` |
+  | `seed-direction-panorama.png` | `0266275481fa43fe61355bd87dae84066b39e77ed49005ce154458cc46d6ea0b` |
+
+  - The four regions communicate RGB appearance, range, authored Object Index and boundaries, and the
+    derived accounting with the seed directions.
+  - Visual Language 1 provenance (REFERENCE / EVALUATION, ORACLE INPUT, DERIVED) is explicit.
+  - The old Controller domain appears as historical context, not as the whole perceptual field.
+  - The authored-object / noncatalog-geometry tension is visible and scientifically useful.
+  - The seed panorama makes clear that seeds are DERIVED analysis only.
+  - Minor density and small-text issues are non-blocking and are not repaired.
+- **The post-run seed-tie numerical clarification (contract section 11) is accepted.** Only seeds 102
+  `Rectangle018.002`, (187, 63) → (187, 62), and 177 `post-it`, (193, 463) → (193, 462), moved. No other
+  scientific quantity changed.
+- **The 15.4 % of noncatalog rendered geometry is an accepted scientific finding.** It is not repaired in
+  Breadth-1.
+- **What the catalog is.** The 234-object catalog remains an oracle / reference accounting universe:
+  - it is not natural perceptual ground truth;
+  - it is not an exhaustive inventory of all rendered geometry.
+- **Open by intent.** How collection-instanced geometry should enter future reference or evaluation is
+  left for Natural Bootstrap and later evaluation design.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It
+  changed only this status record, and (in the next commit) `CLAUDE.md` and the Chat Handoff.
