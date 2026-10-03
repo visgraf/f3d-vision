@@ -35,6 +35,7 @@ declares its contract (required), its methodology document, report and tools/vis
 Breadth-1 declares its contract (required), report and five tools/classroom_oracle/breadth1_* / check tools
 (allowed). Natural Bootstrap-1a adds the docs/natural-bootstrap/ and tools/natural_bootstrap/ directories and
 declares its contract (required), report and six tools (allowed); the handoff records NB1a accepted.
+Natural Bootstrap-1b declares its contract (required), report and five tools/natural_bootstrap/ nb1b tools (allowed).
 """
 from __future__ import annotations
 
@@ -102,10 +103,14 @@ NB1A_REQUIRED = {"docs/natural-bootstrap/nb1a-range-connectivity-contract.md"}
 NB1A_TOOLS = {f"tools/natural_bootstrap/{n}" for n in ("nb1a_spec.py", "nb1a_guard.py", "nb1a_discovery.py",
                                                          "nb1a_run.py", "nb1a_visuals.py", "check_nb1a.py")}
 NB1A_ALLOWED = NB1A_REQUIRED | NB1A_TOOLS | {"docs/natural-bootstrap/nb1a-range-connectivity-report.md"}
+NB1B_REQUIRED = {"docs/natural-bootstrap/nb1b-foveal-serviceability-contract.md"}
+NB1B_TOOLS = {f"tools/natural_bootstrap/{n}" for n in ("nb1b_spec.py", "nb1b_serviceability.py", "nb1b_run.py",
+                                                         "nb1b_visuals.py", "check_nb1b.py")}
+NB1B_ALLOWED = NB1B_REQUIRED | NB1B_TOOLS | {"docs/natural-bootstrap/nb1b-foveal-serviceability-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
-                 | NB1A_ALLOWED)
+                 | NB1A_ALLOWED | NB1B_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -342,6 +347,8 @@ def main() -> int:
     check("the Breadth-1 contract is tracked", not missing_b1, str(missing_b1))
     missing_nb1a = sorted(NB1A_REQUIRED - set(index))
     check("the NB1a contract is tracked", not missing_nb1a, str(missing_nb1a))
+    missing_nb1b = sorted(NB1B_REQUIRED - set(index))
+    check("the NB1b contract is tracked", not missing_nb1b, str(missing_nb1b))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
