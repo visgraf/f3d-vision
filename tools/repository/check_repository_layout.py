@@ -41,7 +41,8 @@ the handoff records NB1b accepted and the post-NB1b pivot to NB1c. Natural Boots
 the start of Active Bootstrap (AB1a executes RGB gaze #1 exactly once). Active Bootstrap-1a adds the
 docs/active-bootstrap/ and tools/active_bootstrap/ directories and declares its contract (required), report and six
 tools/active_bootstrap/ ab1a tools (allowed); the handoff records AB1a accepted and the post-AB1a pivot to
-spherical epipolar geometry (AB1b tests representation only, with perfect correspondence).
+spherical epipolar geometry (AB1b tests representation only, with perfect correspondence). Active Bootstrap-1b
+declares its contract (required), report and six tools/active_bootstrap/ ab1b tools (allowed).
 """
 from __future__ import annotations
 
@@ -121,10 +122,14 @@ AB1A_REQUIRED = {"docs/active-bootstrap/ab1a-first-natural-stereo-look-contract.
 AB1A_TOOLS = {f"tools/active_bootstrap/{n}" for n in ("ab1a_spec.py", "ab1a_render.py", "ab1a_stereo.py", "ab1a_run.py",
                                                       "ab1a_visuals.py", "check_ab1a.py")}
 AB1A_ALLOWED = AB1A_REQUIRED | AB1A_TOOLS | {"docs/active-bootstrap/ab1a-first-natural-stereo-look-report.md"}
+AB1B_REQUIRED = {"docs/active-bootstrap/ab1b-spherical-epipolar-geometry-contract.md"}
+AB1B_TOOLS = {f"tools/active_bootstrap/{n}" for n in ("ab1b_spec.py", "ab1b_oracle.py", "ab1b_geometry.py", "ab1b_run.py",
+                                                      "ab1b_visuals.py", "check_ab1b.py")}
+AB1B_ALLOWED = AB1B_REQUIRED | AB1B_TOOLS | {"docs/active-bootstrap/ab1b-spherical-epipolar-geometry-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
-                 | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED)
+                 | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -367,6 +372,8 @@ def main() -> int:
     check("the NB1c contract is tracked", not missing_nb1c, str(missing_nb1c))
     missing_ab1a = sorted(AB1A_REQUIRED - set(index))
     check("the AB1a contract is tracked", not missing_ab1a, str(missing_ab1a))
+    missing_ab1b = sorted(AB1B_REQUIRED - set(index))
+    check("the AB1b contract is tracked", not missing_ab1b, str(missing_ab1b))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
