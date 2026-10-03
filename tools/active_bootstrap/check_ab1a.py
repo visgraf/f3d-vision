@@ -2,7 +2,8 @@
 
     .venv/bin/python tools/active_bootstrap/check_ab1a.py --run RUN --visuals VIS [--corruptions] [--write-summary]
 
-Contract: docs/active-bootstrap/ab1a-first-natural-stereo-look-contract.md, sections 16-17 (checks 1-41).  The checker
+Contract: docs/active-bootstrap/ab1a-first-natural-stereo-look-contract.md, sections 16-17 (checks 1-42; 42 is the
+literal pass-set clause of section 6, split out of check 40).  The checker
 keeps its own literal constants and recomputes independently of the generator:
 - the frozen NB1c action (hashes, rank 1, the cell-centre convention);
 - the calibration (baseline-projected axes, intrinsics, vergence, IPD, z_rect bounds) and L / B_perp;
@@ -404,10 +405,19 @@ def c06(x):
     return bool(ok), {"acquire_entries": len(acq), "files": files}
 
 
+def _argv_text(x) -> str:
+    """Every logged argv, with the declared accepted data paths removed (the head-pose source lives under
+    previews/controller-01-full/: a data file, not a controller command)."""
+    text = " ".join(" ".join(map(str, e.get("argv", []))) + " " + " ".join(map(str, e.get("blender", {}).get("argv", [])))
+                    for e in x.log)
+    for p in (HEAD_POSE[0], CATALOG[0]):
+        text = text.replace(str(p), "<accepted-data>")
+    return text.lower()
+
+
 def c07(x):
     cmds = {e.get("command") for e in x.log}
-    argv = " ".join(" ".join(map(str, e.get("argv", []))) + " " + " ".join(map(str, e.get("blender", {}).get("argv", [])))
-                    for e in x.log).lower()
+    argv = _argv_text(x)
     bad_imports = static_imports()
     ok = cmds <= COMMANDS and "controller" not in argv and not [i for i in bad_imports if "controller" in i]
     return ok, {"commands": sorted(map(str, cmds)), "bad_imports": bad_imports}
@@ -774,8 +784,7 @@ def c35(x):
 
 
 def c36(x):
-    argv = " ".join(" ".join(map(str, e.get("argv", []))) + " " + " ".join(map(str, e.get("blender", {}).get("argv", [])))
-                    for e in x.log).lower()
+    argv = _argv_text(x)
     toks = [t for t in ("fsg6f", "fsg3_surface_map", "surface_map", "fusion", "surfel") if t in argv]
     files = [str(p.relative_to(x.run)) for p in x.run.rglob("*") if any(t in p.name.lower() for t in ("surfel", "surface-map", "fsg6f"))]
     imps = [i for i in static_imports() if any(t in i for t in ("fsg6f", "fsg3", "multiobject"))]
@@ -821,7 +830,9 @@ def c40(x):
                  float(np.abs(np.asarray(ep["head_origin_w_m"]) - np.asarray(pose["head_origin_w_m"])).max()))
     det = {"device": a["device"] == DEVICE, "spp": a["spp"] == SPP and st["samples"] == SPP, "seeds": a["render_seeds_lr"] == SEEDS,
            "filter": st["pixel_filter"] == "BOX" and st["filter_width"] == 1.0 and not st["adaptive_sampling"]
-           and not st["denoising"], "passes": all(p == PASSES for p in passes.values()) and exr_passes == passes,
+           and not st["denoising"],
+           "declared_passes_present_no_depth_normal": all(PASSES <= p and not ({"Depth", "Normal"} & p)
+                                                          for p in passes.values()) and exr_passes == passes,
            "eye_pose": pose_d <= EYE_TOL and sha256(HEAD_POSE[0]) == HEAD_POSE[1],
            "calibration_pose": leaf_diff(x.c["head_R_wh"], ep["head_R_wh"]) <= CAL_TOL,
            "rgb_equals_exr": all(np.array_equal(x.exr[s]["rgb"], x.rgb[f"rgb_{s}"]) for s in ("L", "R")),
@@ -829,6 +840,13 @@ def c40(x):
            "catalog": json.loads((x.run / "evaluation_only/instance-catalog.json").read_text())["instances"]
            == json.loads(CATALOG[0].read_text())["instances"]}
     return all(det.values()), det
+
+
+def c42(x):
+    """Contract section 6, literally: the raw EXRs hold exactly Combined, Position and Object Index."""
+    passes = {s: sorted({".".join(ch.split(".")[1:-1]) for ch in x.exr[s]["channels"]}) for s in ("L", "R")}
+    extra = sorted(set(passes["L"]) - PASSES)
+    return all(set(p) == PASSES for p in passes.values()), {"extra_passes": extra}
 
 
 def c41(x):
@@ -921,7 +939,9 @@ CHECKS = [(f"{i:02d}", name, fn) for i, (name, fn) in enumerate([
     ("accepted NB1a / NB1b / NB1c / controller / fov3d / FSG files unchanged", c37),
     ("changed tracked files are declared AB1a / layout / handoff files only", c38),
     ("synthetic known answers (generator and independent)", c39),
-    ("acquisition settings, EYE pose, channels, RGB = EXR Combined", c40), ("Blender rehearsal known answers", c41)],
+    ("acquisition settings, EYE pose, declared passes (no Depth / Normal), RGB = EXR Combined", c40),
+    ("Blender rehearsal known answers", c41),
+    ("raw EXR pass set is exactly Combined / Position / Object Index (contract section 6 text)", c42)],
     start=1)]
 
 
@@ -1063,6 +1083,10 @@ def corruptions():
         return f
 
     def position_geometry(m, v, c):
+        """A matcher that takes its geometry from Position must open it; the probe records that read too."""
+        edit_json(m / "measurement/measurement-opened-files.json", lambda d: d["data_reads"].append(
+            str((m / "evaluation_only/reference-observation.npz").resolve())))
+
         def fn(z):
             geom = c.orc["left_geometry"].astype(bool)
             z["valid"] = geom.copy()
@@ -1070,7 +1094,7 @@ def corruptions():
             xyz[~geom] = np.nan
             z["xyz_h"] = xyz
         edit_npz(m / "measurement/stereo-result.npz", fn)
-        refreeze(m, ["measurement/stereo-result.npz"])
+        refreeze(m, ["measurement/stereo-result.npz", "measurement/measurement-opened-files.json"])
 
     def after_eval(m, v, c):
         edit_json(m / "measurement/stereo-summary.json", lambda d: d.update(valid_count=d["valid_count"] + 1))
@@ -1160,7 +1184,7 @@ def corruptions():
         ("same-instance equality added", ("19", "21", "29"), identity_mask("same")),
         ("Object Index opened during measurement", ("19", "20"), opened("evaluation_only/reference-observation.npz")),
         ("Position opened during measurement", ("19", "20"), opened("evaluation_only/raw_L.exr")),
-        ("disparity geometry replaced by Position truth", ("29", "30"), position_geometry),
+        ("disparity geometry replaced by Position truth", ("19", "29", "30"), position_geometry),
         ("support mask altered", ("25", "29"), nat(flip_support)),
         ("one valid pixel altered", ("29",), nat(flip_valid)),
         ("one disparity altered", ("30",), nat(bump_disp)),
