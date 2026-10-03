@@ -1,17 +1,25 @@
 # Breadth-1: Classroom-234 Spherical Glance — report
 
-**Status: REVIEW PENDING — one decision required before completion.**
+**Marker.**
+
+    BREADTH1_CLASSROOM234_SPHERICAL_GLANCE_COMPLETE
+
+**Status: REVIEW PENDING.** Luiz and Chat perform the qualitative and scientific review. No ACCEPTED marker
+is written, and the branch is not merged.
 
 The single canonical Classroom observation is valid and fully analyzed. Every required product exists.
-Checks pass **25/26**; the corruption suite catches **28/28**.
+Checks pass **26/26** (`BREADTH1_CHECKS_PASS`). The corruption suite, run from that passing baseline, catches
+**29/29** (`BREADTH1_MUTATIONS_CAUGHT`).
 
-**Check 13 (seed selection rule) fails** for 3 of the 126 visible objects. This is a genuine ambiguity of
-the frozen seed rule at exact mathematical ties, diagnosed below. Repairing it would change two derived
-seeds by one cell each, and contract section 5 does not allow that after valid data without a decision.
+The first report (`8b347f2`) stopped at 25/26: check 13 exposed an ambiguity of the seed rule at exact
+mathematical ties. Luiz/Chat chose **Option A**, a **post-run numerical clarification** of the seed tie
+semantics (contract section 11, `8158809`). The seeds were then re-derived from the saved canonical EXR.
+**No Blender render was run again.**
 
-- The frozen outputs are unchanged, and check 13 is not weakened.
-- **The Breadth-1 completion marker (contract section 10) is withheld** until Luiz and Chat decide.
-  No ACCEPTED marker is written.
+> **The 234-object catalog is not an inventory of all rendered Classroom geometry.** The 234 objects are the
+> accepted catalog accounting universe. Collection-instanced geometry (school desks, chairs, the teacher's
+> desk, lamps, …) is rendered but is not represented in that catalog: it covers 15.4 % of the sphere with
+> Object Index 0. Breadth-1 does not resolve that discrepancy (see "Cell accounting").
 
 Contract: `docs/classroom-oracle/breadth-1-spherical-glance-contract.md`. MEASURED means produced by
 the identified runs below; PROPOSED means the contract's untested estimate.
@@ -24,8 +32,10 @@ the identified runs below; PROPOSED means the contract's untested estimate.
 | contract | `d5b975b` *Contract Breadth-1 Classroom-234 spherical glance* |
 | implementation (frozen before the run) | `0106269` *Implement Breadth-1 spherical glance* |
 | canonical run | at `0106269`: synthetic test, preflight, render and analysis (clean and pushed tree; recorded in `process-log.jsonl` and `manifest.json`) |
-| presentation fix after the run | `0a78544` *Breadth-1 figures: presentation fixes after the canonical run* (figures only; regenerated at `0a78544`) |
-| report | this commit |
+| presentation fix after the run | `0a78544` *Breadth-1 figures: presentation fixes after the canonical run* (figures only) |
+| first report (decision pending) | `8b347f2` *Report Breadth-1 Classroom-234 spherical glance (decision pending)* |
+| post-run seed tie clarification and repair (Option A) | `8158809` *Clarify Breadth-1 seed tie semantics (post-run, Option A)*; `analyze`, `visualize` and the checker re-run at `8158809` from the saved EXR |
+| completion report | this commit, *Complete Breadth-1 numerical seed tie repair* |
 
 `fov3d/` is byte-identical to `3aa0cc6`. The only changed tracked files are the declared Breadth-1 files
 plus the layout checker (check 21).
@@ -42,7 +52,14 @@ and `VIS=/home/lvelho/rd/f3d-vision/visuals/breadth-1-classroom-234-spherical-gl
 | `… breadth1_glance.py render --run $RUN` | the one canonical render | 2.8 s wall |
 | `… breadth1_glance.py analyze --run $RUN` | 126 visible, 108 no first hit | 0.8 s |
 | `… breadth1_glance.py visualize --run $RUN --visuals $VIS` | 8 figures + PLY (run at `0106269`, then again at `0a78544`) | 1.0 s |
-| `.venv/bin/python tools/classroom_oracle/check_breadth1.py --run $RUN --visuals $VIS --corruptions --write-summary` | 25/26; corruptions 28/28 | 20.5 s |
+| `.venv/bin/python tools/classroom_oracle/check_breadth1.py --run $RUN --visuals $VIS --corruptions --write-summary` | at `0a78544`: 25/26; corruptions 28/28 (not probative: baseline failing) | 20.5 s |
+| `… breadth1_glance.py analyze --run $RUN` (re-derivation at `8158809`, from the saved EXR) | 126 visible, 108 no first hit; tie control 3/3 | 0.8 s |
+| `… breadth1_glance.py visualize --run $RUN --visuals $VIS` (at `8158809`) | 8 figures + PLY | 1.0 s |
+| `… check_breadth1.py --run $RUN --visuals $VIS --corruptions --write-summary` (at `8158809`) | **26/26; corruptions 29/29 from a passing baseline** | 21.7 s |
+
+The re-derivation invoked no Blender process. `process-log.jsonl` still holds exactly the three original
+invocations (synthetic, preflight, canonical) and is byte-identical. The canonical EXR is unchanged at
+sha256 `4ea036fc…`.
 
 All are interactive class. The contract's PROPOSED "batch (< 5 min)" for the render was conservative.
 
@@ -100,6 +117,18 @@ inferred.
 | `INDEX0_NO_GEOMETRY` (Object Index 0, Position = 0) | 3,442 | 0.2592 sr | 2.1 % |
 
 The cell weights sum to 4π = 12.566370614359172 sr.
+
+**What the 234-object catalog is, and is not:**
+- The 234 objects are the **accepted catalog accounting universe**: the `instance_catalog.json` used by
+  Controller-01/02, which is exactly the scene's renderable geometric objects.
+- **Collection-instanced geometry is rendered but is not represented in that catalog.** It appears as
+  `INDEX0_NONCATALOG_GEOMETRY` (15.4 % of the sphere). See "Observations for the review" for the read-only
+  scene query (56 collection instancers, including 20 school desks).
+- **Breadth-1 does not resolve that discrepancy.** No ids were assigned retroactively, and no cell-by-cell
+  furniture attribution was made.
+- The discrepancy is scientifically relevant to Natural Bootstrap-1 and to any future evaluation that uses
+  the catalog.
+- Authored-object identity remains oracle / reference information, not natural segmentation ground truth.
 
 ### Overlap with the accepted localized 25 (reference subset only)
 
@@ -228,26 +257,30 @@ No authored cell is nearer than 1.05 m.
 ### Representative DERIVED seeds
 
 There are 126 seeds, one per visible object, each on its object's largest component. The declared
-fallback was used 0 times. In 16 objects the maximum dot product is a round-off tie (see the decision
-below). No seed caused an observation.
+fallback was used 0 times. No seed caused an observation.
+
+Under the section-11 tie semantics (`SEED_TIE_DOT_EPS = 1e-12`), 16 objects have two numerically tied
+candidates: 4, 7, 11, 19, 26, 30, 31, 102, 114, 131, 177, 209, 216, 217, 218 and 231. Each record carries
+`tied_candidates`.
 
 ## Visual products (Visual Language 1)
 
 Persistent, under `/home/lvelho/rd/f3d-vision/visuals/breadth-1-classroom-234-spherical-glance/`, drawn at
-`0a78544`:
+`8158809`. Only the two figures that draw seeds changed relative to `0a78544` (marked †); every other file
+is byte-identical:
 
 | file | truth badges | sha256 |
 |---|---|---|
-| `overview.png` | REFERENCE / EVALUATION, ORACLE INPUT, DERIVED | `25075fe90fb7ffbb8a405efd65a101d2f2375e2d854252cade37f383fa01259a` |
+| `overview.png` † | REFERENCE / EVALUATION, ORACLE INPUT, DERIVED | `705265b08fda43f7c532341fee97486d2f3e494fdcf25d85365e010244454f02` |
 | `rgb-panorama.png` | REFERENCE / EVALUATION | `789f3d65ad31c7d861a5e1fdf38c14f6478cb8dec7a5fe3e20a7076c1225898b` |
 | `range-panorama.png` | REFERENCE / EVALUATION | `f37a35d5ef6abed6c51761e43feee34ec6a89750fc4abea33c23ad8c66f24f4b` |
 | `instance-panorama.png` | ORACLE INPUT, DERIVED | `87863c8d2bb2d8588f676839e0f62ac289478bdd1e48ed7abfd779b02c8e1a7a` |
 | `object-boundary-overlay.png` | REFERENCE / EVALUATION, DERIVED | `c860ed7ad06918a762447f60666a8e9284595f049ab309ba6e698ff27a95d91c` |
-| `seed-direction-panorama.png` | DERIVED, REFERENCE / EVALUATION | `bef125d3698acaab149d2ace0fe0f7f50843d76f64c9c0bea0cfe746f273ce3e` |
+| `seed-direction-panorama.png` † | DERIVED, REFERENCE / EVALUATION | `0266275481fa43fe61355bd87dae84066b39e77ed49005ce154458cc46d6ea0b` |
 | `support-size-histogram.png` | DERIVED | `5d05dbbda327f8ddfdd712c58705796e5af6ee0bc99364363132fd63e40c0dcc` |
 | `support-vs-range.png` | DERIVED | `980eed2d93df1f9901495f0af1c36251431b452bd53a5a879970af9fb6f43763` |
 | `global-point-cloud.ply` | REFERENCE / EVALUATION, ORACLE INPUT | `ee46ffcba92f18c43cddc6d3d0d90cbfd9226280fd4c0affd750976143310ee4` |
-| `visuals-manifest.json` | — | `e8077795d4f1d85468e6beeedbd10dc811fd8622ef3c584bfb892d7d328055c2` |
+| `visuals-manifest.json` † | — | `e9dd2c02bf5fecd66d6336263efb7142b55a8831b24b05beca871595af7698ba` |
 
 The overview has four regions:
 - the RGB glance with the old Controller domain;
@@ -269,22 +302,28 @@ Regenerate the figures with:
 ## Machine evidence
 
 Under `/home/lvelho/rd/f3d-vision/previews/breadth-1-classroom-234-spherical-glance/` (67 MB), `manifest.json`
-is `f53b3557…`, written at `0106269` (clean, pushed). It records:
+is `a0919152cef1b43592b6f055693a833fe3433b50429dc9f966827ee78a284236`. It was rewritten by the re-derivation
+at `8158809` (clean, pushed); the first was `f53b3557…` at `0106269`. It records:
 - the inputs with sha256;
 - the head transform;
 - the three logged Blender invocations;
 - the orientation residuals;
+- the seed tie rule and its control;
 - the truth class of every product.
+
+Files marked † changed in the re-derivation, and only through the seed fields of objects 102 and 177 plus
+the new `tied_candidates` / `tie_semantics` fields. Every other output is byte-identical to the first
+derivation, including all three `.npz` arrays.
 
 | output | sha256 |
 |---|---|
 | `glance.npz` | `83bb436dbdda44c09da423be66b0b44d062ac80174f994f052f4f79c7bf31aa2` |
 | `range.npz` | `6dee7711b4903f901143cff59b6ad990cf890b95b0ceaf06e67618f604d197bb` |
 | `components.npz` | `721b0a686c03e4854fea2fb50411b1b80b13b3cc9e774395fc648be7cd09d2d5` |
-| `object-stats.json` | `ee2f6fe64c99b080928344692ec403a651691b456da4a5528287eb47ef54f3f1` |
-| `object-stats.csv` | `8072c8f1b184c3f8d144b7eae74fb516ad6138483393da9d909406519f357562` |
+| `object-stats.json` † | `2f8aa7bee3abf88bd4a93316ad13babd6419f551536d99e71db6b63dce175a02` |
+| `object-stats.csv` † | `fb0f9220a2763457f364e647e1cce582a954a3fa59bc4cfd8520dfb48938c2ab` |
 | `components.json` | `078757fa5a4d8a887048e6e7c99837453fbe3bd7a86bc2cdedb865b5427d231e` |
-| `seed-directions.json` | `3f3a2e8dc7b8269095db0314d5b82028f3cd6fc4cfa14001b72bb693a397055a` |
+| `seed-directions.json` † | `d68af8fd41db8300d651601f0b9ff33827a13130356c7ffb042c1277d1afa4c7` |
 | `summary.json` | `b0744571be530599446e48ec0379c429d3e21acc08fdf153930fd82d4842be04` |
 | `global-point-cloud.ply` | `ee46ffcb…`: 222,267 points, one per authored cell, with world Position, 8-bit RGB and instance id |
 
@@ -293,14 +332,15 @@ The directory also holds:
 - `preflight.json`;
 - `render/` (EXR, metadata, log);
 - `process-log.jsonl`;
-- `check-summary.json`, from the checker at `0a78544`.
+- `check-summary.json` `8e43150b8ccd0876e25709a4003b34c3e8c9839b3074d5d83d0866ba72344cc4`, from the checker at
+  `8158809`: 26/26, with the corruption results and `baseline_passing: true`.
 
 RGB, Position and Object Index come from the one EXR: `glance.npz` equals the EXR's channels exactly
 (check 23).
 
 ## Checks
 
-`tools/classroom_oracle/check_breadth1.py`: **25/26 pass**. `BREADTH1_CHECKS_PASS` is not printed.
+`tools/classroom_oracle/check_breadth1.py` at `8158809`: **26/26 pass** (`BREADTH1_CHECKS_PASS`).
 
 | # | check | result |
 |---|---|---|
@@ -316,7 +356,7 @@ RGB, Position and Object Index come from the one EXR: `glance.npz` equals the EX
 | 10 | seam-aware 8-connected components (independent BFS) recompute | PASS |
 | 11 | range raster from Position and origin | PASS |
 | 12 | per-object min / median / max range | PASS |
-| **13** | **seeds on the largest component and reproducing the frozen rule** | **FAIL: 3 of 126 (ids 102, 209, 218) differ from the checker by one adjacent cell** |
+| 13 | seeds on the largest component; frozen rule with the section-11 tie semantics, applied independently; declared epsilon; independent tie controls 3/3 | PASS (126 seeds, 16 with tied candidates; previously FAIL at `0a78544`) |
 | 14 | old-domain flags | PASS |
 | 15 | accepted-25 flags vs both accepted sources | PASS |
 | 16 | rankings and top-K | PASS |
@@ -331,7 +371,10 @@ RGB, Position and Object Index come from the one EXR: `glance.npz` equals the EX
 | 25 | synthetic test passed at the canonical commit | PASS |
 | 26 | figures regenerate byte-identically | PASS |
 
-**Corruption / mutation suite: 28/28 caught** (`BREADTH1_MUTATIONS_CAUGHT`). Each targeted check failed:
+**Corruption / mutation suite: 29/29 caught from a passing baseline** (`BREADTH1_MUTATIONS_CAUGHT`). That is
+the original 28 plus a new probative tie-break corruption. The checker now prints the marker only when the
+uncorrupted baseline passes, and records `baseline_passing` in `check-summary.json`. Each targeted check
+failed:
 
 | defect | target |
 |---|---|
@@ -343,6 +386,7 @@ RGB, Position and Object Index come from the one EXR: `glance.npz` equals the EX
 | a duplicated component | 10 |
 | components counted without the longitude wrap (6 seam objects) | 10 |
 | seed moved to a neighbouring other-object cell | 13 |
+| seed moved to the other numerically tied cell (object 4: (171, 476) → (171, 477)) | 13 |
 | median range +0.01 m | 12 |
 | flipped old-domain flag | 14 |
 | flipped accepted-25 flag | 15 |
@@ -364,16 +408,22 @@ RGB, Position and Object Index come from the one EXR: `glance.npz` equals the EX
 | a failed synthetic check | 25 |
 | an overview pixel altered | 26 |
 
-Because the canonical state fails check 13, every corruption run also lists 13 among its failures.
+**Check-13 negative control, explicitly:**
+- uncorrupted baseline: check 13 **PASS**;
+- seed moved off support: check 13 **FAIL**;
+- seed moved to the other numerically tied cell: check 13 **FAIL**. That cell is on support, on the largest
+  component and equally near the mean, so only the declared tie-break rejects it.
 
-Other gates, at `0a78544`:
+In the first report the baseline already failed check 13, so its earlier 28/28 was not probative for 13.
+
+Other gates, at `8158809` and again at this commit:
 - layout checker 521/521, with the Breadth-1 declarations, and negative controls: an untracked contract
   fails it, and an undeclared Breadth-1 file fails it;
 - `scripts/verify_baseline.sh` 9/9;
 - `git diff --check` clean;
 - `fov3d/` identical.
 
-## Decision required: seed tie semantics (check 13)
+## Check-13 seed tie semantics: diagnosis, decision and repair
 
 **Diagnosis (MEASURED).** For objects 102 `Rectangle018.002`, 209 `wall.007` and 218 `wallSwitch`, the
 largest component is exactly mirror-symmetric in longitude:
@@ -411,7 +461,7 @@ Candidates within ε = 1e-12 of the maximum dot product are treated as ties, the
 - Under ε, the generator and the independent checker agree on all 126 seeds.
 - Nothing else would change: visibility, components, ranks, ranges and accounting do not depend on seeds.
 
-**Options (Luiz/Chat):**
+**Options put to Luiz/Chat (first report):**
 - **A (recommended).** Declare ε = 1e-12 as a round-off tie tolerance in contract 4.5, then:
   - apply the same three-line change in `breadth1_glance.representative_seed` and in check 13;
   - re-run `analyze`, `visualize` and `check` from the saved canonical EXR. No render and no new
@@ -423,6 +473,54 @@ Candidates within ε = 1e-12 of the maximum dot product are treated as ties, the
 - **B.** Declare the generator's float64 arithmetic canonical: the 4.2 weights and row-major summation.
   Check 13 then replicates that exact arithmetic for the argmax. Current seeds are kept, including 102 and
   177, which do not follow the mathematical tie-break.
+
+**Decision.** Luiz/Chat chose **Option A**, a post-run numerical clarification and not scientific retuning.
+It is recorded as contract section 11, dated 2026-10-03; the original 4.5 rule is kept verbatim, with
+pointers.
+
+**Repair (`8158809`).** Exact files changed:
+- `docs/classroom-oracle/breadth-1-spherical-glance-contract.md`: section 11 added, plus pointers in 4.5 and
+  check 13;
+- `tools/classroom_oracle/breadth1_spec.py`:
+  - `SEED_TIE_DOT_EPS = 1e-12`, with its explanation;
+  - three known-answer controls on exactly mirror-symmetric synthetic components;
+- `tools/classroom_oracle/breadth1_glance.py`:
+  - `representative_seed` takes all cells with `max_dot - dot <= SEED_TIE_DOT_EPS` and resolves them by row,
+    then column, recording `tied_candidates`;
+  - `analyze` runs the tie control and stops if it fails;
+  - the manifest and `seed-directions.json` record the rule;
+- `tools/classroom_oracle/check_breadth1.py`:
+  - check 13 applies the rule **independently**, with its own cell geometry, spherical-weight expression
+    (cos·sin), BFS components and weighted mean, and a literal epsilon. It never calls the generator;
+  - it checks the declared epsilon and runs its own three tie controls;
+  - a new corruption moves a seed to the other tied cell;
+  - corruptions count only from a passing baseline.
+
+**Tie controls** (synthetic, no Blender), in the generator and independently in the checker:
+
+| control | cells | expected = got | tied |
+|---|---|---|---|
+| two-cell row (exact float64 equality would pick (60, 29)) | (60, 28), (60, 29) | (60, 28) | 2 |
+| four-way tie straddling the equator | rows 179–180 × columns 359–360 | (179, 359) | 4 |
+| four-way tie across the longitude seam | rows 179–180 × columns 719, 0 | (179, 0) | 4 |
+
+**Re-derivation (MEASURED, from the saved canonical EXR; no render).** Exactly the two predicted seeds moved:
+
+| object | before (row, col) | after (row, col) | yaw before → after | pitch |
+|---|---|---|---|---|
+| 102 `Rectangle018.002` | (187, 63) | (187, 62) | −148.25° → −148.75° | −3.75° |
+| 177 `post-it` | (193, 463) | (193, 462) | 51.75° → 51.25° | −6.75° |
+
+No other seed moved: 124 of 126 are identical. Neither object is in the accepted 25.
+
+**Unchanged** (compared with a pre-repair snapshot):
+- `glance.npz`, `range.npz`, `components.npz`, `components.json`, `summary.json`, `global-point-cloud.ply`,
+  `process-log.jsonl` and `preflight.json`, byte for byte;
+- every non-seed field of all 234 object records (value-identical);
+- catalog 234, visible 126, no first hit 108, fragmented visible 59;
+- authored cells 222,267 and PLY points 222,267;
+- all support, range, component, ranking and accounting quantities. The cell accounting is 82.5 % /
+  15.4 % / 2.1 %.
 
 ## Incidents and repairs
 
@@ -450,8 +548,11 @@ data):
 - the support-vs-range y limits follow the data decades;
 - the visuals manifest records the drawing commit.
 
-The frozen arrays and statistics are unchanged; the `manifest.json` output hashes are still those written
-at `0106269`.
+That fix left the frozen arrays and statistics unchanged: the `manifest.json` output hashes were still those
+written at `0106269`.
+
+**After the decision** (`8158809`): the authorized post-run seed tie clarification, Option A. It is
+described in "Check-13 seed tie semantics" above, and it changed two derived seeds and nothing else.
 
 **Observations for the review:**
 - **Extra EXR passes.** The Classroom's `interior` view layer already enables AO, diffuse, glossy,
@@ -489,8 +590,12 @@ at `0106269`.
   Classroom without rendering.
 - No controller was executed or imported. Controller-01 and Controller-02 code, the FSG code, the
   accepted renderers and Visual Language 1 are unchanged. `fov3d/` is byte-identical.
-- No threshold or configuration was changed after the result. The ε above is a proposal awaiting
-  decision, and it is not applied.
+- No observation configuration, catalog, visibility, component, support, range or ranking rule was changed
+  after the result. The only post-result change to a derived quantity is the authorized seed tie
+  clarification (contract section 11). It moved two seeds by one cell each and was re-derived from the
+  saved EXR without any render.
+- There is still exactly one canonical Classroom render. The canonical EXR was not regenerated (sha256
+  `4ea036fc74eab3b3ab06a0c4470c2b01740c9322de0eea522f957ddfffa172f8`).
 
 ## Interpretation (descriptive)
 
@@ -516,9 +621,9 @@ The old ±25° × ±20° Controller window contains support from only 24 visible
 
 ## Unresolved decisions
 
-1. Check 13 seed tie semantics: option A (recommended) or B. Completion is pending this decision.
-2. Qualitative and scientific review of the glance and its figures (Luiz and Chat).
-3. Whether instanced Classroom geometry (desks, chairs, lamps, …), outside the accepted 234-object
-   catalog, should enter later reference or evaluation universes.
+1. Qualitative and scientific review of the glance and its figures (Luiz and Chat).
+2. Whether instanced Classroom geometry (desks, chairs, lamps, …), outside the accepted 234-object
+   catalog, should enter later reference or evaluation universes. Breadth-1 leaves the catalog unchanged
+   and assigns no retroactive ids.
 
 The branch is not merged. Natural Bootstrap-1 is not started.
