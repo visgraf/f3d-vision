@@ -689,7 +689,8 @@ def reconstructed_point_cloud(d: Data) -> Image.Image:
     point_cloud(img, 40, 150, 1040, 900, pts, col, "top", {"gaze": (d.yaw, d.pitch)})
     point_cloud(img, 1120, 150, 1040, 900, pts, col, "side", {"gaze": (d.yaw, d.pitch)})
     caption(ImageDraw.Draw(img), 40, 1060, "top view", size=14, fill=S.INK2)
-    caption(ImageDraw.Draw(img), 1120, 1060, "side view (along −Z)", size=14, fill=S.INK2)
+    caption(ImageDraw.Draw(img), 1120, 1060, "projection onto head (−Z, Y): seen along the +X baseline, nearly face-on to "
+            "the fixation", size=14, fill=S.INK2)
     return img
 
 
