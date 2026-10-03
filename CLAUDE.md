@@ -301,22 +301,37 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     are not a bootstrap failure. The mechanism is not retuned toward the
     NB1b PRIMARY candidates, and later steps consume the frozen ordering
     (no cherry-picking, e.g. of gaze 3).
-- Active Bootstrap begins after NB1c. NB1c is complete. The next experiment
-  executes RGB gaze #1 exactly once. Near-term chain:
+- Active Bootstrap began after NB1c.
+  - AB1a: First Natural Stereo Look is accepted as a negative experiment.
+    Frozen RGB gaze #1 (+76.75°, +7.75°) was executed exactly once:
+    natural RGB-only valid 0 / 65,536 and post-freeze perfect-reference
+    valid 0 / 65,536. AB1a does not show that gaze #1 is unmeasurable. At
+    this near-baseline gaze (15.3° from the baseline) the accepted planar
+    rectification plus the fixed central rectified core samples a raw sliver
+    14.3° from the fixation and 1.05° from the baseline, which holds no
+    geometry; the raw L/R images contain the intended textured fixation.
+    The failure belongs to the measurement representation, not to SGBM or
+    to the fixation.
+- Active Bootstrap pivots after AB1a to spherical epipolar geometry.
+  Roadmap:
 
-        coarse spherical RGB
-          -> RGB candidate gaze
-          -> local binocular RGB acquisition
-          -> natural local stereo geometry
-          -> [future, not yet] geometric active growth / controller
+        spherical RGB attention
+          -> gaze-centered binocular geometry
+          -> replaceable correspondence engine
+          -> active local metric growth
 
-  - The next experiment is Active Bootstrap-1a: First Natural Stereo Look.
-    It executes RGB gaze #1 exactly once: one binocular RGB acquisition with
-    the accepted FSG instrument (baseline-projected tangent frame), RGB-only
-    local stereo with no identity, Position or range input, a measurement
-    freeze before any reference truth, then descriptive post-freeze
-    evaluation. No second gaze, no surface growth, no fusion and no
-    controller.
+  Keep three concerns separate:
+  - REPRESENTATION: how binocular rays are parameterized;
+  - CORRESPONDENCE: how matching left/right rays are found;
+  - CONTROL: where the eye looks next.
+  - The next experiment is Active Bootstrap-1b: Gaze-Centered Spherical
+    Epipolar Geometry. It tests REPRESENTATION only: it re-analyses the
+    saved AB1a raw L/R pair (no Blender, no re-render, no new gaze, no
+    controller), with perfect / oracle correspondence from Position and
+    Object Index in a separate oracle stage, and truth-free direct
+    triangulation from baseline-polar (theta, phi) angles over the raw
+    left 256 × 256 core. It is not a matcher, SGBM or global spherical
+    warp experiment; a natural matcher is a later, separate experiment.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

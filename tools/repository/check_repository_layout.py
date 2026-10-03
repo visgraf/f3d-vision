@@ -40,7 +40,8 @@ the handoff records NB1b accepted and the post-NB1b pivot to NB1c. Natural Boots
 (required), report and five tools/natural_bootstrap/ nb1c tools (allowed); the handoff records NB1c accepted and
 the start of Active Bootstrap (AB1a executes RGB gaze #1 exactly once). Active Bootstrap-1a adds the
 docs/active-bootstrap/ and tools/active_bootstrap/ directories and declares its contract (required), report and six
-tools/active_bootstrap/ ab1a tools (allowed).
+tools/active_bootstrap/ ab1a tools (allowed); the handoff records AB1a accepted and the post-AB1a pivot to
+spherical epipolar geometry (AB1b tests representation only, with perfect correspondence).
 """
 from __future__ import annotations
 
@@ -447,10 +448,14 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at NB1c, with NB1b, NB1a, Breadth-1, Visual Language 1, Controller-02, "
-          "Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, Controller-01A, "
-          "Controller-01, RT1 and Core 14 recorded",
-          "main @ 6b0ba683555ccc99a7995537087a214b256b70dc" in handoff
+    check("chat handoff records accepted main at AB1a, with NB1c, NB1b, NB1a, Breadth-1, Visual Language 1, "
+          "Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, "
+          "Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ c27edb2e8c3597f4bd415b695547bef4c8406463" in handoff
+          and "ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_ACCEPTED" in handoff
+          and "ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_COMPLETE" in handoff
+          and "AB1a is complete. The next experiment tests binocular REPRESENTATION only, with perfect correspondence."
+          in handoff
           and "NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_ACCEPTED" in handoff
           and "NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_COMPLETE" in handoff
           and "NB1c is complete. The next experiment executes RGB gaze #1 exactly once." in handoff
