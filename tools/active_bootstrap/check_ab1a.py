@@ -65,6 +65,13 @@ CORE_FOV, CORE, RAW = 12.0, 256, 640
 IPD, VERGENCE, Z_RECT = 0.063, 2.10, (0.75, 4.5)
 SPP, DEVICE, SEEDS = 256, "OPTIX", {"L": 2111, "R": 2112}
 PASSES = {"Combined", "Position", "Object Index"}
+FORBIDDEN_PASSES = {"Depth", "Normal"}
+# Contract section 23 (post-run clarification authorized by Luiz and Chat): the exact inherited Classroom
+# lighting / material pass set recorded from the canonical acquisition; permitted only inside evaluation_only/raw_*.exr.
+INHERITED_PASSES = {"Ambient Occlusion", "Diffuse Color", "Diffuse Direct", "Diffuse Indirect", "Emission",
+                    "Glossy Color", "Glossy Direct", "Glossy Indirect", "Transmission Color", "Transmission Direct",
+                    "Transmission Indirect"}
+REQUIRED_CHANNELS = {"Combined": {"R", "G", "B", "A"}, "Position": {"X", "Y", "Z"}, "Object Index": {"X"}}
 BLOCK, LR_TOL, UNIQ, MIN_STD = 5, 1.0, 10, 0.5
 EYE_TOL, CAL_TOL, CAM_TOL = 1e-6, 1e-9, 0.5 + 1e-3
 QUANT = {"median": 0.5, "p90": 0.90, "p95": 0.95, "p99": 0.99, "max": 1.0}
@@ -842,11 +849,27 @@ def c40(x):
     return all(det.values()), det
 
 
+def _pass_set(channels) -> set:
+    return {".".join(ch.split(".")[1:-1]) for ch in channels}
+
+
 def c42(x):
-    """Contract section 6, literally: the raw EXRs hold exactly Combined, Position and Object Index."""
-    passes = {s: sorted({".".join(ch.split(".")[1:-1]) for ch in x.exr[s]["channels"]}) for s in ("L", "R")}
-    extra = sorted(set(passes["L"]) - PASSES)
-    return all(set(p) == PASSES for p in passes.values()), {"extra_passes": extra}
+    """Contract sections 6 and 23: the raw EXRs hold the required passes (with their channels), no Depth / Normal, and
+    otherwise exactly the recorded inherited Classroom pass set; L and R agree; the record equals the files."""
+    chans = x.ov("exr_channels", {s: x.exr[s]["channels"] for s in ("L", "R")})
+    passes = {s: _pass_set(chans[s]) for s in ("L", "R")}
+    recorded = {s: _pass_set(x.acq["exr_channels_lr"][s]) for s in ("L", "R")}
+    det = {"required_present": all(PASSES <= p for p in passes.values()),
+           "required_channels": all({ch.split(".")[-1] for ch in chans[s] if ".".join(ch.split(".")[1:-1]) == name} == comp
+                                    for s in ("L", "R") for name, comp in REQUIRED_CHANNELS.items()),
+           "depth_normal_absent": not any(FORBIDDEN_PASSES & p for p in passes.values()),
+           "extras_equal_pinned_inherited_set": all(p - PASSES == INHERITED_PASSES for p in passes.values()),
+           "no_undeclared_pass": all(p <= PASSES | INHERITED_PASSES for p in passes.values()),
+           "left_right_consistent": passes["L"] == passes["R"] and sorted(chans["L"]) == sorted(chans["R"]),
+           "recorded_equals_files": recorded == passes
+           and all(sorted(x.acq["exr_channels_lr"][s]) == sorted(chans[s]) for s in ("L", "R"))}
+    det["extra_passes_observed"] = sorted(passes["L"] - PASSES)
+    return all(v for k, v in det.items() if k != "extra_passes_observed"), det
 
 
 def c41(x):
@@ -941,7 +964,7 @@ CHECKS = [(f"{i:02d}", name, fn) for i, (name, fn) in enumerate([
     ("synthetic known answers (generator and independent)", c39),
     ("acquisition settings, EYE pose, declared passes (no Depth / Normal), RGB = EXR Combined", c40),
     ("Blender rehearsal known answers", c41),
-    ("raw EXR pass set is exactly Combined / Position / Object Index (contract section 6 text)", c42)],
+    ("raw EXR passes: required present, no Depth / Normal, extras = the pinned inherited set (sections 6, 23)", c42)],
     start=1)]
 
 
@@ -1167,6 +1190,24 @@ def corruptions():
     def audit(tok):
         return lambda m, v, c: {"static_audit": {"forbidden_tokens": [tok], "truth_assisted_calls": []}}
 
+    def exr_chans(fn):
+        """Checker-only, in-process: the raw EXR channel lists as read from the files, then altered."""
+        def f(m, v, c):
+            ch = {s: list(c.exr[s]["channels"]) for s in ("L", "R")}
+            fn(ch)
+            return {"exr_channels": ch}
+        return f
+
+    def drop(name):
+        return lambda ch: [ch.__setitem__(s, [k for k in ch[s] if ".".join(k.split(".")[1:-1]) != name]) for s in ch]
+
+    def add(chan, sides=("L", "R")):
+        return lambda ch: [ch[s].append(chan) for s in sides]
+
+    def recorded_set(m, v, c):
+        edit_json(m / "acquisition/acquisition.json", lambda d: d["exr_channels_lr"].__setitem__(
+            "L", [k for k in d["exr_channels_lr"]["L"] if ".Emission." not in k]))
+
     second = {"command": "acquire", "status": "ok", "argv": ["ab1a_run.py", "acquire"], "code": {"dirty": False, "pushed": True},
               "blender": {"mode": "canonical", "argv": ["blender", "-b", "x.blend", "--mode", "canonical"]}}
     return [
@@ -1214,6 +1255,14 @@ def corruptions():
         ("stereo leverage L altered in the pre-look record", ("17",), lever),
         ("rectification P2 altered in the natural result", ("22",), nat(p2)),
         ("one RGB observation pixel altered", ("40",), rgb_pixel),
+        ("raw EXR gains a Depth pass", ("42",), exr_chans(add("interior.Depth.Z"))),
+        ("raw EXR gains a Normal pass", ("42",), exr_chans(add("interior.Normal.X"))),
+        ("raw EXR loses the Position pass", ("42",), exr_chans(drop("Position"))),
+        ("raw EXR loses the Object Index pass", ("42",), exr_chans(drop("Object Index"))),
+        ("raw EXR gains an unknown, unrecorded pass", ("42",), exr_chans(add("interior.Mist.Z"))),
+        ("raw EXR lacks one pinned inherited pass", ("42",), exr_chans(drop("Emission"))),
+        ("left / right EXR pass sets differ", ("42",), exr_chans(add("interior.Volume Direct.R", ("R",)))),
+        ("the recorded inherited-pass set altered (acquisition.json)", ("42",), recorded_set),
     ]
 
 

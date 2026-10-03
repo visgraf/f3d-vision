@@ -517,3 +517,41 @@ nothing). The checker's own synthetic cases (check 39) include a differential te
 (constant, everywhere-interior) identity, the accepted truth-assisted `fsg_stereo.compute` returns exactly the AB1a
 natural valid mask, disparity and XYZ, so the natural matcher differs from the accepted instrument only by the
 identity guard.
+
+## 23. Post-run clarification: inherited Classroom EXR passes (authorized by Luiz and Chat)
+
+**Chronology.** After the canonical acquisition, measurement, freeze and evaluation, the checker found that the
+evaluation-only raw EXRs (`evaluation_only/raw_L.exr`, `raw_R.exr`) do not hold only the passes section 6 named. The
+Classroom `.blend` view layer (`interior`) has further lighting / material passes enabled, and the reused accepted
+`classroom_oracle1_render._prepare_perspective_pair` leaves them on (the accepted Controller-01 EXRs carry the same
+passes, plus Depth and Normal). AB1a switched Depth and Normal off as declared. MEASURED from the canonical EXR
+headers (identical for L and R; recorded in `acquisition/acquisition.json` `exr_channels_lr`): 14 passes, i.e. the
+3 required ones plus 11 inherited ones:
+
+    Ambient Occlusion, Diffuse Color, Diffuse Direct, Diffuse Indirect, Emission,
+    Glossy Color, Glossy Direct, Glossy Indirect,
+    Transmission Color, Transmission Direct, Transmission Indirect
+
+These channels stayed exclusively inside `evaluation_only/raw_*.exr`. The natural measurement consumed exactly
+`calibration.json` and `rgb-observation.npz` (exactly `rgb_L`, `rgb_R`, equal to the EXR Combined channels) with 0
+truth-firewall violations. Luiz and Chat authorized this narrow clarification. It is not a scientific-rule change and
+authorizes no re-render, re-measurement, re-freeze or re-evaluation: the canonical acquisition, RGB observation,
+natural measurement, measurement freeze and evaluation stay exactly as they are.
+
+**Clarified acquisition contract** (the section 6 wording above is kept as the original record):
+- required EXR passes: Combined, Position, Object Index;
+- forbidden EXR passes: Depth, Normal;
+- additional inherited Classroom lighting / material passes are permitted **only** inside `evaluation_only/raw_*.exr`,
+  provided that (1) their exact names are recorded in `acquisition.json` and the report; (2) the L and R pass sets
+  agree; (3) none is copied into `rgb-observation.npz`; (4) none is opened by the natural matcher; (5) none influences
+  the frozen natural measurement.
+
+**Check 42** (split out of check 40's pass clause, then repaired here, not deleted) requires: the required passes
+present with their channels; Depth and Normal absent; the additional pass set equal to the exact inherited set
+pinned above; no pass outside required + pinned inherited; L / R consistency; and the recorded channel lists equal to
+the EXR headers. Conditions (3)-(5) remain covered by checks 18-20, 29-30 and 40. New probes: add Depth; add Normal;
+remove Position; remove Object Index; add an unknown, unrecorded pass; drop a pinned inherited pass; L / R pass sets
+differ; alter the recorded inherited-pass set.
+
+Correction: the commit message of `8c9d685` and the question put to Luiz described these as 13 extra passes; the
+exact count is 11 (14 in total).
