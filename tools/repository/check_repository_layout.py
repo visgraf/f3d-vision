@@ -42,7 +42,9 @@ the start of Active Bootstrap (AB1a executes RGB gaze #1 exactly once). Active B
 docs/active-bootstrap/ and tools/active_bootstrap/ directories and declares its contract (required), report and six
 tools/active_bootstrap/ ab1a tools (allowed); the handoff records AB1a accepted and the post-AB1a pivot to
 spherical epipolar geometry (AB1b tests representation only, with perfect correspondence). Active Bootstrap-1b
-declares its contract (required), report and six tools/active_bootstrap/ ab1b tools (allowed).
+declares its contract (required), report and six tools/active_bootstrap/ ab1b tools (allowed); the handoff records
+AB1b accepted and the post-AB1b operating strategy (AB1c compares planar and spherical geometry in a favorable
+safe-forward regime, with perfect correspondence).
 """
 from __future__ import annotations
 
@@ -455,10 +457,14 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at AB1a, with NB1c, NB1b, NB1a, Breadth-1, Visual Language 1, "
+    check("chat handoff records accepted main at AB1b, with AB1a, NB1c, NB1b, NB1a, Breadth-1, Visual Language 1, "
           "Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, "
           "Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ c27edb2e8c3597f4bd415b695547bef4c8406463" in handoff
+          "main @ 32fc9a31041ff78fbf2e4cc9b40cf7040fe19323" in handoff
+          and "ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_ACCEPTED" in handoff
+          and "ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_COMPLETE" in handoff
+          and "AB1b is complete. The next experiment compares planar and spherical geometry in a favorable safe-forward "
+              "regime, with perfect correspondence." in squash(handoff)
           and "ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_ACCEPTED" in handoff
           and "ACTIVE_BOOTSTRAP1A_FIRST_NATURAL_STEREO_LOOK_COMPLETE" in handoff
           and "AB1a is complete. The next experiment tests binocular REPRESENTATION only, with perfect correspondence."

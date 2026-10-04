@@ -2,12 +2,22 @@
 
 ## Accepted main
 
-    main @ c27edb2e8c3597f4bd415b695547bef4c8406463
+    main @ 32fc9a31041ff78fbf2e4cc9b40cf7040fe19323
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`c27edb2` (the AB1a acceptance commit on branch `active-bootstrap/ab1a-first-natural-stereo-look`).
+`32fc9a3` (the AB1b acceptance commit on branch `active-bootstrap/ab1b-spherical-epipolar-geometry`).
 
 Accepted milestones:
+- **Active Bootstrap-1b: Gaze-Centered Spherical Epipolar Geometry**, accepted by Luiz and Chat (the machine result,
+  the scientific conclusion and the primary visual):
+
+      ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_ACCEPTED
+
+  The accepted completion marker is `ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_COMPLETE`. **AB1b is complete.**
+- **Active Bootstrap operating strategy after AB1b** (a decision by Luiz and Chat, not an experiment): spherical
+  geometry is not a way to make poorly conditioned stereo precise; active head pose avoids poorly conditioned
+  configurations, and local stereo operates in a favorable head-relative regime. The next bounded sequence is AB1c,
+  AB1d, AB1e. See "Active Bootstrap operating strategy after AB1b".
 - **Active Bootstrap-1a: First Natural Stereo Look**, accepted by Luiz and Chat as an **accepted negative
   experiment** (the machine result, the one execution of RGB gaze #1 and the scientific interpretation):
 
@@ -140,7 +150,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after AB1a)
+## Current roadmap (Luiz and Chat, after AB1b)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -151,8 +161,14 @@ Accepted milestones:
            NB1c RGB candidate gaze                  ACCEPTED
       -> Active Bootstrap
            AB1a first natural stereo look           ACCEPTED (negative: planar representation)
-           AB1b gaze-centered spherical epipolar    NEXT (saved AB1a pair, perfect correspondence)
-                geometry
+           AB1b gaze-centered spherical epipolar    ACCEPTED (support preserved, geometry correct;
+                geometry                                      conditioning poor at gaze #1)
+           AB1c safe-forward planar vs spherical    NEXT (perfect correspondence, fixed head,
+                geometry                                  favorable configurations only)
+           AB1d safe-forward natural RGB            future, only after AB1c is judged
+                correspondence
+           AB1e same difficult target, whole-head   future
+                recentering
       -> Classroom validation
       -> Tabletop transfer
            same controller / bootstrap policy,
@@ -249,6 +265,8 @@ Near-term chain:
 
 ### Active Bootstrap pivot after AB1a (Luiz and Chat)
 
+Historical record (the launch of AB1b; AB1b is now accepted, see its section below):
+
 **AB1a is complete. The next experiment tests binocular REPRESENTATION only, with perfect correspondence.**
 
 Roadmap:
@@ -290,6 +308,104 @@ Rationale (durable project history):
   - It is **not** a matcher benchmark, an SGBM experiment, a global spherical warp or a controller experiment. No
     correspondence fraction, error, disparity or conditioning threshold is declared.
   - A natural matcher is a later, separate experiment, only if AB1b shows the geometry itself is sound.
+
+### Active Bootstrap operating strategy after AB1b (Luiz and Chat)
+
+**AB1b is complete. The next experiment compares planar and spherical geometry in a favorable safe-forward regime,
+with perfect correspondence.**
+
+Decision record (durable):
+1. AB1b is accepted (see its section below).
+2. Spherical epipolar geometry is **not** intended as a way to make intrinsically poorly conditioned stereo physically
+   precise.
+3. The intended operating strategy is:
+   - use active head pose to avoid poorly conditioned binocular configurations;
+   - operate local stereo in a favorable head-relative regime;
+   - use gaze-centered spherical epipolar geometry there;
+   - transform measurements back into the canonical omnidirectional scene frame when head motion is later introduced.
+4. Conceptual distinction:
+   - **REPRESENTATION** must not destroy an otherwise valid local measurement;
+   - **CONDITIONING** is physical and should be controlled by sensor / head pose.
+
+   In particular: *"representation should not destroy a valid measurement, but active sensing should avoid
+   intrinsically bad measurements in the first place."*
+5. Next bounded sequence:
+
+       AB1c  safe-forward planar vs spherical geometry
+             PERFECT correspondence
+             fixed head
+             favorable configurations only
+             PRIMARY question: geometric agreement
+
+       AB1d  safe-forward NATURAL RGB correspondence
+             only after AB1c is judged
+
+       AB1e  return to the SAME difficult world target as AB1a / AB1b,
+             rotate the whole binocular head to make the target locally
+             forward / well-conditioned, use ordinary local stereo, and
+             transform the result back to the canonical frame
+
+6. Head motion is not implemented now. A natural matcher is not implemented now.
+
+- **AB1c: Safe-Forward Planar vs Spherical Geometry** (branch
+  `active-bootstrap/ab1c-safe-forward-planar-vs-spherical`, contract
+  `docs/active-bootstrap/ab1c-safe-forward-planar-vs-spherical-contract.md`, committed before implementation) asks
+  whether, under favorable, well-conditioned head-relative viewing geometry, conventional planar tangent stereo
+  geometry and gaze-centered spherical epipolar geometry recover the same local metric scene structure from the same
+  binocular observations when correspondence is held perfect. It is an equivalence / control experiment, not a
+  competition, not a near-baseline rescue, not a matcher, head-motion or controller experiment.
+  - Three frozen gazes, chosen deterministically from the accepted NB1c RGB attention score inside a predeclared
+    SAFE-FORWARD envelope (center within 20° of −Z; minimum full-core stereo leverage ≥ 0.90 in both eyes), with the
+    accepted NB1c tie rule and spherical NMS (D_MIN = 16.9°); no depth, identity or stereo result in selection.
+  - Exactly one binocular observation per gaze, fixed head; planar and spherical geometry consume the same
+    observation and the same frozen, truth-stripped perfect-correspondence product; both geometries are frozen before
+    Position is reopened for evaluation. No success threshold is declared.
+
+## Active Bootstrap-1b: Gaze-Centered Spherical Epipolar Geometry (accepted at `32fc9a3`)
+
+Luiz and Chat accept AB1b: the machine result, the scientific conclusion and the primary visual.
+
+Record (branch `active-bootstrap/ab1b-spherical-epipolar-geometry`, base `cbdc4eb`):
+- contract: `docs/active-bootstrap/ab1b-spherical-epipolar-geometry-contract.md` (`922dc8e`).
+- implementation: `tools/active_bootstrap/ab1b_{spec,oracle,geometry,run,visuals}.py` and `check_ab1b.py`. Frozen at
+  `53393e3` before the canonical analysis; presentation fix `d0f1a23` (one caption).
+- report: `docs/active-bootstrap/ab1b-spherical-epipolar-geometry-report.md` (completion `a597c89`, acceptance
+  `32fc9a3`).
+- run: `/home/lvelho/rd/f3d-vision/previews/active-bootstrap/ab1b-spherical-epipolar-geometry/`. A re-analysis of the
+  saved AB1a pair (no render): correspondence freeze `oracle/correspondence-freeze.json`
+  `d160d98faecdd8ba1c44ff532fc91cd94ab89789e9d6a31743a5c25d8ce8ba56`; geometry freeze `geometry/geometry-freeze.json`
+  `942707a858c8b76cb65db503183853d27c55000eb2e59c6de4dfbcf025d21c7a`. The canonical steps refuse to rerun.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/active-bootstrap/ab1b-spherical-epipolar-geometry/` (`overview.png`
+  `b1000881b8510ffeaab5af88b6873077982b46f8ed52b14ede3884a5e3277288`, inspected and accepted as satisfying the
+  Level-A scientific-visual requirement).
+
+Accepted measured result:
+
+    ACTIVE_BOOTSTRAP1B_CHECKS_PASS          46 / 46
+    ACTIVE_BOOTSTRAP1B_MUTATIONS_CAUGHT     51 / 51 (from a passing baseline; one probe not applicable)
+
+| quantity | value |
+|---|---|
+| raw-core rays represented | 65,536 / 65,536 |
+| perfect binocular correspondences / spherical triangulations | 44,769 / 44,769 |
+| \|φ_R − φ_L\| median / p95 / max | 1.93e-6 / 3.22e-6 / 3.88e-6 rad |
+| δθ | positive for all 44,769 pairs |
+| κ median / p95 | about 262 / about 384 |
+| epipolar vs ray-ray reconstruction, median / max | about 8.1e-8 m / about 2.9e-7 m |
+| post-freeze error vs Blender Position, median / p95 / p99 / max | 0.408 / 0.696 / 0.788 / 0.929 mm |
+| AB1a planar rectified reference-valid (accepted, MEASURED in AB1a) | 0 / 65,536 |
+
+Accepted interpretation (durable):
+1. At the deliberately difficult gaze #1, gaze-centered spherical epipolar geometry preserves the intended foveal support
+   and yields correct metric geometry when correspondence is supplied perfectly.
+2. The failure observed in AB1a was therefore a planar-representation failure, not an absence of binocular support.
+3. Metric precision at gaze #1 nevertheless remains strongly limited by physical stereo conditioning, because the
+   fixation lies near the physical eye baseline (B⊥ ≈ 16.6 mm; about 0.94 m of range per pixel-equivalent angle at
+   ≈4.4 m).
+4. The ≈7.8e-4 px Blender Position offset is a labelled post-run supporting diagnostic for the ≈0.4 mm systematic
+   radial bias; acceptance does not depend on it as a frozen claim.
+5. The synthetic case-10 margin (8.4e-10 m against 1e-9 m) stays recorded; it is not a blocker.
+6. No natural matcher has been run.
 
 ## Active Bootstrap-1a: First Natural Stereo Look (accepted at `c27edb2`)
 
@@ -1050,16 +1166,18 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c and AB1a are accepted. The Controller-01
-investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a and AB1b are accepted. The
+Controller-01 investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Current next activity: Active Bootstrap-1b — Gaze-Centered Spherical Epipolar Geometry** (see "Active Bootstrap
-pivot after AB1a"), on branch `active-bootstrap/ab1b-spherical-epipolar-geometry` from this accepted `main`, with its
-contract at `docs/active-bootstrap/ab1b-spherical-epipolar-geometry-contract.md`. It re-analyses the saved AB1a
-gaze-#1 pair with perfect / oracle correspondence and truth-free spherical epipolar triangulation over the raw left
-256 × 256 core; the geometry is frozen before Position truth is reopened for evaluation. No Blender, no re-render,
-no new gaze, no SGBM, no planar rectification, no controller, no fusion or growth. A natural matcher is not started.
-Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not started. FSG6f is not repaired.
+**Current next activity: Active Bootstrap-1c — Safe-Forward Planar vs Spherical Geometry** (see "Active Bootstrap
+operating strategy after AB1b"), on branch `active-bootstrap/ab1c-safe-forward-planar-vs-spherical` from this
+accepted `main`, with its contract at `docs/active-bootstrap/ab1c-safe-forward-planar-vs-spherical-contract.md`. Three
+frozen RGB gazes inside the predeclared SAFE-FORWARD envelope, one binocular observation each (fixed head), one shared
+perfect-correspondence product per gaze consumed by both the accepted planar rectification geometry and the accepted
+spherical epipolar geometry, both frozen before Position truth is reopened. The primary quantity is the direct planar
+vs spherical agreement on the common valid set; no success threshold. No natural matcher, no head motion, no
+controller. AB1d and AB1e are not started. Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not
+started. FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -1097,9 +1215,9 @@ Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not started.
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
-6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c and
-   AB1a acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap and the post-AB1a
-   pivot. These handoff updates did not touch it.
+6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a
+   and AB1b acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap, the post-AB1a pivot
+   and the post-AB1b operating strategy. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

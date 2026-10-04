@@ -324,14 +324,40 @@ roadmap decision recorded in `docs/chat-handoff.md`:
   - REPRESENTATION: how binocular rays are parameterized;
   - CORRESPONDENCE: how matching left/right rays are found;
   - CONTROL: where the eye looks next.
-  - The next experiment is Active Bootstrap-1b: Gaze-Centered Spherical
-    Epipolar Geometry. It tests REPRESENTATION only: it re-analyses the
-    saved AB1a raw L/R pair (no Blender, no re-render, no new gaze, no
-    controller), with perfect / oracle correspondence from Position and
-    Object Index in a separate oracle stage, and truth-free direct
-    triangulation from baseline-polar (theta, phi) angles over the raw
-    left 256 × 256 core. It is not a matcher, SGBM or global spherical
-    warp experiment; a natural matcher is a later, separate experiment.
+  - AB1b: Gaze-Centered Spherical Epipolar Geometry is accepted. On the
+    saved AB1a pair at the deliberately difficult gaze #1, with perfect
+    correspondence, spherical epipolar geometry preserves the intended
+    foveal support (65,536 / 65,536 raw-core rays; 44,769 perfect
+    correspondences, all triangulated) and yields correct metric geometry
+    (error vs Position median 0.41 mm, max 0.93 mm). The AB1a failure was
+    a planar-representation failure, not an absence of binocular support.
+    Metric precision there remains strongly limited by physical
+    conditioning (kappa median about 262), because the fixation lies near
+    the eye baseline. No natural matcher has been run.
+- Active Bootstrap operating strategy after AB1b (Luiz and Chat).
+  Spherical epipolar geometry is not intended as a way to make
+  intrinsically poorly conditioned stereo physically precise. Instead:
+  use active head pose to avoid poorly conditioned binocular
+  configurations; operate local stereo in a favorable head-relative
+  regime; use gaze-centered spherical epipolar geometry there; transform
+  measurements back into the canonical omnidirectional scene frame when
+  head motion is later introduced.
+  - REPRESENTATION must not destroy an otherwise valid local measurement.
+  - CONDITIONING is physical and should be controlled by sensor / head
+    pose: "representation should not destroy a valid measurement, but
+    active sensing should avoid intrinsically bad measurements in the
+    first place."
+  - Next bounded sequence:
+    - AB1c: safe-forward planar vs spherical geometry. Perfect
+      correspondence, fixed head, favorable configurations only; the
+      primary question is geometric agreement. It is the next experiment.
+    - AB1d: safe-forward natural RGB correspondence, only after AB1c is
+      judged.
+    - AB1e: return to the same difficult world target as AB1a / AB1b,
+      rotate the whole binocular head so the target is locally forward and
+      well conditioned, use ordinary local stereo, and transform the result
+      back to the canonical frame.
+  - Head motion and a natural matcher are not implemented yet.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.
