@@ -1,11 +1,15 @@
 # Active Bootstrap-1b — Gaze-Centered Spherical Epipolar Geometry — report
 
-**Marker.**
+**Markers.**
 
     ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_COMPLETE
+    ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide what the measured result means. No ACCEPTED marker is written, and
-the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted AB1b after scientific, quantitative, code and qualitative visual review
+(see "Acceptance record" at the end). At the deliberately difficult gaze #1, gaze-centered spherical epipolar geometry
+preserves the intended foveal support and yields correct metric geometry when correspondence is supplied perfectly; the
+metric precision there remains strongly limited by physical stereo conditioning. The sections below are the report as
+completed at `a597c89`, unchanged.
 
 > **Question.** Can direct gaze-centered spherical epipolar ray geometry preserve the intended foveal region and
 > recover correct metric 3-D from the exact gaze-#1 binocular observation when correspondence is assumed perfect?
@@ -447,11 +451,79 @@ Known answers before the canonical analysis (MEASURED at `53393e3`; analytic dat
 
 ## Unresolved decisions (Luiz and Chat)
 
-1. Scientific and qualitative review of AB1b and its figures.
-2. Whether the measured result establishes that "the geometry itself is sound", the stated precondition for a natural
-   matcher experiment.
-3. How to treat the conditioning at near-baseline gazes such as gaze #1 (κ ≈ 260; ≈0.94 m range per pixel-equivalent
-   angle at ≈4.4 m) when correspondence becomes natural. Options include the matcher's sub-pixel precision target,
-   leverage-aware attention, or vergence / gaze choice. This report only measures it.
+1. ~~Scientific and qualitative review of AB1b and its figures.~~ **ACCEPTED** (see "Acceptance record").
+2. ~~Whether the measured result establishes that "the geometry itself is sound", the stated precondition for a natural
+   matcher experiment.~~
+
+   **Decided:** the accepted conclusion is stated in the acceptance record and is not strengthened beyond it. A natural
+   matcher does not follow directly. The next experiment, Active Bootstrap-1c, compares planar and spherical geometry with
+   perfect correspondence in a favorable (safe-forward) head-relative regime. Natural RGB correspondence (AB1d) comes
+   only after AB1c is judged.
+3. ~~How to treat the conditioning at near-baseline gazes such as gaze #1 (κ ≈ 260; ≈0.94 m range per pixel-equivalent
+   angle at ≈4.4 m) when correspondence becomes natural.~~
+
+   **Decided (architectural):** conditioning is physical and is to be controlled by sensor / head pose, not compensated
+   by the representation. Spherical epipolar geometry is not intended to make intrinsically poorly conditioned stereo
+   physically precise. Active head pose should avoid poorly conditioned binocular configurations; local stereo operates
+   in a favorable head-relative regime. A later experiment (AB1e) returns to this same difficult world target with
+   whole-head recentering. The roadmap commit that follows this acceptance records the decision.
 4. The ≈7.8e-4 px offset of Blender Position from the pixel centre (scratch diagnostic) bounds oracle-based metric
    checks at this conditioning to about 1 mm. It may matter for future oracle comparisons at large κ.
+
+   **Recorded, not decided:** it stays a labelled post-run supporting diagnostic. AB1b acceptance does not depend on it.
+
+## Acceptance record
+
+Luiz and Chat completed the scientific, quantitative, code and qualitative visual review and **accept AB1b** as committed
+at `a597c89`:
+
+    ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_ACCEPTED
+
+- **Machine result accepted:**
+  - `ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_COMPLETE`;
+  - `ACTIVE_BOOTSTRAP1B_CHECKS_PASS` 46/46;
+  - `ACTIVE_BOOTSTRAP1B_MUTATIONS_CAUGHT` 51/51 from a passing baseline (one probe not applicable, recorded);
+  - `AB1B_SYNTHETIC_PASS` 15/15.
+- **Accepted scientific conclusion:**
+  - At the deliberately difficult gaze #1, gaze-centered spherical epipolar geometry preserves the intended foveal
+    support and yields correct metric geometry when correspondence is supplied perfectly.
+  - Therefore the failure observed in AB1a was a planar-representation failure, not an absence of binocular support.
+  - Metric precision at gaze #1 nevertheless remains strongly limited by physical stereo conditioning, because the
+    fixation lies near the physical eye baseline.
+- **Accepted measured facts** (MEASURED in the sections above; unchanged):
+
+  | quantity | value |
+  |---|---|
+  | raw-core rays represented | 65,536 / 65,536 |
+  | perfect binocular correspondences | 44,769 / 65,536 |
+  | spherical triangulations | 44,769 / 65,536 |
+  | \|φ_R − φ_L\| median / p95 / max | 1.93e-6 / 3.22e-6 / 3.88e-6 rad |
+  | δθ | positive for all 44,769 pairs |
+  | κ median / p95 | about 262 / about 384 |
+  | epipolar vs independent ray-ray reconstruction, median / max | about 8.1e-8 m / about 2.9e-7 m |
+  | post-freeze error against Blender Position, median / p95 / p99 / max | 0.408 / 0.696 / 0.788 / 0.929 mm |
+  | AB1a planar rectified reference-valid (accepted, MEASURED in AB1a) | 0 / 65,536 |
+
+- **Post-run supporting diagnostic (labelled; not a frozen scientific claim).** The ≈7.8e-4 px offset of Blender Position
+  from the pixel centre ("Post-run scratch diagnostic") is useful supporting evidence for the ≈0.4 mm systematic radial
+  bias. AB1b acceptance does **not** depend on making that diagnostic a stronger frozen claim.
+- **Synthetic case 10 margin stays recorded** (incident 4): |P_epi − P_ray| reached 8.4e-10 m against its declared 1e-9 m
+  known-answer tolerance. It is deterministic, not a blocker, and does not reopen the experiment.
+- **Visual review accepted.** Luiz and Chat inspected the primary scientific visual
+  `visuals/active-bootstrap/ab1b-spherical-epipolar-geometry/overview.png`
+  (`b1000881b8510ffeaab5af88b6873077982b46f8ed52b14ede3884a5e3277288`). Accepted qualitative interpretation:
+  - **A:** the same saved physical observation, no new render;
+  - **B:** the spherical representation preserves the finite two-dimensional foveal support;
+  - **C:** the perfect correspondences satisfy the epipolar organization and triangulate into coherent geometry;
+  - **D:** the AB1a planar support failure and the AB1b spherical recovery are shown side by side, while the poor
+    conditioning remains explicit.
+
+  The figure satisfies the project's Level-A scientific-visual requirement.
+- **Conditioning caveat retained.** κ median 262 (up to 430) and a median 0.94 m of range per pixel-equivalent angle at
+  ≈4.4 m: the physical baseline (B⊥ ≈ 16.6 mm), not the representation, limits metric precision at gaze #1.
+- **No natural matcher has yet been run.** AB1b used perfect / oracle correspondence only.
+- **AB1b is complete.** Its run is the accepted record. Later steps read its frozen products; nothing is re-rendered or
+  recomputed.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It changed only
+  this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff assertion.
+  The AB1b code, contract, canonical run, figures and measured numbers are unchanged.
