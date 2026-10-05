@@ -372,7 +372,7 @@ def paired_lines(d: Data, z: Gaze) -> list[str]:
 
 # ------------------------------------------------------------------ figures
 def overview(d: Data) -> Image.Image:
-    W, H = 2400, 2500
+    W, H = 2400, 2560
     img = Image.new("RGB", (W, H), S.SURFACE)
     header(img, "Active Bootstrap-1d2 — 4096-spp observation-quality control",
            ["Does substantially reducing Monte Carlo rendering noise materially improve the SAME frozen primitive "
@@ -506,9 +506,9 @@ def correspondence_improvement(d: Data) -> Image.Image:
             f"{fq(e['delta_E'], 'p90', '{:+.2f}')} px",
             f"improved by >1 px {e['improved_by_more_than_1px']:.3f};  worsened by >1 px {e['worsened_by_more_than_1px']:.3f}"],
             size=14, step=23)
-    colorbar(img, W - 380, 150, 300, 16, -100, 100, div=True, label="ΔE [px]: blue improved · vermilion worsened",
+    colorbar(img, W - 380, 104, 300, 16, -100, 100, div=True, label="ΔE [px]: blue improved · vermilion worsened",
              fmt="{:+.0f}")
-    colorbar(img, W - 760, 150, 300, 16, 0.01, 300, ends=ERR_RAMP, label="|err| px (log ramp)", fmt="{:g}")
+    colorbar(img, W - 760, 104, 300, 16, 0.01, 300, ends=ERR_RAMP, label="|err| px (log ramp)", fmt="{:g}")
     return img
 
 
@@ -553,9 +553,9 @@ def observation_comparison(d: Data) -> Image.Image:
                    "G4096 − G256 [u8], full raster", legend="(grey L eye, blue R eye; ends clipped)")
         dg = d.ev["per_gaze"][z.g]["paired"]
         histogram2(img, x0, yh + 214, 370, 200, z.rec["256"]["left_patch_std_u8"], z.rec["4096"]["left_patch_std_u8"],
-                   np.linspace(0, 20, 41), "left 5×5 patch std [u8] (≥20 in last bin)")
+                   np.linspace(0, 20, 41), "left patch std u8 (≥20 last bin)")
         histogram2(img, x0 + 390, yh + 214, 370, 200, z.par["Z256"], z.par["Z4096"], np.linspace(-1, 1, 41),
-                   "oracle-on-curve ZNCC")
+                   "oracle ZNCC")
         dd = dg["diagnostics"]
         gcl, gcr = dd["gray_change"]["L"], dd["gray_change"]["R"]
         stat_lines(img, x0, yh + 432, [
