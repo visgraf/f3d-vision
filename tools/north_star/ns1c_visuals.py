@@ -326,26 +326,37 @@ def panel_d(img: Image.Image, y: int, dd: Data) -> int:
              f"target points {fu['measured_points']:,}; fusion {fu['action']}",
              f"map {fu['map_before']:,} -> {fu['map_after']:,} (matched {fu['matched']:,}, new {fu['new']:,})"]
     text_block(d, 50, y + 6, lines, size=16, gap=27)
-    # seed map of the new entity around its chart centre, with the executed fixation
+    # the new entity's seed map and the surfels its action added, in an H0 window around the executed fixation
     ch = dd.charts[str(t)]
     w1, h1 = 520, 420
-    im, dd_ = new_panel(w1, h1, f"{t}: map + fixation", SP.LABEL_H0)
+    im, dd_ = new_panel(w1, h1, f"{t}: seed + new surfels", SP.LABEL_H0)
     sy, sp_ = ch["seed_gaze_H0_deg"]
+    fy, fp = dec["action"]["world_gaze_deg"]
     inner = (16, 48, w1 - 16, h1 - 16)
-    yr, pr = (sy - 22, sy + 22), (sp_ - 18, sp_ + 18)
+    yr, pr = (fy - 10.0, fy + 10.0), (fp - 8.0, fp + 8.0)
 
     def h0xy(yaw, pitch):
-        yaw = (np.asarray(yaw, float) - sy + 180.0) % 360.0 - 180.0 + sy
+        yaw = (np.asarray(yaw, float) - fy + 180.0) % 360.0 - 180.0 + fy
         return eq_xy(yaw, pitch, inner, yr, pr)
-    xyz = dd.map_of(rec_before)
-    a, b = h0xy(*angles(xyz[sub(len(xyz))]))
-    dots(dd_, a, b, NEW_COL, r=1, box=inner)
+    seed = dd.map_of(rec_before)
+    fused = dd.map_of(s["after"]["entities"][str(t)])
+    new = fused[len(seed):] if len(fused) > len(seed) else np.empty((0, 3))
+    a, b = h0xy(*angles(seed))
+    dots(dd_, a, b, SEED_COL, r=1, box=inner)
+    if len(new):
+        a, b = h0xy(*angles(new[sub(len(new))]))
+        dots(dd_, a, b, NEW_COL, r=1, box=inner)
+    cal1 = j(s["sd"] / f"{SP.OBS_ACQ}/calibration.json")
+    yp = NV.core_outline(cal1)
+    oa, ob = h0xy(yp[:, 0], yp[:, 1])
+    S.dashed_line(dd_, list(zip(oa.tolist(), ob.tolist())) + [(float(oa[0]), float(ob[0]))], S.CORE_GREEN, width=2)
     ca, cb = h0xy(sy, sp_)
-    S.crosshair(dd_, float(ca), float(cb), r=10, color=S.INK2)
-    fa, fb = h0xy(*dec["action"]["world_gaze_deg"])
-    S.crosshair(dd_, float(fa), float(fb), r=14, color=NEW_COL)
-    lx = float(fa) + 18 if float(fa) < w1 - 160 else float(fa) - 150
-    S.text(dd_, (lx, float(fb) - 30), "executed fixation", size=14, bold=True, fill=NEW_COL)
+    S.ring(dd_, float(ca), float(cb), r=7, color=S.INK2, width=2)
+    S.text(dd_, (float(ca) + 10, float(cb) - 22), "chart centre", size=13, fill=S.INK2)
+    fa, fb = h0xy(fy, fp)
+    S.crosshair(dd_, float(fa), float(fb), r=12, color=S.INK)
+    S.text(dd_, (18, h1 - 64), f"grey: seed map ({len(seed):,}); blue: new surfels ({len(new):,})", size=13)
+    S.text(dd_, (18, h1 - 42), "cross-hair: executed fixation; dashed green: its 12 deg raw core", size=13)
     img.paste(im, (860, y))
     # the new observation and its correspondences
     rgb = npz(s["sd"] / f"{SP.OBS_ACQ}/rgb-observation.npz")["rgb_L"]
