@@ -350,14 +350,35 @@ roadmap decision recorded in `docs/chat-handoff.md`:
   - Next bounded sequence:
     - AB1c: safe-forward planar vs spherical geometry. Perfect
       correspondence, fixed head, favorable configurations only; the
-      primary question is geometric agreement. It is the next experiment.
+      primary question is geometric agreement.
     - AB1d: safe-forward natural RGB correspondence, only after AB1c is
       judged.
     - AB1e: return to the same difficult world target as AB1a / AB1b,
       rotate the whole binocular head so the target is locally forward and
       well conditioned, use ordinary local stereo, and transform the result
       back to the canonical frame.
-  - Head motion and a natural matcher are not implemented yet.
+  - AB1c: Safe-Forward Planar vs Spherical Geometry is accepted. Within
+    the predeclared safe-forward regime (20° cone about −Z, min-core
+    leverage ≥ 0.90), at three independently selected RGB-attention gazes,
+    planar and gaze-centered spherical epipolar geometry recover the same
+    local metric structure from the same binocular observations under
+    shared perfect correspondence: direct disagreement median 1–4 µm,
+    max ≤ 12 µm, collapsing to about 1e-12 m for exactly consistent
+    correspondence. Spherical geometry preserves the benign forward case
+    while avoiding the AB1a near-baseline pathology. METRIC GEOMETRY:
+    benign equivalence established. IMAGE-SUPPORT PARAMETERIZATION: not
+    identical (the planar rectified core holds about 81–94 % of the
+    oracle pairs). AB1c does not establish that the whole fixed-crop
+    planar pipeline is interchangeable with spherical stereo.
+- Active Bootstrap after AB1c (Luiz and Chat). Geometry is now
+  sufficiently settled for the intended favorable operating regime.
+  - AB1d: safe-forward natural RGB correspondence is the next experiment.
+    It tests CORRESPONDENCE, not geometry: it reuses the three accepted
+    AB1c observations (no render, no new gaze, fixed head) with the
+    accepted AB1b spherical geometry held fixed.
+  - AB1e (head recentering) remains future.
+  - Head motion is not implemented yet. No natural matcher has yet been
+    accepted.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

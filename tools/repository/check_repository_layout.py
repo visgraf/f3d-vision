@@ -45,7 +45,8 @@ spherical epipolar geometry (AB1b tests representation only, with perfect corres
 declares its contract (required), report and six tools/active_bootstrap/ ab1b tools (allowed); the handoff records
 AB1b accepted and the post-AB1b operating strategy (AB1c compares planar and spherical geometry in a favorable
 safe-forward regime, with perfect correspondence). Active Bootstrap-1c declares its contract (required), report and eight
-tools/active_bootstrap/ ab1c tools (allowed).
+tools/active_bootstrap/ ab1c tools (allowed); the handoff records AB1c accepted and the post-AB1c step (AB1d tests
+natural RGB correspondence in the safe-forward regime, with the accepted spherical geometry held fixed).
 """
 from __future__ import annotations
 
@@ -466,10 +467,14 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at AB1b, with AB1a, NB1c, NB1b, NB1a, Breadth-1, Visual Language 1, "
+    check("chat handoff records accepted main at AB1c, with AB1b, AB1a, NB1c, NB1b, NB1a, Breadth-1, Visual Language 1, "
           "Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, "
           "Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 32fc9a31041ff78fbf2e4cc9b40cf7040fe19323" in handoff
+          "main @ 45b08ae81b09365c0744d204276038fe6046b4f9" in handoff
+          and "ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_ACCEPTED" in handoff
+          and "ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_COMPLETE" in handoff
+          and "AB1c is complete. The next experiment tests natural RGB correspondence in the safe-forward regime, with "
+              "the accepted spherical geometry held fixed." in squash(handoff)
           and "ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_ACCEPTED" in handoff
           and "ACTIVE_BOOTSTRAP1B_SPHERICAL_EPIPOLAR_GEOMETRY_COMPLETE" in handoff
           and "AB1b is complete. The next experiment compares planar and spherical geometry in a favorable safe-forward "

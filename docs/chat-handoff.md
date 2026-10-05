@@ -2,12 +2,21 @@
 
 ## Accepted main
 
-    main @ 32fc9a31041ff78fbf2e4cc9b40cf7040fe19323
+    main @ 45b08ae81b09365c0744d204276038fe6046b4f9
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`32fc9a3` (the AB1b acceptance commit on branch `active-bootstrap/ab1b-spherical-epipolar-geometry`).
+`45b08ae` (the AB1c acceptance commit on branch `active-bootstrap/ab1c-safe-forward-planar-vs-spherical`).
 
 Accepted milestones:
+- **Active Bootstrap-1c: Safe-Forward Planar vs Spherical Geometry**, accepted by Luiz and Chat (the machine result,
+  the scientific conclusion, contract section 23 and the two primary visuals):
+
+      ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_ACCEPTED
+
+  The accepted completion marker is `ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_COMPLETE`. **AB1c is complete.**
+- **Active Bootstrap after AB1c** (a decision by Luiz and Chat, not an experiment): geometry is now sufficiently
+  settled for the intended favorable operating regime. AB1d is next and tests CORRESPONDENCE, not geometry; AB1e
+  remains future. See "Active Bootstrap after AB1c".
 - **Active Bootstrap-1b: Gaze-Centered Spherical Epipolar Geometry**, accepted by Luiz and Chat (the machine result,
   the scientific conclusion and the primary visual):
 
@@ -150,7 +159,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after AB1b)
+## Current roadmap (Luiz and Chat, after AB1c)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -163,10 +172,10 @@ Accepted milestones:
            AB1a first natural stereo look           ACCEPTED (negative: planar representation)
            AB1b gaze-centered spherical epipolar    ACCEPTED (support preserved, geometry correct;
                 geometry                                      conditioning poor at gaze #1)
-           AB1c safe-forward planar vs spherical    NEXT (perfect correspondence, fixed head,
-                geometry                                  favorable configurations only)
-           AB1d safe-forward natural RGB            future, only after AB1c is judged
-                correspondence
+           AB1c safe-forward planar vs spherical    ACCEPTED (metric geometry equivalent in the
+                geometry                                      favorable regime; image support not identical)
+           AB1d safe-forward natural RGB            NEXT (tests correspondence, not geometry;
+                correspondence                            AB1c observations, spherical geometry fixed)
            AB1e same difficult target, whole-head   future
                 recentering
       -> Classroom validation
@@ -311,6 +320,8 @@ Rationale (durable project history):
 
 ### Active Bootstrap operating strategy after AB1b (Luiz and Chat)
 
+Historical record (the launch of AB1c; AB1c is now accepted, see its section below):
+
 **AB1b is complete. The next experiment compares planar and spherical geometry in a favorable safe-forward regime,
 with perfect correspondence.**
 
@@ -360,6 +371,88 @@ Decision record (durable):
   - Exactly one binocular observation per gaze, fixed head; planar and spherical geometry consume the same
     observation and the same frozen, truth-stripped perfect-correspondence product; both geometries are frozen before
     Position is reopened for evaluation. No success threshold is declared.
+
+### Active Bootstrap after AB1c (Luiz and Chat)
+
+**AB1c is complete. The next experiment tests natural RGB correspondence in the safe-forward regime, with the accepted
+spherical geometry held fixed.**
+
+Decision record (durable):
+1. AB1c is accepted (see its section below).
+2. Geometry is now sufficiently settled for the intended favorable operating regime: in the safe-forward envelope,
+   planar and spherical metric geometry agree under perfect correspondence, and spherical geometry also survives the
+   near-baseline case (AB1b) where the planar representation failed (AB1a).
+3. **AB1d tests CORRESPONDENCE, not geometry.** Geometry is held fixed to the accepted AB1b spherical epipolar geometry.
+4. AB1e (the same difficult world target with whole-head recentering) remains future. Head motion is not implemented.
+
+- **AB1d: Safe-Forward Natural RGB Correspondence** (branch
+  `active-bootstrap/ab1d-safe-forward-natural-correspondence`, contract
+  `docs/active-bootstrap/ab1d-safe-forward-natural-correspondence-contract.md`, committed before implementation) asks
+  whether, in the favorable safe-forward regime established by AB1c, a simple natural RGB matcher can recover the
+  right-eye spherical epipolar correspondence accurately enough to provide useful local metric measurements.
+  - It reuses exactly the three accepted AB1c binocular observations: no Blender, no render, no new gaze, no new
+    attention selection, no head motion.
+  - One deliberately simple matcher: direct raw-image epipolar search, a 5 × 5 local angular patch, ZNCC and one
+    one-dimensional sub-pixel peak refinement. The matcher reads only the calibration and the RGB observation.
+  - Natural correspondence is frozen before geometry; the spherical geometry is frozen before the AB1c oracle or
+    Position is opened. The AB1c perfect correspondence is a post-freeze benchmark only.
+  - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
+    acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
+
+## Active Bootstrap-1c: Safe-Forward Planar vs Spherical Geometry (accepted at `45b08ae`)
+
+Luiz and Chat accept AB1c: the machine result, the scientific conclusion, contract section 23 and the two primary
+visuals.
+
+Record (branch `active-bootstrap/ab1c-safe-forward-planar-vs-spherical`, base `c2b8373`):
+- contract: `docs/active-bootstrap/ab1c-safe-forward-planar-vs-spherical-contract.md` (`d8a56aa`); section 23 is the
+  pre-canonical clarification (in `03e7efe`), accepted as legitimate: it occurred before the canonical Classroom
+  selection and changed only software known-answer tolerances and a PROPOSED numerical expectation, not the envelope,
+  selection, planar or spherical definition, oracle semantics, metric or success semantics.
+- implementation: `tools/active_bootstrap/ab1c_{spec,select,planar,render,run,synthetic,visuals}.py` and
+  `check_ab1c.py`. Frozen at `03e7efe` before the canonical selection.
+- report: `docs/active-bootstrap/ab1c-safe-forward-planar-vs-spherical-report.md` (completion `eecdbc3`, acceptance
+  `45b08ae`).
+- run: `/home/lvelho/rd/f3d-vision/previews/active-bootstrap/ab1c-safe-forward-planar-vs-spherical/`. The three
+  canonical Classroom pairs: selection freeze `selection/safe-forward-freeze.json` `72d7e4b8…`; correspondence freeze
+  `oracle/correspondence-freeze.json` `e7f06f53…`; geometry freeze `freeze/geometry-freeze.json` `1b7e2207…`. Never re-render; the canonical steps refuse to rerun.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/active-bootstrap/ab1c-safe-forward-planar-vs-spherical/`
+  (`overview.png` `0b62d77bbf0c8f5cfaf82c541ca5051abd90dd88abd456295873fa67571177c6` and
+  `planar-vs-spherical-difference.png` `13a7c1c389a9470d10487a85aae28318fa91c10d16c297975f041a9ce95ab263`, inspected
+  and accepted as satisfying the scientific-visual requirement).
+
+Accepted measured result:
+
+    ACTIVE_BOOTSTRAP1C_CHECKS_PASS          45 / 45
+    ACTIVE_BOOTSTRAP1C_MUTATIONS_CAUGHT     53 / 53 (from a passing baseline; clean null probe)
+
+Check 42 of `check_ab1c.py` is scoped to the AB1c base `c2b8373`. On later commits it reports every later accepted
+change outside the AB1c files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 44/45, only check 42). That is the guard's scope, not an AB1c regression; the
+frozen-product checks remain valid.
+
+| gaze | row, col | yaw, pitch (°) | common valid | ‖P_planar − P_spherical‖ median / p95 / max | consistency-restored max | 3-D error vs Position median | κ median |
+|---|---|---|---|---|---|---|---|
+| 1 | 191, 322 | −18.75, −5.75 | 53,750 | 2.95 / 6.14 / 8.82 µm | 2.1e-12 m | 0.157 mm | 80.2 |
+| 2 | 166, 373 | +6.75, +6.75 | 63,293 | 1.05 / 2.22 / 3.63 µm | 1.8e-12 m | 0.125 mm | 69.2 |
+| 3 | 190, 397 | +18.75, −5.25 | 65,493 | 3.57 / 8.08 / 11.64 µm | 7.8e-13 m | 0.140 mm | 76.2 |
+
+Accepted interpretation (durable):
+1. Within the predeclared safe-forward operating regime, at three independently selected RGB-attention gazes,
+   conventional planar and gaze-centered spherical epipolar geometry recover the same local metric structure from the
+   same binocular observations under shared perfect correspondence.
+2. Their direct disagreement is only micrometric and collapses to numerical precision for exactly consistent
+   correspondence: it arises from the two methods resolving the oracle's small epipolar inconsistency differently, not
+   from disagreement in their exact metric stereo geometry.
+3. Spherical epipolar geometry therefore preserves the benign forward case while avoiding the near-baseline
+   representation pathology demonstrated by AB1a.
+4. **METRIC GEOMETRY: benign equivalence established. IMAGE-SUPPORT PARAMETERIZATION: not identical.** The planar
+   rectified core is sourced 0.871 / 0.968 / 1.000 from the nominal raw core, and only about 81 % / 94 % / 83 % of the
+   oracle pairs lie inside it. AB1c does not establish that the whole fixed-crop planar pipeline is interchangeable with
+   spherical stereo.
+5. Caveats: no natural correspondence; no head motion; the 20° / min-core leverage ≥ 0.90 envelope is a design choice,
+   not proven necessary or optimal; non-catalog Object Index 0 geometry was excluded by the inherited oracle; no
+   generality beyond these three gazes, Classroom, this instrument and this range regime.
 
 ## Active Bootstrap-1b: Gaze-Centered Spherical Epipolar Geometry (accepted at `32fc9a3`)
 
