@@ -2,12 +2,23 @@
 
 ## Accepted main
 
-    main @ c5f9bf599d2e537e7d4021adacc7e53269bd18c7
+    main @ f65c6ac8344bfcfb0491888bf8608471d2452f61
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`c5f9bf5` (the AB1d acceptance commit on branch `active-bootstrap/ab1d-safe-forward-natural-correspondence`).
+`f65c6ac` (the AB1d2 acceptance commit on branch `active-bootstrap/ab1d2-4096spp-observation-quality`).
 
 Accepted milestones:
+- **Active Bootstrap-1d2: 4096-spp Observation-Quality Control**, accepted by Luiz and Chat (the machine result, the
+  scientific conclusion and the two primary visuals):
+
+      ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_ACCEPTED
+
+  The accepted completion marker is `ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_COMPLETE`. **AB1d2 is
+  complete.**
+- **Active Bootstrap after AB1d2 — the SGBM bet** (a decision by Luiz and Chat, not an experiment): natural stereo
+  receives ONE additional bounded attempt, AB1d3 (one-shot SGBM viability). Afterwards either SGBM is adopted, or natural
+  stereo stops and the North Star proceeds with the validated PERFECT / oracle correspondence service. AB1e is no longer
+  an obligatory prerequisite. See "Active Bootstrap after AB1d2".
 - **Active Bootstrap-1d: Safe-Forward Natural RGB Correspondence**, accepted by Luiz and Chat as an **accepted negative
   experiment** (the machine result, the negative scientific conclusion, contract section 33 and the two primary
   visuals):
@@ -170,7 +181,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after AB1d)
+## Current roadmap (Luiz and Chat, after AB1d2)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -188,9 +199,16 @@ Accepted milestones:
            AB1d safe-forward natural RGB            ACCEPTED (negative: the frozen primitive matcher does not
                 correspondence                                recover reliable correspondence; render-noise
                                                               causal role not established)
-           AB1d2 4096-spp observation-quality       NEXT (same three views, calibration, seeds and frozen
-                control                                   matcher; 256 -> 4096 spp only)
-           AB1e same difficult target, whole-head   future
+           AB1d2 4096-spp observation-quality       ACCEPTED (observation quality a major limitation; large
+                control                                       residual along-epipolar ambiguity remains)
+           AB1d3 one-shot SGBM viability            NEXT (accepted 4096-spp observations; ONE frozen
+                                                          pre-existing SGBM configuration; no tuning, no sweep)
+             -> SGBM operationally useful:  adopt SGBM as the natural correspondence service;
+                                            stop improving stereo; return to active perception
+             -> otherwise:                  stop natural stereo (DEFERRED RESEARCH TOPIC); PERFECT / oracle
+                                            correspondence service for the North Star; return immediately to
+                                            the active-perception / full-Classroom roadmap
+           AB1e same difficult target, whole-head   no longer an obligatory prerequisite for the North Star
                 recentering
       -> Classroom validation
       -> Tabletop transfer
@@ -415,7 +433,45 @@ Decision record (durable):
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
 
+### Active Bootstrap after AB1d2 (Luiz and Chat): the SGBM bet
+
+**AB1d2 is complete. Natural stereo receives ONE additional bounded attempt: AB1d3, one-shot SGBM viability, on the
+accepted 4096-spp observations with one frozen pre-existing SGBM configuration and no parameter tuning or sweep.**
+
+Decision record (durable):
+1. AB1d2 is accepted (see its section below): observation quality was a MAJOR limitation of AB1d, but residual
+   local-patch (along-epipolar) ambiguity remains.
+2. 4096 spp is the reference observation quality for subsequent SYNTHETIC Classroom natural-correspondence experiments.
+   This is a project control choice: it does not assert optimality of 4096 spp, biological plausibility or equivalence
+   to a real sensor.
+3. **AB1d3 — one-shot SGBM viability** is the one additional bounded natural-stereo attempt. It uses the accepted
+   4096-spp observations and one frozen pre-existing SGBM configuration (the accepted FSG / AB1a RGB-only
+   configuration). One configuration, one canonical run, one result: no parameter tuning, no sweep, no second SGBM
+   experiment inside AB1d3.
+4. Decision after AB1d3 (Luiz and Chat, on review):
+   - **If SGBM is judged operationally useful:** adopt SGBM as the current natural correspondence service; stop
+     improving stereo; return to the active-perception program.
+   - **Otherwise:** stop natural-stereo development; use the already validated PERFECT / oracle matcher as the
+     local-correspondence service for the North Star concept demo (the full Classroom active-perception
+     demonstration); return immediately to the active-perception / full-Classroom roadmap.
+5. In the failure branch, natural stereo becomes a **DEFERRED RESEARCH TOPIC**, revisited only after the full Classroom
+   demonstration is achieved.
+6. AB1e (head-recentered natural stereo) is **no longer an obligatory prerequisite** for returning to the North Star.
+7. The PERFECT fallback is not implemented by this decision; it is implemented only if the failure branch is taken.
+
+- **AB1d3: One-Shot SGBM Viability** (branch `active-bootstrap/ab1d3-sgbm-viability`, contract
+  `docs/active-bootstrap/ab1d3-sgbm-viability-contract.md`, committed before canonical SGBM execution).
+  - No render: the three accepted AB1d2 4096-spp observations, read as calibration + RGB only.
+  - Conventional planar rectification is allowed internally (AB1c: planar and spherical metric geometry are benignly
+    equivalent in the safe-forward regime). The SGBM output is mapped back to the common truth-free raw correspondence
+    product (`left_core_row`, `left_core_col`, `uv_L`, `uv_R`) and measured with the accepted AB1b spherical geometry,
+    so SGBM, the PERFECT matcher and any future matcher supply the same downstream interface.
+  - No automatic accept / reject threshold: Luiz and Chat judge precision, coverage, catastrophic errors, spatial
+    coherence and compatibility with the 12 / 25 / 50-mm active-map scales.
+
 ### Active Bootstrap after AB1d (Luiz and Chat)
+
+Historical record (the launch of AB1d2; AB1d2 is now accepted, see its section below):
 
 **AB1d is complete. The next experiment tests whether substantially reducing Monte Carlo rendering noise materially
 improves the SAME frozen primitive natural correspondence matcher. AB1d2 changes observation quality only; it does not
@@ -441,6 +497,56 @@ Decision record (durable):
     passes.
   - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
     is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## Active Bootstrap-1d2: 4096-spp Observation-Quality Control (accepted at `f65c6ac`)
+
+Luiz and Chat accept AB1d2: the machine result, the scientific conclusion and the two primary visuals.
+
+Record (branch `active-bootstrap/ab1d2-4096spp-observation-quality`, base `22f538f`):
+- contract: `docs/active-bootstrap/ab1d2-4096spp-observation-quality-contract.md` (`6f5b757`, before any implementation
+  and any 4096-spp Classroom render).
+- implementation: `tools/active_bootstrap/ab1d2_{spec,render,preflight,run,visuals}.py` and `check_ab1d2.py` (`b66d7f7`;
+  all canonical stages ran from it); post-run figure layout fix `e4c60eb` (presentation only).
+- report: `docs/active-bootstrap/ab1d2-4096spp-observation-quality-report.md` (completion `cb73e56`, acceptance
+  `f65c6ac`).
+- run: `/home/lvelho/rd/f3d-vision/previews/active-bootstrap/ab1d2-4096spp-observation-quality/`. The three AB1c gazes
+  re-rendered once at 4096 spp (106 s total). Observation freeze `freeze/observation-freeze.json` `7c8ed0a3…`;
+  correspondence freeze `match/correspondence-freeze.json` `ae98de44…`; geometry freeze `freeze/geometry-freeze.json`
+  `9447019d…`. Never re-render; later steps read the frozen 4096-spp observations (`rgb-observation.npz` `9d653bd1…` /
+  `3046cc66…` / `fd9ecd4e…`).
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/active-bootstrap/ab1d2-4096spp-observation-quality/` (`overview.png`
+  `232467c8403d78cba932a73e8ea5cb95787ea96de5ca0552b8b3d395d055bfa8` and `paired-cost-landscapes.png`
+  `3aee6c8c38a61044543f3d249dfaa60347eab03b88fc0ec1757b3667dfcb14dc`, inspected and accepted).
+
+Accepted measured result:
+
+    ACTIVE_BOOTSTRAP1D2_CHECKS_PASS          41 / 41
+    ACTIVE_BOOTSTRAP1D2_MUTATIONS_CAUGHT     44 / 44 (from a passing baseline; clean null probe)
+
+Check 40 of `check_ab1d2.py` is scoped to the AB1d2 base `22f538f`. On later commits it reports every later accepted
+change outside the AB1d2 files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 40/41, only check 40). That is the guard's scope, not an AB1d2 regression; the
+frozen-product checks remain valid.
+
+| gaze | within 1 px-equiv (256 → 4096) | median px-equiv error | oracle top-1 | median oracle ZNCC | median 3-D error vs perfect | within 12 mm |
+|---|---|---|---|---|---|---|
+| 1 | 9.2 → 35.9 % | 93.1 → 26.4 px | 9.9 → 36.5 % | 0.421 → 0.849 | 4.161 → 3.283 m | 0.9 → 4.2 % |
+| 2 | 16.8 → 66.6 % | 57.4 → 0.258 px | 17.7 → 67.0 % | 0.485 → 0.924 | 3.569 m → 63.8 mm | 2.9 → 14.7 % |
+| 3 | 9.2 → 49.2 % | 129.2 → 1.748 px | 9.8 → 49.7 % | 0.288 → 0.779 | 4.031 → 0.482 m | 1.3 → 7.3 % |
+
+Accepted interpretation (durable):
+1. At the three accepted safe-forward Classroom gazes, increasing Cycles sampling from 256 spp to 4096 spp — while
+   holding scene, gaze, calibration, seeds, stereo geometry, matcher and evaluation fixed — substantially improves
+   natural spherical epipolar correspondence.
+2. Therefore the AB1d failure was strongly limited by observation quality.
+3. However, large residual along-epipolar ambiguities remain. Cleaner observations alone do not make independent 5 × 5
+   local-patch matching generally sufficient.
+4. Outcome 1 strongly supported, with the Outcome-2 residual.
+5. NOT claimed: that 4096 spp is optimal; that this measures a physical sensor-noise variance; that local matching is
+   now generally sufficient; that real cameras behave like this experiment.
+6. The measured +0.08 to +0.17 u8 mean gray shift is a nonblocking caveat. Every load-bearing rendering setting was
+   verified identical; its exact explanation is NOT established (the nonlinear-transfer explanation is not a measured
+   fact). No further experiment is launched for it.
 
 ## Active Bootstrap-1d: Safe-Forward Natural RGB Correspondence (accepted at `c5f9bf5`)
 
@@ -1354,17 +1460,20 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c and AB1d are accepted. The
-Controller-01 investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d and AB1d2 are accepted.
+The Controller-01 investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Current next activity: Active Bootstrap-1d2 — 4096-spp Observation-Quality Control** (see "Active Bootstrap after
-AB1d"), on branch `active-bootstrap/ab1d2-4096spp-observation-quality` from this accepted `main`, with its contract at
-`docs/active-bootstrap/ab1d2-4096spp-observation-quality-contract.md`. The same three accepted AB1c / AB1d gazes are
-re-rendered once each at 4096 spp (instead of 256), with every other render setting, the calibration and the seeds
-unchanged. The accepted AB1d matcher runs unchanged on the new pairs, and the result is compared pixel by pixel with
-AB1d against the same accepted AB1c benchmark. No success threshold. No matcher change, no denoising, no head motion,
-no controller. AB1e is not started. Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not started.
-FSG6f is not repaired.
+**Current next activity: Active Bootstrap-1d3 — One-Shot SGBM Viability** (see "Active Bootstrap after AB1d2"), on
+branch `active-bootstrap/ab1d3-sgbm-viability` from this accepted `main`, with its contract at
+`docs/active-bootstrap/ab1d3-sgbm-viability-contract.md`. No render: the three accepted AB1d2 4096-spp observations
+are matched once by one frozen pre-existing SGBM configuration (the accepted FSG / AB1a RGB-only configuration) after
+the accepted planar safe-forward rectification. The SGBM output is mapped back to the common raw correspondence product
+and measured with the accepted AB1b spherical geometry, against the same accepted AB1c benchmark, and compared with the
+accepted AB1d2 primitive matcher. No parameter tuning, no sweep, no second SGBM configuration, no head motion, no
+controller. Luiz and Chat then make ONE decision: adopt SGBM and return to active perception, or stop natural stereo and
+proceed to the North Star with PERFECT correspondence. The PERFECT fallback is not implemented yet. AB1e is not started
+and is no longer an obligatory prerequisite. Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not
+started. FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -1403,7 +1512,7 @@ FSG6f is not repaired.
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
 6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c and AB1d acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap, the
+   AB1b, AB1c, AB1d and AB1d2 acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap, the
    post-AB1a pivot and the post-AB1b operating strategy. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /

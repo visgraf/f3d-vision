@@ -50,7 +50,9 @@ natural RGB correspondence in the safe-forward regime, with the accepted spheric
 Bootstrap-1d declares its contract (required), report and six tools/active_bootstrap/ ab1d tools (allowed); the handoff
 records AB1d accepted as a negative experiment and the post-AB1d step (AB1d2 tests whether substantially reducing Monte
 Carlo rendering noise improves the same frozen matcher; it changes observation quality only). Active Bootstrap-1d2
-declares its contract (required), report and six tools/active_bootstrap/ ab1d2 tools (allowed).
+declares its contract (required), report and six tools/active_bootstrap/ ab1d2 tools (allowed); the handoff records
+AB1d2 accepted and the post-AB1d2 decision (the SGBM bet: AB1d3 is one bounded natural-stereo attempt with one frozen
+SGBM configuration; otherwise natural stereo is deferred and the North Star uses PERFECT correspondence).
 """
 from __future__ import annotations
 
@@ -483,10 +485,15 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at AB1d, with AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, Breadth-1, Visual "
-          "Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, "
-          "Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ c5f9bf599d2e537e7d4021adacc7e53269bd18c7" in handoff
+    check("chat handoff records accepted main at AB1d2, with AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, Breadth-1, "
+          "Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual "
+          "package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ f65c6ac8344bfcfb0491888bf8608471d2452f61" in handoff
+          and "ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_ACCEPTED" in handoff
+          and "ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_COMPLETE" in handoff
+          and "AB1d2 is complete. Natural stereo receives ONE additional bounded attempt: AB1d3, one-shot SGBM viability, "
+              "on the accepted 4096-spp observations with one frozen pre-existing SGBM configuration and no parameter "
+              "tuning or sweep." in squash(handoff)
           and "ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_ACCEPTED" in handoff
           and "ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_COMPLETE" in handoff
           and "AB1d is complete. The next experiment tests whether substantially reducing Monte Carlo rendering noise "

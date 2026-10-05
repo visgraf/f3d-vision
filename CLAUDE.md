@@ -391,13 +391,42 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     Outcome 3 (along-epipolar ambiguity) as an important mechanism. The
     causal role of Monte Carlo render noise is NOT established by AB1d.
 - Active Bootstrap after AB1d (Luiz and Chat).
-  - AB1d2: 4096-spp Observation-Quality Control is the next experiment.
-    It asks: does substantially reducing Monte Carlo rendering noise
-    materially improve the SAME frozen primitive natural correspondence
-    matcher? AB1d2 changes observation quality only (Cycles 256 -> 4096
-    spp at the same three gazes, calibration, seeds and render settings).
-    It does NOT redesign the matcher.
-  - AB1e (head recentering) remains future.
+  - AB1d2: 4096-spp Observation-Quality Control asks: does substantially
+    reducing Monte Carlo rendering noise materially improve the SAME
+    frozen primitive natural correspondence matcher? AB1d2 changes
+    observation quality only (Cycles 256 -> 4096 spp at the same three
+    gazes, calibration, seeds and render settings). It does NOT redesign
+    the matcher.
+  - AB1d2 is accepted. At the three accepted safe-forward Classroom
+    gazes, 256 -> 4096 spp (everything else fixed) substantially improves
+    natural spherical epipolar correspondence: within 1 pixel-equivalent
+    9.2 / 16.8 / 9.2 % -> 35.9 / 66.6 / 49.2 %; median error
+    93.1 / 57.4 / 129.2 -> 26.4 / 0.258 / 1.748 px. The AB1d failure was
+    strongly limited by observation quality, but large residual
+    along-epipolar ambiguities remain: cleaner observations alone do not
+    make independent 5 x 5 local-patch matching generally sufficient.
+    Outcome 1 strongly supported, with the Outcome-2 residual.
+  - 4096 spp is the reference observation quality for subsequent
+    SYNTHETIC Classroom natural-correspondence experiments. This is a
+    project control choice, not a claim of optimality, biological
+    plausibility or sensor equivalence.
+- Active Bootstrap after AB1d2 (Luiz and Chat): THE SGBM BET.
+  - Natural stereo receives ONE additional bounded attempt: AB1d3,
+    one-shot SGBM viability. It uses the accepted 4096-spp observations
+    and one frozen pre-existing SGBM configuration, with no parameter
+    tuning or sweep.
+  - If SGBM is judged operationally useful: adopt SGBM as the current
+    natural correspondence service, stop improving stereo, and return to
+    the active-perception program.
+  - Otherwise: stop natural-stereo development, use the already
+    validated PERFECT / oracle matcher as the local-correspondence
+    service for the North Star concept demo (the full Classroom
+    active-perception demonstration), and return immediately to the
+    active-perception / full-Classroom roadmap. Natural stereo then
+    becomes a DEFERRED RESEARCH TOPIC, revisited only after the full
+    Classroom demonstration is achieved.
+  - AB1e (head-recentered natural stereo) is no longer an obligatory
+    prerequisite for returning to the North Star.
   - Head motion is not implemented yet. No natural matcher has yet been
     accepted as useful.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
