@@ -1,11 +1,14 @@
 # Active Bootstrap-1d3 — One-Shot SGBM Viability — report
 
-**Marker.**
+**Markers.**
 
     ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_COMPLETE
+    ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat make the project decision (ADOPT SGBM, or PERFECT MATCHER → NORTH STAR). No
-ACCEPTED marker is written, and the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted AB1d3 as **Outcome 2** after quantitative review, independent GitHub review,
+code / checker review and qualitative inspection of the two primary visuals (see "Acceptance record" at the end). SGBM is
+NOT adopted for the North-Star demo; natural stereo is a DEFERRED RESEARCH TOPIC; the North Star uses the PERFECT /
+oracle matcher. The sections below are the report as completed at `e6854f7`, unchanged.
 
 > **Question.** On the SAME accepted 4096-spp safe-forward Classroom observations, does the already-tested semi-global
 > SGBM mechanism resolve enough of the residual spatial correspondence ambiguity to provide coherent and operationally
@@ -438,9 +441,10 @@ Regenerate: `.venv/bin/python tools/active_bootstrap/ab1d3_run.py visualize --ru
 
 ## Unresolved decision for Luiz and Chat
 
-    ADOPT SGBM
-    or
-    PERFECT MATCHER -> NORTH STAR
+~~ADOPT SGBM or PERFECT MATCHER -> NORTH STAR~~
+
+**Decided:** PERFECT MATCHER -> NORTH STAR. SGBM is not adopted for the North-Star demo, and natural stereo is deferred
+(see "Acceptance record").
 
 The measured inputs to that decision are above:
 - **Correspondence:** precision ≤ 1 px 96.7 / 98.4 / 99.9 %; catastrophic 0 / 1 px / 0.
@@ -453,3 +457,69 @@ The measured inputs to that decision are above:
 - **Unevaluated outputs:** 7,527 / 1,853 / 35, against Position medians of 5–15 cm.
 
 This report makes no SGBM parameter recommendation and does not design a next matcher.
+
+## Acceptance record
+
+Luiz and Chat completed the quantitative review, an independent GitHub review, the code / checker review and the
+qualitative inspection of the two primary figures, and **accept AB1d3** as committed at `e6854f7`:
+
+    ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_ACCEPTED
+
+- **Machine result accepted:**
+  - `ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_COMPLETE`;
+  - `ACTIVE_BOOTSTRAP1D3_CHECKS_PASS` 34/34;
+  - `ACTIVE_BOOTSTRAP1D3_MUTATIONS_CAUGHT` 46/46 from a passing baseline, with a clean unmodified-mirror null probe;
+  - `AB1D3_PREFLIGHT_PASS` 38/38.
+- **Outcome 2 accepted** (contract section 21): SGBM helps substantially but is not operationally sufficient.
+- **Accepted scientific conclusion** (stated without strengthening):
+  - On the accepted 4096-spp safe-forward Classroom observations, the frozen SGBM matcher almost eliminates the
+    catastrophic along-epipolar correspondence ambiguities of the independent local matcher.
+  - Among evaluable SGBM outputs, 96.7 % / 98.4 % / 99.9 % are within 1 pixel-equivalent at the three gazes, with
+    essentially no catastrophic errors.
+  - However, at the present baseline, range and scene distances, the subpixel correspondence precision yields median
+    metric errors of approximately 103 mm / 66 mm / 86 mm, and insufficient effective coverage at the 12–50 mm scales
+    used by the current persistent-map machinery.
+  - Therefore SGBM demonstrates that spatial aggregation solves most of the gross correspondence ambiguity, but SGBM is
+    **not adopted** as the operational matcher for the North-Star concept demonstration.
+- **Project disposition** (a decision by Luiz and Chat):
+
+      SGBM:
+          NOT ADOPTED FOR NORTH-STAR DEMO
+
+      NATURAL STEREO:
+          DEFERRED RESEARCH TOPIC
+
+      NORTH-STAR LOCAL CORRESPONDENCE:
+          PERFECT / ORACLE MATCHER
+
+  The remaining stereo problem is not discarded; it is explicitly deferred, to be reopened only after the full Classroom
+  active-perception demonstration has been achieved. The accepted stereo research record is:
+  - AB1a: representation failure near the baseline;
+  - AB1b: spherical representation succeeds, conditioning poor;
+  - AB1c: benign planar / spherical metric equivalence;
+  - AB1d: the independent local natural matcher fails;
+  - AB1d2: observation quality strongly improves natural matching;
+  - AB1d3: semi-global aggregation removes gross ambiguity but lacks sufficient metric precision / effective coverage.
+
+  No further stereo experiment is opened now.
+- **Visuals accepted.** Luiz and Chat inspected the two primary figures:
+  - `visuals/active-bootstrap/ab1d3-sgbm-viability/overview.png`
+    (`91ff08b7c3093e9a42cdd6adbe6b2cfbc6edb8cca5a332f742ce020ddace3361`);
+  - `visuals/active-bootstrap/ab1d3-sgbm-viability/sgbm-vs-primitive.png`
+    (`adda160a5225d9436dadc7e6f837900a01e69086f0941528b0bffed9886079e9`).
+
+  Accepted qualitative reading:
+  - SGBM produces coherent spatial disparity rather than independent catastrophic peak selection;
+  - spatial aggregation clearly helps large regions;
+  - invalid / rejected SGBM support remains visible rather than being disguised as correct output;
+  - the metric CDFs show that correspondence success at approximately one-pixel scale is still insufficient for the
+    current map scale.
+
+  `disparity-validity.png`, `metric-error.png` and `attrition.png` remain supporting evidence, with no further
+  acceptance ceremony.
+- **PERFECT matcher selected for the North Star.** The North-Star concept demonstration uses the validated AB1b PERFECT /
+  oracle correspondence service. AB1e (head recentering) is not a prerequisite for the concept demo.
+- **AB1d3 is complete.** Its run is the accepted record. SGBM is not re-run, tuned or reconfigured.
+- **This acceptance step** made no new observation, ran no SGBM and did no scientific computation. It changed only this
+  status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff assertion. The
+  AB1d3 code, canonical run, measured results, figures and contract definitions are unchanged.
