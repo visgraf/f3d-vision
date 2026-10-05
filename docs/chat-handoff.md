@@ -2,12 +2,23 @@
 
 ## Accepted main
 
-    main @ 37c7e026f2ab514be392cd845d390fab2a2d86fc
+    main @ 255355108863022f931574dae4b2df8cdd2a772e
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`37c7e02` (the NS1a acceptance commit on branch `north-star/ns1a-perfect-bootstrap-round`).
+`2553551` (the NS1b acceptance commit on branch `north-star/ns1b-recentered-controller-handoff`).
 
 Accepted milestones:
+- **North Star-1b: Recentered Local-Controller Handoff — One Action**, accepted by Luiz and Chat as **Outcome 1** (the
+  machine result, the scientific and coordinate conclusions, the retained limitations and the three visuals):
+
+      NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_ACCEPTED
+
+  The accepted completion marker is `NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_COMPLETE`. **NS1b is complete.**
+  Bootstrap-to-controller bridge: ESTABLISHED.
+- **North Star after NS1b — coherent multi-entity control** (a decision by Luiz and Chat, not an experiment): North
+  Star-1c continues from the accepted NS1b state, services entity 172 with the accepted scheduler and per-entity policy
+  charts, and stops after the first controller-selected action on a different coherent (single-patch) seed. See "North
+  Star after NS1b".
 - **North Star-1a: RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds**, accepted by Luiz and Chat
   as **Outcome 1, with documented Outcome-2 elements** (the machine result, the scientific conclusion, the retained
   caveats and the three visuals):
@@ -205,7 +216,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after NS1a): THE NORTH STAR
+## Current roadmap (Luiz and Chat, after NS1b): THE NORTH STAR
 
     NATURAL BOOTSTRAP
         coarse 360 RGB
@@ -223,15 +234,23 @@ Accepted milestones:
             -> perfect local measurements
             -> persistent entity seeds
             frozen seed handoff: 13 entities, 302,936 surfels
-        next:
-            North Star-1b                            NEXT
+        North Star-1b                                ACCEPTED
             recentered local-controller handoff, ONE action
-            one deterministically selected NS1a entity
-            -> temporary POLICY COORDINATE CHART (not head motion)
-            -> accepted local policy selects one fixation
+            entity 172 -> POLICY CHART C (not head motion)
+            -> local (0, -5) -> H0 (-155.008, +33.636)
             -> one PERFECT measurement fused into canonical H0
-        after NS1b review, if the bridge succeeds:
-            multi-entity scene-level active loop
+               (12,072 -> 21,243 surfels; first 12-mm overlap)
+            bootstrap-to-controller bridge: ESTABLISHED
+        next:
+            North Star-1c                            NEXT
+            coherent multi-entity control, first scene switch
+            continue from the accepted NS1b state (172; 21,243 surfels)
+            -> accepted scheduler + one fixed policy chart per entity
+            -> service 172, then switch to another coherent seed
+            -> stop after the first action on a target other than 172
+            multi-part oracle identities 10 / 110 / 178: DEFERRED
+        after NS1c review:
+            full coherent multi-entity North-Star loop
         later:
             full Classroom active scene loop
             final omnidirectional outputs
@@ -240,7 +259,7 @@ Accepted milestones:
 - Head recentering / AB1e is not a prerequisite for the concept demo. The first North-Star concept-demo path remains
   fixed-head / static-scene.
 
-The full stage roadmap (updated after NS1a):
+The full stage roadmap (updated after NS1b):
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -272,10 +291,16 @@ The full stage roadmap (updated after NS1a):
            NS1a six-gaze RGB bootstrap round        ACCEPTED (Outcome 1 with Outcome-2 elements: 13 initialized
                                                               persistent entities, 302,936 surfels; oracle identity
                                                               merges disconnected pieces; no 12-mm association yet)
-           NS1b recentered local-controller         NEXT (one deterministic NS1a entity; temporary POLICY
-                handoff, one action                       COORDINATE CHART, not head motion; one PERFECT
-                                                          measurement fused into canonical H0)
-           multi-entity scene-level active loop     after NS1b review, if the bridge succeeds
+           NS1b recentered local-controller         ACCEPTED (Outcome 1: entity 172 through POLICY CHART C,
+                handoff, one action                           not head motion; one PERFECT measurement fused
+                                                              into canonical H0, 12,072 -> 21,243 surfels;
+                                                              bootstrap-to-controller bridge established)
+           NS1c coherent multi-entity control,      NEXT (continue from the accepted NS1b state; accepted
+                first scene switch                        scheduler, one fixed policy chart per coherent seed;
+                                                          stop after the first action on a target other than
+                                                          172; 10 / 110 / 178 deferred)
+           full coherent multi-entity North-Star    after NS1c review
+                loop
            full Classroom active scene loop, final omnidirectional outputs
       -> Classroom validation
       -> Tabletop transfer
@@ -500,7 +525,47 @@ Decision record (durable):
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
 
+### North Star after NS1b (Luiz and Chat): coherent multi-entity control, first scene switch
+
+**NS1b is complete. The bootstrap-to-controller bridge is ESTABLISHED; North Star-1c, coherent multi-entity control
+with a first scene switch, is next.**
+
+Decision record (durable):
+1. NS1b is accepted as Outcome 1 (see its section below). POLICY CHART C IS NOT PHYSICAL HEAD MOTION: the chart is
+   accepted as the North-Star bridge between global 360° persistent scene geometry and the frozen local ±25° / ±20°
+   controller.
+2. NS1c NEXT: coherent multi-entity control, first scene switch. Starting from the accepted NS1b state, the accepted
+   deterministic scene scheduler (`fov3d.control.integrated.schedule`, unchanged) and per-entity recentered local
+   controllers continue servicing the current entity and then autonomously switch to another coherent RGB-bootstrap
+   seed and execute one valid controller-selected observation there. The canonical experiment stops after the first
+   successful controller action on a target other than 172.
+3. NS1c starts from the ACTUAL accepted NS1b state, not a replay:
+   - current target: 172;
+   - map: 21,243 surfels;
+   - own looks: 2;
+   - visited local gazes: (0, 0), (0, −5);
+   - next accepted post-action proposal: (−5, −10).
+4. The first scene-level experiment operates only on entities that were single-patch persistent seeds in the frozen
+   NS1a handoff (`initialized` and `contributing_patches == 1`, derived from the seed set, never hard-coded). The
+   multi-part oracle identities 10, 110 and 178 remain **DEFERRED** for this experiment.
+5. Each coherent entity receives one fixed policy chart, built with the accepted NS1b rule at its NS1a initialization
+   gaze. The physical head stays fixed; persistent maps stay in canonical H0; no threshold, scheduler or watchdog
+   change; no SCENE_CLOSED claim (a quiet coherent subset is `COHERENT_SUBSET_QUIESCENT`).
+6. Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen unless explicitly reopened. Natural stereo stays
+   deferred. The North-Star concept-demo path stays fixed-head / static-scene.
+
+- **North Star-1c: Coherent Multi-Entity Control — First Scene Switch** (branch
+  `north-star/ns1c-coherent-first-scene-switch`, contract
+  `docs/north-star/ns1c-coherent-first-scene-switch-contract.md`, committed before canonical execution).
+  - Question: starting from the accepted NS1b state, can the accepted deterministic scene scheduler and per-entity
+    recentered local controllers continue servicing the current entity and then AUTONOMOUSLY SWITCH to another coherent
+    RGB-bootstrap seed and execute one valid controller-selected observation there?
+  - Stops after the first successful physical action whose target is not 172 (one read-only post-action probe of the
+    new target); no second action on the new target, no third entity, no multi-part identity, no head motion.
+
 ### North Star after NS1a (Luiz and Chat): the recentered local-controller handoff
+
+Historical record (the launch of NS1b; NS1b is now accepted, see its section below):
 
 **NS1a is complete. The frozen NS1a seed set is the North-Star seed handoff; North Star-1b, a recentered
 local-controller handoff with ONE action, is next.**
@@ -653,6 +718,65 @@ Decision record (durable):
     passes.
   - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
     is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## North Star-1b: Recentered Local-Controller Handoff — One Action (accepted at `2553551`)
+
+Luiz and Chat accept NS1b as **Outcome 1**: the machine result, the scientific and coordinate conclusions, the retained
+limitations and the three visuals.
+
+Record (branch `north-star/ns1b-recentered-controller-handoff`, base `889373d`):
+- contract: `docs/north-star/ns1b-recentered-controller-handoff-contract.md` (`1e641e6`, before any implementation,
+  probe or render).
+- implementation: `tools/north_star/ns1b_{spec,chart,core,render,run,synthetic,fixtures,visuals}.py`,
+  `check_ns1b.py` and `check_ns1b_corruptions.py` (`40eaf7e`; every canonical stage ran from it); post-run checker fix
+  `16cfcb6` (check 21 frame-tag literal).
+- report: `docs/north-star/ns1b-recentered-controller-handoff-report.md` (completion `8155c2d`, acceptance `2553551`).
+- run: `/home/lvelho/rd/f3d-vision/previews/north-star/ns1b-recentered-controller-handoff/` (the ONE 4096-spp pair;
+  stages refuse to rerun; never re-render, never re-probe).
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/north-star/ns1b-recentered-controller-handoff/` (`overview.png`
+  `5dedb921a1428212daf6d230b5df22e15a23266412389aa2d90f6772de294463`, `chart-covariance.png`
+  `4419516363733473ac32d68b05c2350976cabadbda94a58a3a3739f4514b6428`, `first-controller-action-3d.png`
+  `0b299f936f0680b6568ebee633dc85d708681f9ab1e1f34b0363fb95b32c6d5b`, inspected and accepted).
+
+Accepted measured result:
+
+    NORTH_STAR1B_CHECKS_PASS          26 / 26
+    NORTH_STAR1B_MUTATIONS_CAUGHT     45 / 45 (from a passing baseline; clean null probe)
+    NS1B_SYNTHETIC_PASS               23 / 23
+    NS1B_COVARIANCE_PASS              12 / 12 parts
+
+Check 26 of `check_ns1b.py` is scoped to the NS1b base `889373d`. On later commits it reports every later accepted
+change outside the NS1b files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 25/26, only check 26). That is the guard's scope, not an NS1b regression.
+
+| quantity (deterministic target 172) | value |
+|---|---|
+| initialization H0 gaze | (−156.25°, +28.75°) |
+| local selected action | (0°, −5°) |
+| mapped H0 action | (−155.008°, +33.636°) |
+| Controller-02 gate | admissible; novel serviceable support 12 |
+| fixed-head 4096-spp observation | executed exactly once |
+| PERFECT correspondences / target metric points | 64,437 / 18,525 |
+| 12-mm fusion | map 12,072 -> 21,243 surfels; 9,354 matched (8,601 surfels affected; median 1.50 mm); 9,171 new |
+| post-action probe | ACTIONABLE; next local proposal (−5°, −10°), NOT executed |
+
+Accepted interpretation (durable):
+1. A persistent entity seed produced by the global RGB bootstrap can be handed to the unchanged accepted FSG6f ->
+   Cyclopean / Controller-02 semantics through a temporary local POLICY COORDINATE CHART while all physical sensing and
+   persistent geometry remain in canonical H0. This is the first genuine North-Star 12-mm overlap and active
+   persistent-map extension.
+2. **POLICY CHART C IS NOT PHYSICAL HEAD MOTION.** The physical head remained fixed; persistent geometry remained in
+   canonical H0; the chart only transformed policy geometry. Covariance evidence: identity FSG6f reproduction, rotated
+   FSG6f covariance, identity / rotated Cyclopean covariance, physical projection invariance, Controller-02 real-sensor
+   gate reproduction. The chart is the North-Star bridge between global 360° persistent scene geometry and the frozen
+   local ±25° / ±20° controller.
+3. Accepted visual reading: deterministic target selection; fixed physical head; policy-only recentering; covariance;
+   controller-selected action; genuine overlap; persistent H0 map growth.
+4. Limitations retained: PERFECT correspondence remains an oracle aid; object identity remains an ORACLE SEGMENTATION
+   AID; only one entity was actively serviced; the NS1a multi-part oracle identities 10, 110, 178 remain unresolved;
+   the controller observation state has narrower support than the North-Star spherical measurement (at the NS1b
+   initialization look: North-Star target map 12,072 points, accepted Controller-01 planar controller-state target
+   support 4,118 points). That representation is not redesigned in NS1c; the discrepancy is measured where useful.
 
 ## North Star-1a: RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds (accepted at `37c7e02`)
 
@@ -1724,22 +1848,23 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2, AB1d3 and
-NS1a are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual Language 1
-are frozen unless explicitly reopened.
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a
+and NS1b are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual
+Language 1 are frozen unless explicitly reopened.
 
-**Current next activity: North Star-1b — Recentered Local-Controller Handoff — One Action** (see "North Star after
-NS1a"), on branch `north-star/ns1b-recentered-controller-handoff` from this accepted `main`, with its contract at
-`docs/north-star/ns1b-recentered-controller-handoff-contract.md`. One NS1a initialized entity is selected
-deterministically from the frozen seed set (single-patch entities only; maximum physical stereo leverage at the
-initialization gaze, then surfels, then id), before any probe. A temporary POLICY COORDINATE CHART centred on its
-initialization gaze carries the accepted FSG6f -> Cyclopean / Controller-02 local semantics unchanged (yaw ±25°,
-pitch ±20°, 5° step, every threshold); physical projections, calibration and observability stay in the fixed-head
-canonical H0 frame. At most ONE new fixed-head binocular 4096-spp observation, measured with PERFECT correspondence and
-the accepted AB1b spherical geometry, fused into the canonical-H0 target map (12 mm / 12 mm), then one read-only
-post-action probe. NOT physical head motion. No scene scheduler, no second entity, no second action, no global STOP, no
-threshold or FSG6f rule change, no natural stereo. Range-based reseeding, RGB segmentation, a background model and
-Natural Bootstrap-2 are not started. FSG6f is not repaired.
+**Current next activity: North Star-1c — Coherent Multi-Entity Control — First Scene Switch** (see "North Star after
+NS1b"), on branch `north-star/ns1c-coherent-first-scene-switch` from this accepted `main`, with its contract at
+`docs/north-star/ns1c-coherent-first-scene-switch-contract.md`. The coherent seed set is derived from the frozen NS1a
+seed set (`initialized` and `contributing_patches == 1`; the multi-part oracle identities 10, 110, 178 are excluded by
+that rule and recorded as DEFERRED_AMBIGUOUS_ORACLE_IDENTITY). Entity 172 continues from the accepted NS1b post-action
+state (21,243 surfels, 2 own looks, visited (0, 0) and (0, −5)); every other coherent entity starts from its frozen NS1a
+map and saved initialization look. Each entity has one fixed policy chart (the accepted NS1b construction at its NS1a
+initialization gaze). All coherent entities are probed once before any render; the unchanged
+`fov3d.control.integrated.schedule` starts with current 172, retains it while ACTIONABLE and switches when it is not
+serviceable. Each action is one fixed-head 4096-spp observation at the mapped H0 gaze, PERFECT correspondence, accepted
+spherical geometry, target-only 12-mm fusion in canonical H0. The canonical stop is the first successful action on a
+target other than 172, followed by one read-only probe of that target. No physical head motion, no threshold, scheduler
+or watchdog change, no SCENE_CLOSED, no natural stereo, no identity decomposition, no background model.
 
 ## Decision-critical open items
 
@@ -1778,9 +1903,9 @@ Natural Bootstrap-2 are not started. FSG6f is not repaired.
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
 6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c, AB1d, AB1d2, AB1d3 and NS1a acceptances, the revised roadmap, the post-NB1b pivot, the start of Active
-   Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star and the post-NS1a
-   handoff decision. These handoff updates did not touch it.
+   AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a and NS1b acceptances, the revised roadmap, the post-NB1b pivot, the start of
+   Active Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star and the
+   post-NS1a and post-NS1b decisions. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

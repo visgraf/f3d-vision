@@ -453,8 +453,10 @@ roadmap decision recorded in `docs/chat-handoff.md`:
       complete.
     - North Star-1a: one six-gaze RGB bootstrap round -> perfect local
       measurements -> persistent entity seeds. Accepted (below).
-    - North Star-1b (next): connect the seed set to the accepted local
-      controller (below).
+    - North Star-1b: connect the seed set to the accepted local
+      controller. Accepted (below).
+    - North Star-1c (next): coherent multi-entity control, first scene
+      switch (below).
     - Later: the full Classroom active scene loop and the final
       omnidirectional outputs.
   - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
@@ -483,7 +485,7 @@ roadmap decision recorded in `docs/chat-handoff.md`:
 - North Star after NS1a (Luiz and Chat).
   - Frozen North-Star seed handoff: the NS1a seed set, 13 initialized
     persistent entities, 302,936 surfels.
-  - NS1b (next): prove a recentered local-controller handoff for one
+  - NS1b: prove a recentered local-controller handoff for one
     deterministically selected NS1a entity; allow the accepted local
     policy to select one post-bootstrap fixation; execute exactly that one
     action using PERFECT correspondence; fuse the new metric result back
@@ -492,8 +494,38 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     head motion. The physical head remains fixed. Persistent scene
     geometry remains authoritative in canonical H0. No controller
     thresholds or FSG6f numerical rules are changed.
-  - After NS1b review, if the bridge succeeds: proceed toward the
-    multi-entity scene-level active loop.
+  - NS1b: Recentered Controller Handoff is ACCEPTED as Outcome 1. A
+    persistent entity seed produced by the global RGB bootstrap can be
+    handed to the unchanged accepted FSG6f -> Cyclopean / Controller-02
+    semantics through a temporary local POLICY COORDINATE CHART while all
+    physical sensing and persistent geometry remain in canonical H0.
+    Deterministic target 172 (initialization H0 gaze (−156.25°, +28.75°)):
+    local action (0°, −5°) -> H0 (−155.008°, +33.636°), gate admissible
+    (novel support 12); one fixed-head 4096-spp observation; 64,437
+    PERFECT correspondences, 18,525 target points; the map grew from
+    12,072 to 21,243 surfels (9,354 matched, median 1.50 mm; 9,171 new):
+    the first genuine North-Star 12-mm overlap. Post-action ACTIONABLE,
+    next local proposal (−5°, −10°), NOT executed. POLICY CHART C IS NOT
+    PHYSICAL HEAD MOTION. Limitations retained: PERFECT correspondence
+    and identity are oracle aids; one entity serviced; the multi-part
+    oracle identities 10, 110, 178 are unresolved; the controller
+    observation state supports less than the North-Star measurement
+    (4,118 vs 12,072 points at the initialization look).
+- North Star after NS1b (Luiz and Chat).
+  - Bootstrap-to-controller bridge: ESTABLISHED.
+  - NS1c (next): coherent multi-entity control, first scene switch. It
+    continues from the ACTUAL accepted NS1b state (current target 172;
+    map 21,243 surfels; 2 own looks; visited local gazes (0, 0),
+    (0, −5); next accepted proposal (−5, −10)). The accepted scheduler
+    and per-entity recentered local controllers service the current
+    entity, then switch autonomously to another coherent seed and
+    execute one controller-selected observation there; the experiment
+    stops after the first action on a target other than 172.
+  - The scene-level experiment operates only on entities that were
+    single-patch persistent seeds in the frozen NS1a handoff. The
+    multi-part oracle identities 10, 110, 178 remain DEFERRED.
+  - Physical head fixed; one fixed policy chart per entity; no threshold,
+    scheduler or watchdog change; no SCENE_CLOSED claim.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

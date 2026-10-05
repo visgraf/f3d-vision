@@ -60,7 +60,9 @@ directory and declares its contract (required), report and eight tools/north_sta
 implementation adds the tools/north_star/ directory. The handoff records NS1a accepted (Outcome 1 with Outcome-2
 elements; 13 initialized seeds) and the post-NS1a decision (North Star-1b: a recentered local-controller handoff with
 one action, through a temporary policy coordinate chart, not physical head motion). North Star-1b declares its contract
-(required), report and ten tools/north_star/ ns1b tools (allowed).
+(required), report and ten tools/north_star/ ns1b tools (allowed). The handoff records NS1b accepted (Outcome 1; the
+bootstrap-to-controller bridge established) and the post-NS1b decision (North Star-1c: coherent multi-entity control,
+first scene switch, continuing from the accepted NS1b state; multi-part oracle identities deferred).
 """
 from __future__ import annotations
 
@@ -514,10 +516,16 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at NS1a, with AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, "
-          "Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
+    check("chat handoff records accepted main at NS1b, with NS1a, AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, "
+          "NB1a, Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
           "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 37c7e026f2ab514be392cd845d390fab2a2d86fc" in handoff
+          "main @ 255355108863022f931574dae4b2df8cdd2a772e" in handoff
+          and "NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_ACCEPTED" in handoff
+          and "NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_COMPLETE" in handoff
+          and "NS1b is complete. The bootstrap-to-controller bridge is ESTABLISHED; North Star-1c, coherent "
+              "multi-entity control with a first scene switch, is next." in squash(handoff)
+          and "The multi-part oracle identities 10, 110 and 178 remain **DEFERRED** for this experiment."
+          in squash(handoff)
           and "NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_ACCEPTED" in handoff
           and "NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_COMPLETE" in handoff
           and "NS1a is complete. The frozen NS1a seed set is the North-Star seed handoff; North Star-1b, a recentered "
