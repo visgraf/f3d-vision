@@ -1,11 +1,14 @@
 # North Star-1b — Recentered Local-Controller Handoff — One Action — report
 
-**Marker.**
+**Markers.**
 
     NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_COMPLETE
+    NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide whether to enable the multi-entity North-Star controller loop. No
-ACCEPTED marker is written, and the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted NS1b as **Outcome 1** after scientific review, independent GitHub
+implementation review, checker / corruption review and qualitative visual inspection of the three figures (see
+"Acceptance record" at the end). The bootstrap-to-controller bridge is established; North Star-1c (coherent multi-entity
+control, first scene switch) is next. The sections below are the report as completed at `8155c2d`, unchanged.
 
 > **Question.** Can one persistent entity seed produced by the global 360° RGB bootstrap be handed to the accepted local
 > FSG6f -> Cyclopean / Controller-02 control semantics through a temporary recentered POLICY COORDINATE CHART, such that
@@ -525,7 +528,11 @@ Regenerate:
 
 ## 23. Unresolved decision for Luiz / Chat
 
-    READY TO ENABLE THE MULTI-ENTITY NORTH-STAR CONTROLLER LOOP?
+~~READY TO ENABLE THE MULTI-ENTITY NORTH-STAR CONTROLLER LOOP?~~
+
+**Decided:** NS1b is accepted (Outcome 1), and the bootstrap-to-controller bridge is established. The next step is
+North Star-1c, coherent multi-entity control with a first scene switch, continuing from the accepted NS1b state (see
+"Acceptance record").
 
 The measured inputs:
 - Outcome 1 on one deterministic seed (172).
@@ -537,4 +544,86 @@ The measured inputs:
 
 This report makes no scheduler design.
 
-NS1b REVIEW PENDING · DECISION PENDING: READY TO ENABLE MULTI-ENTITY NORTH-STAR CONTROL?
+~~NS1b REVIEW PENDING · DECISION PENDING: READY TO ENABLE MULTI-ENTITY NORTH-STAR CONTROL?~~
+
+NS1b ACCEPTED · BOOTSTRAP-TO-CONTROLLER BRIDGE ESTABLISHED · NS1c NEXT
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, an independent GitHub implementation review, the checker / corruption
+review and a qualitative visual inspection of the three figures, and **accept NS1b** as committed at `8155c2d`:
+
+    NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_ACCEPTED
+
+- **Machine result accepted:**
+  - `NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_COMPLETE`;
+  - `NORTH_STAR1B_CHECKS_PASS` 26/26;
+  - `NORTH_STAR1B_MUTATIONS_CAUGHT` 45/45 from a passing baseline, with a clean unmodified-mirror null probe;
+  - `NS1B_SYNTHETIC_PASS` 23/23;
+  - `NS1B_COVARIANCE_PASS` 12/12 parts.
+- **Outcome 1 accepted** (contract section 17).
+- **Accepted scientific conclusion** (stated without strengthening):
+
+      A persistent entity seed produced by the global RGB bootstrap can be handed to the unchanged accepted FSG6f ->
+      Cyclopean / Controller-02 semantics through a temporary local POLICY COORDINATE CHART while all physical sensing
+      and persistent geometry remain in canonical H0.
+
+- **Accepted measured result** (MEASURED, the one canonical run; sections 3–15). For deterministic target 172:
+
+  | quantity | value |
+  |---|---|
+  | initialization H0 gaze | (−156.25°, +28.75°) |
+  | local selected action | (0°, −5°) |
+  | mapped H0 action | (−155.008°, +33.636°) |
+  | Controller-02 gate | admissible |
+  | novel serviceable support | 12 |
+  | fixed-head 4096-spp observation | executed exactly once |
+  | PERFECT correspondences | 64,437 |
+  | target metric points | 18,525 |
+  | map before | 12,072 surfels |
+  | matched target points | 9,354 |
+  | affected existing surfels | 8,601 |
+  | median matched distance | 1.50 mm |
+  | new surfels | 9,171 |
+  | map after | 21,243 surfels |
+
+  The experiment establishes the first genuine North-Star 12-mm overlap and active persistent-map extension.
+
+  Post-action: the controller remained ACTIONABLE; the next local proposal, (−5°, −10°), was **NOT executed**.
+- **Accepted coordinate conclusion.**
+
+      POLICY CHART C IS NOT PHYSICAL HEAD MOTION.
+
+  The physical head remained fixed. Persistent geometry remained in canonical H0. The chart only transformed policy
+  geometry. The accepted covariance evidence includes:
+  - identity FSG6f reproduction;
+  - rotated FSG6f covariance;
+  - identity / rotated Cyclopean covariance;
+  - physical projection invariance;
+  - Controller-02 real-sensor gate reproduction.
+
+  The chart is therefore accepted as the North-Star bridge between global 360° persistent scene geometry and the frozen
+  local ±25° / ±20° controller.
+- **Retained limitations** (part of the acceptance):
+  1. PERFECT correspondence remains an oracle aid.
+  2. Object identity remains an ORACLE SEGMENTATION AID.
+  3. Only one entity was actively serviced in NS1b.
+  4. The known NS1a multi-part oracle identities remain unresolved: 10, 110, 178.
+  5. The controller observation state still has narrower support than the North-Star spherical measurement. At the NS1b
+     initialization look: North-Star target map 12,072 points; accepted Controller-01 planar controller-state target
+     support 4,118 points. This representation is NOT redesigned in NS1c; the discrepancy is measured where useful.
+- **Visuals accepted.** Luiz and Chat inspected the three figures:
+  - `visuals/north-star/ns1b-recentered-controller-handoff/overview.png`
+    (`5dedb921a1428212daf6d230b5df22e15a23266412389aa2d90f6772de294463`);
+  - `visuals/north-star/ns1b-recentered-controller-handoff/chart-covariance.png`
+    (`4419516363733473ac32d68b05c2350976cabadbda94a58a3a3739f4514b6428`);
+  - `visuals/north-star/ns1b-recentered-controller-handoff/first-controller-action-3d.png`
+    (`0b299f936f0680b6568ebee633dc85d708681f9ab1e1f34b0363fb95b32c6d5b`).
+
+  Accepted visual reading: deterministic target selection; fixed physical head; policy-only recentering; covariance;
+  controller-selected action; genuine overlap; persistent H0 map growth.
+- **Accepted NS1b post-action state** (the NS1c starting point): current target 172; H0 map 21,243 surfels; 2 own looks;
+  visited local gazes (0, 0), (0, −5); next accepted post-action proposal local (−5, −10), not executed.
+- **This acceptance step** made no new observation and did no scientific computation. It changed only this status
+  record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff assertion. The NS1b
+  code, canonical run, controller action, maps, figures and contract are unchanged.
