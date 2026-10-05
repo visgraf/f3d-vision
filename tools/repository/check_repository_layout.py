@@ -56,7 +56,8 @@ SGBM configuration; otherwise natural stereo is deferred and the North Star uses
 Bootstrap-1d3 declares its contract (required), report and seven tools/active_bootstrap/ ab1d3 tools (allowed); the
 handoff records AB1d3 accepted (Outcome 2; SGBM not adopted) and the return to the North Star (natural stereo deferred;
 the North Star uses PERFECT / oracle correspondence; North Star-1a is next). North Star-1a adds the docs/north-star/
-directory and declares its contract (required), report and eight tools/north_star/ ns1a tools (allowed).
+directory and declares its contract (required), report and eight tools/north_star/ ns1a tools (allowed); its
+implementation adds the tools/north_star/ directory.
 """
 from __future__ import annotations
 
@@ -78,7 +79,7 @@ PREFIX = "[repository-layout]"
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "methodology", "natural-bootstrap", "north-star", "partition-graph", "repository"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
-              "natural_bootstrap", "partition_graph", "repository", "visual_language"}
+              "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
 ADDED_REQUIRED = {
     "docs/repository/repository-transition-1-contract.md",
