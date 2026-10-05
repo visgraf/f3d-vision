@@ -302,7 +302,8 @@ def k_nominal(m, v):
 
 
 def k_no_same(m, v):
-    r = biggest_rank(m)
+    r = max(C.RANKS, key=lambda r: jload(m / f"correspondence/{C.rd(r)}/oracle-summary.json")["excluded"][
+        "different_right_instance"])
     dn = regen_product(m, r, lambda hit, il, inside, same, u, v: hit & (il > 0) & inside)
     if dn == 0:
         return "no inside pair has a different right instance"
@@ -370,7 +371,8 @@ def _rank_with_two_ids(m) -> int | None:
 
 
 def k_wrong_pixel(m, v):
-    r = biggest_rank(m)
+    r = max(C.RANKS, key=lambda r: len(set(int(i) for i in nload(
+        m / f"segmentation/{C.rd(r)}/local-identity.npz")["temporary_entity_id"] if i > 0)))
     p = m / f"segmentation/{C.rd(r)}/local-identity.npz"
     d = nload(p)
     il = nload(m / f"observations/{C.rd(r)}/oracle_aid/reference-observation.npz")["instance_L"]
