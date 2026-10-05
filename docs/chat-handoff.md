@@ -2,12 +2,24 @@
 
 ## Accepted main
 
-    main @ f65c6ac8344bfcfb0491888bf8608471d2452f61
+    main @ 9e0bae487012164921343925b04569111bdc9296
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`f65c6ac` (the AB1d2 acceptance commit on branch `active-bootstrap/ab1d2-4096spp-observation-quality`).
+`9e0bae4` (the AB1d3 acceptance commit on branch `active-bootstrap/ab1d3-sgbm-viability`).
 
 Accepted milestones:
+- **Active Bootstrap-1d3: One-Shot SGBM Viability**, accepted by Luiz and Chat as **Outcome 2** (the machine result,
+  the scientific conclusion and the two primary visuals):
+
+      ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_ACCEPTED
+
+  The accepted completion marker is `ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_COMPLETE`. **AB1d3 is complete.** SGBM is NOT
+  ADOPTED for the North-Star demo.
+- **Return to the North Star after AB1d3 — the second mandate** (a decision by Luiz and Chat, not an experiment):
+  NATURAL STEREO IS DEFERRED (a deferred research topic, reopened only after the full Classroom active-perception
+  demonstration); the North-Star concept demonstration uses the validated PERFECT / ORACLE correspondence service. North
+  Star-1a (six-gaze RGB bootstrap round -> perfect local measurements -> persistent entity seeds) is next. See "Return
+  to the North Star after AB1d3".
 - **Active Bootstrap-1d2: 4096-spp Observation-Quality Control**, accepted by Luiz and Chat (the machine result, the
   scientific conclusion and the two primary visuals):
 
@@ -181,7 +193,36 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after AB1d2)
+## Current roadmap (Luiz and Chat, after AB1d3): RETURN TO THE NORTH STAR
+
+    NATURAL BOOTSTRAP
+        coarse 360 RGB
+        -> six frozen RGB candidate gazes            NB1c ACCEPTED
+
+    ACTIVE BOOTSTRAP / STEREO INVESTIGATION
+        AB1a through AB1d3                           COMPLETE
+
+    NATURAL STEREO                                   DEFERRED RESEARCH TOPIC
+
+    NORTH STAR CONCEPT DEMO
+        local correspondence service:                PERFECT / ORACLE
+        next:
+            North Star-1a                            NEXT
+            six-gaze RGB bootstrap round
+            -> perfect local measurements
+            -> persistent entity seeds
+        after NS1a review:
+            connect the resulting seed set to active local growth /
+            Controller-02 infrastructure
+        later:
+            full Classroom active scene loop
+            final omnidirectional outputs
+
+- Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen unless explicitly reopened.
+- Head recentering / AB1e is not a prerequisite for the concept demo. The first North-Star concept-demo path remains
+  fixed-head / static-scene.
+
+The full stage roadmap (updated after AB1d3):
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -201,15 +242,20 @@ Accepted milestones:
                                                               causal role not established)
            AB1d2 4096-spp observation-quality       ACCEPTED (observation quality a major limitation; large
                 control                                       residual along-epipolar ambiguity remains)
-           AB1d3 one-shot SGBM viability            NEXT (accepted 4096-spp observations; ONE frozen
-                                                          pre-existing SGBM configuration; no tuning, no sweep)
-             -> SGBM operationally useful:  adopt SGBM as the natural correspondence service;
-                                            stop improving stereo; return to active perception
-             -> otherwise:                  stop natural stereo (DEFERRED RESEARCH TOPIC); PERFECT / oracle
+           AB1d3 one-shot SGBM viability            ACCEPTED (Outcome 2: gross ambiguity removed; metric
+                                                              precision / effective coverage insufficient at
+                                                              the 12-50 mm map scales; SGBM NOT ADOPTED)
+             -> taken branch:               stop natural stereo (DEFERRED RESEARCH TOPIC); PERFECT / oracle
                                             correspondence service for the North Star; return immediately to
                                             the active-perception / full-Classroom roadmap
-           AB1e same difficult target, whole-head   no longer an obligatory prerequisite for the North Star
+           AB1e same difficult target, whole-head   not a prerequisite for the concept demo
                 recentering
+      -> North Star concept demo (PERFECT / oracle correspondence; fixed head, static scene)
+           NS1a six-gaze RGB bootstrap round        NEXT (perfect local measurements -> persistent entity
+                                                          seeds; no controller run)
+           NS1b seed set -> active local growth /   after NS1a review
+                Controller-02 infrastructure
+           full Classroom active scene loop, final omnidirectional outputs
       -> Classroom validation
       -> Tabletop transfer
            same controller / bootstrap policy,
@@ -433,7 +479,61 @@ Decision record (durable):
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
 
+### Return to the North Star after AB1d3 (Luiz and Chat): the second mandate
+
+**AB1d3 is complete. NATURAL STEREO IS DEFERRED. The North-Star concept demonstration uses the validated PERFECT /
+ORACLE correspondence service; North Star-1a is next.**
+
+Decision record (durable):
+1. AB1d3 is accepted as Outcome 2 (see its section below). SGBM demonstrates that spatial aggregation solves most of the
+   gross correspondence ambiguity, but at the present baseline, range and scene distances its subpixel precision gives
+   median metric errors of about 103 / 66 / 86 mm and insufficient effective coverage at the 12–50 mm persistent-map
+   scales.
+2. Project disposition:
+
+       SGBM:                              NOT ADOPTED FOR NORTH-STAR DEMO
+       NATURAL STEREO:                    DEFERRED RESEARCH TOPIC
+       NORTH-STAR LOCAL CORRESPONDENCE:   PERFECT / ORACLE MATCHER
+
+3. The remaining stereo problem is not discarded; it is explicitly deferred, and reopened only after the full Classroom
+   active-perception demonstration has been achieved. The accepted stereo record gives the later effort a head start:
+   - AB1a: representation failure near the baseline;
+   - AB1b: spherical representation succeeds, conditioning poor;
+   - AB1c: benign planar / spherical metric equivalence;
+   - AB1d: the independent local natural matcher fails;
+   - AB1d2: observation quality strongly improves natural matching;
+   - AB1d3: semi-global aggregation removes gross ambiguity but lacks sufficient metric precision / effective coverage.
+
+   No further stereo experiment is opened now.
+4. The PERFECT / oracle correspondence service is the accepted AB1b oracle semantics (raw left nominal core, finite hit,
+   positive Object Index, exact projection into the full padded right raster, same-instance binocular visibility,
+   continuous `uv_R`), feeding the accepted AB1b spherical geometry through the truth-stripped product (`left_core_row`,
+   `left_core_col`, `uv_L`, `uv_R`).
+5. Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen unless explicitly reopened.
+6. Head recentering / AB1e is **not** a prerequisite for the concept demo. The first North-Star concept-demo path
+   remains fixed-head / static-scene.
+7. Near-term sequence: North Star-1a (one six-gaze RGB bootstrap round -> perfect local measurements -> persistent
+   entity seeds; it stops there, with no controller run); after its review, connect the resulting seed set to active
+   local growth / the Controller-02 infrastructure; later, the full Classroom active scene loop and the final
+   omnidirectional outputs.
+
+- **North Star-1a: RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds** (branch
+  `north-star/ns1a-perfect-bootstrap-round`, contract `docs/north-star/ns1a-perfect-bootstrap-round-contract.md`,
+  committed before canonical execution).
+  - Question: starting from the six accepted NB1c RGB candidate gazes, can one complete foveal bootstrap round, using the
+    PERFECT / oracle correspondence service, create a useful persistent set of locally discovered Classroom entity
+    seeds WITHOUT using the global Blender object catalog as bootstrap initialization?
+  - The six frozen NB1c gazes, in frozen order (no reselection, filtering or replacement); one binocular 4096-spp
+    acquisition per gaze; fixed head, static scene.
+  - Local Object Index is an explicit ORACLE SEGMENTATION AID (not natural identity); instance 0 stays UNASSIGNED /
+    NON-CATALOG ORACLE GEOMETRY; the global catalog and object names open only after the seed-set freeze, for
+    descriptive evaluation.
+  - Persistent entity maps use the accepted surface-map machinery, initialization precondition and fusion parameters.
+  - No controller, FSG6f, Cyclopean policy, seventh gaze or residue closure.
+
 ### Active Bootstrap after AB1d2 (Luiz and Chat): the SGBM bet
+
+Historical record (the launch of AB1d3; AB1d3 is now accepted, see its section below):
 
 **AB1d2 is complete. Natural stereo receives ONE additional bounded attempt: AB1d3, one-shot SGBM viability, on the
 accepted 4096-spp observations with one frozen pre-existing SGBM configuration and no parameter tuning or sweep.**
@@ -497,6 +597,55 @@ Decision record (durable):
     passes.
   - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
     is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## Active Bootstrap-1d3: One-Shot SGBM Viability (accepted at `9e0bae4`)
+
+Luiz and Chat accept AB1d3 as **Outcome 2**: the machine result, the scientific conclusion and the two primary visuals.
+
+Record (branch `active-bootstrap/ab1d3-sgbm-viability`, base `56606b8`):
+- contract: `docs/active-bootstrap/ab1d3-sgbm-viability-contract.md` (`492232e`, before any canonical SGBM execution).
+- implementation: `tools/active_bootstrap/ab1d3_{spec,sgbm,run,synthetic,visuals}.py`, `check_ab1d3.py` and
+  `check_ab1d3_core.py` (`924db53`; every canonical stage ran from it).
+- report: `docs/active-bootstrap/ab1d3-sgbm-viability-report.md` (completion `e6854f7`, acceptance `9e0bae4`).
+- run: `/home/lvelho/rd/f3d-vision/previews/active-bootstrap/ab1d3-sgbm-viability/` (the ONE canonical SGBM run; no
+  render; the three accepted AB1d2 4096-spp observations read as calibration + RGB). Correspondence freeze `c3a8abd8…`;
+  geometry freeze `b6423acd…`. Never re-run SGBM.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/active-bootstrap/ab1d3-sgbm-viability/` (`overview.png`
+  `91ff08b7c3093e9a42cdd6adbe6b2cfbc6edb8cca5a332f742ce020ddace3361` and `sgbm-vs-primitive.png`
+  `adda160a5225d9436dadc7e6f837900a01e69086f0941528b0bffed9886079e9`, inspected and accepted).
+
+Accepted measured result:
+
+    ACTIVE_BOOTSTRAP1D3_CHECKS_PASS          34 / 34
+    ACTIVE_BOOTSTRAP1D3_MUTATIONS_CAUGHT     46 / 46 (from a passing baseline; clean null probe)
+    AB1D3_PREFLIGHT_PASS                     38 / 38
+
+Check 34 of `check_ab1d3.py` is scoped to the AB1d3 base `56606b8`. On later commits it reports every later accepted
+change outside the AB1d3 files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 33/34, only check 34). That is the guard's scope, not an AB1d3 regression; the
+frozen-product checks remain valid.
+
+| gaze | SGBM valid / full oracle coverage | ≤ 1 px-equiv (precision over evaluable) | > 10 px | median 3-D error vs perfect | ≤ 12 mm precision / effective | ≤ 50 mm precision / effective |
+|---|---|---|---|---|---|---|
+| 1 | 18,118 / 0.197 | 96.7 % | 0 | 103.1 mm | 0.069 / 0.014 | 0.272 / 0.054 |
+| 2 | 54,018 / 0.824 | 98.4 % | 1 px | 65.6 mm | 0.115 / 0.094 | 0.405 / 0.334 |
+| 3 | 53,998 / 0.824 | 99.9 % | 0 | 86.3 mm | 0.081 / 0.066 | 0.313 / 0.258 |
+
+Accepted interpretation (durable):
+1. On the accepted 4096-spp safe-forward Classroom observations, the frozen SGBM matcher almost eliminates the
+   catastrophic along-epipolar correspondence ambiguities of the independent local matcher.
+2. Among evaluable SGBM outputs, 96.7 / 98.4 / 99.9 % are within 1 pixel-equivalent at the three gazes, with
+   essentially no catastrophic errors.
+3. However, at the present baseline, range and scene distances, the subpixel correspondence precision yields median
+   metric errors of approximately 103 / 66 / 86 mm, and insufficient effective coverage at the 12–50 mm scales used by the
+   current persistent-map machinery.
+4. SGBM demonstrates that spatial aggregation solves most of the gross correspondence ambiguity, but SGBM is NOT ADOPTED
+   as the operational matcher for the North-Star concept demonstration. Outcome 2.
+5. Accepted visual reading: coherent spatial disparity rather than independent catastrophic peak selection; spatial
+   aggregation clearly helps large regions; invalid / rejected SGBM support remains visible; the metric CDFs show that
+   ≈ 1-pixel correspondence success is still insufficient for the current map scale.
+6. NOT claimed: that SGBM is optimal, or that another configuration would or would not do better (none was run); that
+   the frozen z_rect interval suits the scene; anything about real cameras, other scenes or head motion.
 
 ## Active Bootstrap-1d2: 4096-spp Observation-Quality Control (accepted at `f65c6ac`)
 
@@ -1460,20 +1609,20 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d and AB1d2 are accepted.
-The Controller-01 investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2 and AB1d3 are
+accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual Language 1 are frozen
+unless explicitly reopened.
 
-**Current next activity: Active Bootstrap-1d3 — One-Shot SGBM Viability** (see "Active Bootstrap after AB1d2"), on
-branch `active-bootstrap/ab1d3-sgbm-viability` from this accepted `main`, with its contract at
-`docs/active-bootstrap/ab1d3-sgbm-viability-contract.md`. No render: the three accepted AB1d2 4096-spp observations
-are matched once by one frozen pre-existing SGBM configuration (the accepted FSG / AB1a RGB-only configuration) after
-the accepted planar safe-forward rectification. The SGBM output is mapped back to the common raw correspondence product
-and measured with the accepted AB1b spherical geometry, against the same accepted AB1c benchmark, and compared with the
-accepted AB1d2 primitive matcher. No parameter tuning, no sweep, no second SGBM configuration, no head motion, no
-controller. Luiz and Chat then make ONE decision: adopt SGBM and return to active perception, or stop natural stereo and
-proceed to the North Star with PERFECT correspondence. The PERFECT fallback is not implemented yet. AB1e is not started
-and is no longer an obligatory prerequisite. Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not
-started. FSG6f is not repaired.
+**Current next activity: North Star-1a — RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds** (see
+"Return to the North Star after AB1d3"), on branch `north-star/ns1a-perfect-bootstrap-round` from this accepted `main`,
+with its contract at `docs/north-star/ns1a-perfect-bootstrap-round-contract.md`. The six frozen NB1c RGB gazes are
+executed once each, in frozen order, as one binocular 4096-spp acquisition per gaze (fixed head, static scene). The
+accepted AB1b PERFECT / oracle correspondence feeds the accepted AB1b spherical geometry; local Object Index attaches an
+explicit ORACLE SEGMENTATION AID to the frozen geometry; the accepted surface-map machinery builds persistent entity
+seed maps in frozen gaze order. The global catalog is opened only after the seed-set freeze, for descriptive evaluation.
+No controller, no FSG6f, no Cyclopean policy, no seventh gaze, no SGBM, no natural matcher, no head motion. Natural
+stereo is deferred. AB1e is not a prerequisite. Range-based reseeding, RGB segmentation, a background model and Natural
+Bootstrap-2 are not started. FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -1512,8 +1661,9 @@ started. FSG6f is not repaired.
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
 6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c, AB1d and AB1d2 acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap, the
-   post-AB1a pivot and the post-AB1b operating strategy. These handoff updates did not touch it.
+   AB1b, AB1c, AB1d, AB1d2 and AB1d3 acceptances, the revised roadmap, the post-NB1b pivot, the start of Active
+   Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy and the return to the North Star. These handoff
+   updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

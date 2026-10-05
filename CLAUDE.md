@@ -427,8 +427,43 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     Classroom demonstration is achieved.
   - AB1e (head-recentered natural stereo) is no longer an obligatory
     prerequisite for returning to the North Star.
-  - Head motion is not implemented yet. No natural matcher has yet been
-    accepted as useful.
+  - AB1d3: One-Shot SGBM Viability is accepted as Outcome 2. On the
+    accepted 4096-spp safe-forward Classroom observations the frozen SGBM
+    matcher almost eliminates the catastrophic along-epipolar
+    ambiguities of the independent local matcher (within 1
+    pixel-equivalent 96.7 / 98.4 / 99.9 % of evaluable outputs,
+    essentially no catastrophic errors), but at the present baseline,
+    range and scene distances its subpixel precision gives median metric
+    errors of about 103 / 66 / 86 mm and insufficient effective coverage
+    at the 12–50 mm persistent-map scales. Spatial aggregation solves
+    most of the gross correspondence ambiguity; SGBM is NOT ADOPTED as
+    the operational matcher for the North-Star concept demonstration.
+- RETURN TO THE NORTH STAR (Luiz and Chat, after AB1d3; the second
+  mandate).
+  - NATURAL STEREO IS DEFERRED. It is a DEFERRED RESEARCH TOPIC, not
+    discarded, reopened only after the full Classroom active-perception
+    demonstration has been achieved. The accepted stereo record AB1a–AB1d3
+    is its head start. Do not open another stereo experiment now.
+  - The North-Star concept demonstration uses the validated PERFECT /
+    ORACLE correspondence service (the accepted AB1b oracle semantics).
+  - Near-term roadmap:
+    - Natural Bootstrap: coarse 360 RGB -> six frozen RGB candidate gazes
+      (NB1c), accepted.
+    - Active Bootstrap / stereo investigation: AB1a through AB1d3,
+      complete.
+    - North Star-1a (next): one six-gaze RGB bootstrap round -> perfect
+      local measurements -> persistent entity seeds. No controller run.
+    - After NS1a review: connect the resulting seed set to active local
+      growth / the Controller-02 infrastructure.
+    - Later: the full Classroom active scene loop and the final
+      omnidirectional outputs.
+  - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
+    unless explicitly reopened.
+  - Head recentering / AB1e is not a prerequisite for the concept demo.
+    The first North-Star concept-demo path remains fixed-head /
+    static-scene.
+  - Head motion is not implemented yet. No natural matcher has been
+    adopted.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

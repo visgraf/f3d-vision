@@ -53,7 +53,9 @@ Carlo rendering noise improves the same frozen matcher; it changes observation q
 declares its contract (required), report and six tools/active_bootstrap/ ab1d2 tools (allowed); the handoff records
 AB1d2 accepted and the post-AB1d2 decision (the SGBM bet: AB1d3 is one bounded natural-stereo attempt with one frozen
 SGBM configuration; otherwise natural stereo is deferred and the North Star uses PERFECT correspondence). Active
-Bootstrap-1d3 declares its contract (required), report and seven tools/active_bootstrap/ ab1d3 tools (allowed).
+Bootstrap-1d3 declares its contract (required), report and seven tools/active_bootstrap/ ab1d3 tools (allowed); the
+handoff records AB1d3 accepted (Outcome 2; SGBM not adopted) and the return to the North Star (natural stereo deferred;
+the North Star uses PERFECT / oracle correspondence; North Star-1a is next).
 """
 from __future__ import annotations
 
@@ -493,10 +495,14 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at AB1d2, with AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, Breadth-1, "
-          "Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual "
-          "package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ f65c6ac8344bfcfb0491888bf8608471d2452f61" in handoff
+    check("chat handoff records accepted main at AB1d3, with AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, "
+          "Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
+          "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ 9e0bae487012164921343925b04569111bdc9296" in handoff
+          and "ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_ACCEPTED" in handoff
+          and "ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_COMPLETE" in handoff
+          and "AB1d3 is complete. NATURAL STEREO IS DEFERRED. The North-Star concept demonstration uses the validated "
+              "PERFECT / ORACLE correspondence service; North Star-1a is next." in squash(handoff)
           and "ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_ACCEPTED" in handoff
           and "ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_COMPLETE" in handoff
           and "AB1d2 is complete. Natural stereo receives ONE additional bounded attempt: AB1d3, one-shot SGBM viability, "
