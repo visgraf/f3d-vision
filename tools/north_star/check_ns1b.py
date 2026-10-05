@@ -788,12 +788,16 @@ def c21(x):
     counts = (fu["action"] == "FUSED" and own_matched == fu["matched"] and len(own) - own_matched == fu["new"]
               and len(np.unique(own[own >= 0])) == fu["affected_surfels"]) or \
         (fu["action"] == "RETAINED_NOT_FUSED" and fu["measured_points"] < MIN_POINTS)
-    ok = (patch_ok and same and counts and fu["frame"] == "CANONICAL H0" and fu.get("radius_m", RADIUS) == RADIUS
+    # the record's frame tag: a FUSED record carries the tag written by the H0-only fusion entry point ("H0", the only
+    # frame it accepts); a not-fused record carries the stage's canonical-H0 label
+    frame_ok = fu["frame"] == ("H0" if fu["action"] == "FUSED" else "CANONICAL H0")
+    ok = (patch_ok and same and counts and frame_ok and fu.get("radius_m", RADIUS) == RADIUS
           and fu.get("hash_cell_m", CELL) == CELL and fu["patch_id"] == PATCH_ID
           and (fu["action"] != "FUSED" or (fu["replay"]["exact"] and fu["replay"]["duplicate_patch"]))
           and np.all(saved["instance_id"] == k) and fu["measured_points"] == int(keep.sum())
           and rec["action"] == fu["action"] and rec.get("matched") == fu["matched"])
     return ok, {"patch_is_frozen_P_epi": bool(patch_ok), "accepted_fuse_reproduced": same, "own_matched": own_matched,
+                "own_counts_equal": bool(counts), "frame_tag": fu["frame"], "frame_ok": frame_ok,
                 "record": {k_: fu[k_] for k_ in ("action", "matched", "new", "affected_surfels", "map_before",
                                                  "map_after")}}
 

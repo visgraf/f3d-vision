@@ -422,6 +422,8 @@ CORRUPTIONS = [
     ("FUSION", "radius changed (regenerated)", CASE_B, radius_regen, "run", ["21"]),
     ("FUSION", "hash cell changed", CASE_B, cell_record, "run", ["21"]),
     ("FUSION", "idempotence disabled", FUSED, no_idempotence, "run", ["21"]),
+    ("FUSION", "fusion record claims the chart frame", FUSED,
+     lambda m: edit(m, "fusion/fusion.json", lambda d: d.update(frame="C")), "run", ["21"]),
     ("COVARIANCE", "K4 verdict altered", ANY, k4_flip, "run", ["08"]),
     ("DECISION", "gate verdict flipped in the decision", ANY, gate_flip, "run", ["14"]),
     ("VISUAL", "local / H0 frame label omitted", ANY, man_edit(lambda d: d["figures"]["overview.png"]["labels"].remove(
