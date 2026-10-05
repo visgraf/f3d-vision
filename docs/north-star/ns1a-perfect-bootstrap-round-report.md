@@ -1,11 +1,14 @@
 # North Star-1a — RGB Bootstrap → Perfect Local Measurement → Persistent Entity Seeds — report
 
-**Marker.**
+**Markers.**
 
     NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_COMPLETE
+    NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide whether the seed set is ready for the North Star-1b controller handoff.
-No ACCEPTED marker is written, and the branch is not merged. No controller has run.
+**Status: ACCEPTED.** Luiz and Chat accepted NS1a as **Outcome 1, with documented Outcome-2 elements**, after scientific
+review, independent GitHub review, checker / corruption review and visual inspection of the three figures (see
+"Acceptance record" at the end). The frozen seed set is the North-Star seed handoff; North Star-1b is next. The sections
+below are the report as completed at `47e4bae`, unchanged. No controller has run.
 
 > **Question.** Starting from the already accepted six RGB-only candidate gazes, can one complete foveal bootstrap round,
 > using the selected PERFECT / ORACLE correspondence service, create a useful persistent set of locally discovered
@@ -492,7 +495,10 @@ Regenerate:
 
 ## 21. Unresolved decision for Luiz / Chat
 
-    IS THIS SEED SET READY FOR NORTH STAR-1b CONTROLLER HANDOFF?
+~~IS THIS SEED SET READY FOR NORTH STAR-1b CONTROLLER HANDOFF?~~
+
+**Decided:** yes. NS1a is accepted, and the frozen seed set is the North-Star seed handoff for North Star-1b (see
+"Acceptance record").
 
 The measured inputs:
 - 13 initialized seeds, 5 large (≥ 12k surfels), 3 near the threshold;
@@ -505,4 +511,72 @@ The measured inputs:
 
 This report makes no controller design.
 
-NS1a REVIEW PENDING · NO CONTROLLER RUN YET · DECISION PENDING: READY FOR NS1b CONTROLLER HANDOFF?
+~~NS1a REVIEW PENDING · NO CONTROLLER RUN YET · DECISION PENDING: READY FOR NS1b CONTROLLER HANDOFF?~~
+
+NS1a ACCEPTED · NO CONTROLLER RUN YET · NS1b NEXT
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, an independent GitHub review, the checker / corruption review and the
+visual inspection of the three figures, and **accept NS1a** as committed at `47e4bae`:
+
+    NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_ACCEPTED
+
+- **Machine result accepted:**
+  - `NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_COMPLETE`;
+  - `NORTH_STAR1A_CHECKS_PASS` 34/34;
+  - `NORTH_STAR1A_MUTATIONS_CAUGHT` 40/40 from a passing baseline, with a clean unmodified-mirror null probe;
+  - `NS1A_SYNTHETIC_PASS` 21/21.
+- **Outcome 1 accepted, with documented Outcome-2 elements** (contract section 14).
+- **Accepted scientific conclusion** (stated without strengthening):
+
+      One frozen six-gaze 360° RGB bootstrap round, followed by PERFECT / oracle local correspondence, accepted
+      spherical metric geometry, local ORACLE SEGMENTATION AID identity and the accepted persistent surface-map
+      machinery, creates a substantial persistent multi-entity seed set without using the global Blender catalog to
+      initialize the bootstrap.
+
+- **Accepted measured result** (MEASURED, the one canonical run; sections 8–13):
+  - positive local entities observed: 22;
+  - persistent entities initialized: 13;
+  - seen but never initialized: 9;
+  - final persistent surfels: 302,936;
+  - five large maps: entity 10 88,465; entity 110 86,381; entity 178 66,681; entity 12 36,126; entity 172 12,072;
+  - gazes producing an initialization: 1, 2, 3, 6;
+  - pooled instance-0 / unassigned fraction: 16.9 %; gaze 3 instance-0 fraction: 95.6 %;
+  - metric consistency: 100 % of measured points within 1 mm of Position at every gaze.
+- **Truth labels kept explicit:**
+
+      CORRESPONDENCE:   PERFECT / ORACLE
+      IDENTITY:         ORACLE SEGMENTATION AID
+      GEOMETRY:         DERIVED spherical geometry
+      ATTENTION:        accepted RGB-only NB1c
+
+- **Caveats retained** (part of the acceptance):
+  1. Natural correspondence is NOT established.
+  2. Natural identity is NOT established.
+  3. Blender instance identity can merge physically disconnected pieces. The NS1a diagnostic found disconnected
+     multi-gaze parts for entities 10, 110 and 178.
+  4. No 12-mm cross-gaze surface association actually occurred in NS1a: the six foveal cores were angularly disjoint.
+  5. The controller has NOT yet been shown to service these seeds.
+  6. None of the original six NB1c gaze centres lies inside the historical FSG6f global yaw ±25°, pitch ±20° chart.
+     This motivates North Star-1b.
+- **Visuals accepted.** Luiz and Chat inspected the three figures:
+  - `visuals/north-star/ns1a-perfect-bootstrap-round/overview.png`
+    (`3580fe603545cc673fc22f9182bb9f9deb6d9e6f82cdc452e8a4561a6399e109`);
+  - `visuals/north-star/ns1a-perfect-bootstrap-round/bootstrap-progression.png`
+    (`adb472a2b0b77df65a50ded43ee02c1c79e6bc1f40ae4dbc5296da3ad6e41743`);
+  - `visuals/north-star/ns1a-perfect-bootstrap-round/entity-seeds-3d.png`
+    (`778c9862a9c73156f0ee2be0138055544626f9d4e931b28ff456e70d5bb5fe3b`).
+
+  Accepted visual reading:
+  - the six attention actions are visibly frozen and global;
+  - local foveal observations vary strongly in usefulness;
+  - oracle correspondence / derived geometry / oracle identity are visibly separated;
+  - persistent state accumulates in frozen gaze order;
+  - the final result is actual canonical-H0 geometry, not merely a symbolic object list.
+- **Frozen North-Star seed handoff.** The seed freeze `4ee36a1a…` and `seeds/seed-set.json` (`e2ff1ba3…`) are the
+  machine-facing handoff: 13 initialized persistent entities, 302,936 surfels. North Star-1b (recentered local-controller
+  handoff, one action) is next.
+- **This acceptance step** made no new observation and did no scientific computation. It changed only this status
+  record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff assertion. The NS1a
+  code, canonical run, seed maps, measured results, figures and contract are unchanged.
