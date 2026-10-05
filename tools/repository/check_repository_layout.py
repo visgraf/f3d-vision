@@ -49,7 +49,8 @@ tools/active_bootstrap/ ab1c tools (allowed); the handoff records AB1c accepted 
 natural RGB correspondence in the safe-forward regime, with the accepted spherical geometry held fixed). Active
 Bootstrap-1d declares its contract (required), report and six tools/active_bootstrap/ ab1d tools (allowed); the handoff
 records AB1d accepted as a negative experiment and the post-AB1d step (AB1d2 tests whether substantially reducing Monte
-Carlo rendering noise improves the same frozen matcher; it changes observation quality only).
+Carlo rendering noise improves the same frozen matcher; it changes observation quality only). Active Bootstrap-1d2
+declares its contract (required), report and six tools/active_bootstrap/ ab1d2 tools (allowed).
 """
 from __future__ import annotations
 
@@ -142,11 +143,15 @@ AB1D_REQUIRED = {"docs/active-bootstrap/ab1d-safe-forward-natural-correspondence
 AB1D_TOOLS = {f"tools/active_bootstrap/{n}" for n in ("ab1d_spec.py", "ab1d_match.py", "ab1d_run.py",
                                                       "ab1d_synthetic.py", "ab1d_visuals.py", "check_ab1d.py")}
 AB1D_ALLOWED = AB1D_REQUIRED | AB1D_TOOLS | {"docs/active-bootstrap/ab1d-safe-forward-natural-correspondence-report.md"}
+AB1D2_REQUIRED = {"docs/active-bootstrap/ab1d2-4096spp-observation-quality-contract.md"}
+AB1D2_TOOLS = {f"tools/active_bootstrap/{n}" for n in ("ab1d2_spec.py", "ab1d2_render.py", "ab1d2_run.py",
+                                                       "ab1d2_preflight.py", "ab1d2_visuals.py", "check_ab1d2.py")}
+AB1D2_ALLOWED = AB1D2_REQUIRED | AB1D2_TOOLS | {"docs/active-bootstrap/ab1d2-4096spp-observation-quality-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
-                 | AB1C_ALLOWED | AB1D_ALLOWED)
+                 | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -395,6 +400,8 @@ def main() -> int:
     check("the AB1c contract is tracked", not missing_ab1c, str(missing_ab1c))
     missing_ab1d = sorted(AB1D_REQUIRED - set(index))
     check("the AB1d contract is tracked", not missing_ab1d, str(missing_ab1d))
+    missing_ab1d2 = sorted(AB1D2_REQUIRED - set(index))
+    check("the AB1d2 contract is tracked", not missing_ab1d2, str(missing_ab1d2))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
