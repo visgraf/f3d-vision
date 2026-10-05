@@ -1,11 +1,14 @@
 # Active Bootstrap-1d2 — 4096-spp Observation-Quality Control — report
 
-**Marker.**
+**Markers.**
 
     ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_COMPLETE
+    ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide what the measured result means. No ACCEPTED marker is written, and the
-branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted AB1d2 after scientific, quantitative, independent GitHub code, checker /
+corruption and qualitative visual review (see "Acceptance record" at the end). Observation quality was a major
+limitation of AB1d; large residual along-epipolar ambiguities remain. The sections below are the report as completed at
+`cb73e56`, unchanged.
 
 > **Question.** Holding scene, gaze, camera geometry, calibration, renderer settings, random-seed convention, matcher,
 > search interval, patch, score, refinement, benchmark and evaluation FIXED, does increasing the Cycles sampling from
@@ -530,12 +533,90 @@ Regenerate: `.venv/bin/python tools/active_bootstrap/ab1d2_run.py visualize --ru
 
 ## Unresolved decisions (Luiz and Chat)
 
-1. Scientific, quantitative, code and visual review of AB1d2, including the outcome reading (all Outcome 1 indicators
-   met, with an Outcome 2 residual).
-2. Whether the small positive gray shift (+0.08 to +0.17 u8 mean) needs any follow-up, or is accepted as consistent with
-   sampling alone.
-3. Which observation quality is the reference for later natural-correspondence experiments: 256 spp, 4096 spp, or
-   something else.
-4. What, if anything, addresses the residual along-line ambiguity. AB1d2 does not propose or build a matcher.
-5. The shortest route after AB1d2, back toward AB1e and the active loop or one narrowly justified correspondence step,
-   is Luiz and Chat's decision.
+1. ~~Scientific, quantitative, code and visual review of AB1d2, including the outcome reading (all Outcome 1 indicators
+   met, with an Outcome 2 residual).~~ **ACCEPTED** (see "Acceptance record").
+2. ~~Whether the small positive gray shift (+0.08 to +0.17 u8 mean) needs any follow-up, or is accepted as consistent with
+   sampling alone.~~
+
+   **Decided:** recorded as a nonblocking caveat. Its exact explanation is not established, and no further experiment is
+   launched for it.
+3. ~~Which observation quality is the reference for later natural-correspondence experiments: 256 spp, 4096 spp, or
+   something else.~~
+
+   **Decided:** 4096 spp is the reference observation quality for subsequent synthetic Classroom
+   natural-correspondence experiments. This is a project control choice (see "Acceptance record").
+4. ~~What, if anything, addresses the residual along-line ambiguity. AB1d2 does not propose or build a matcher.~~
+
+   **Decided:** natural stereo receives one additional bounded attempt, AB1d3 (one-shot SGBM viability). The roadmap
+   commit that follows this acceptance records the decision.
+5. ~~The shortest route after AB1d2, back toward AB1e and the active loop or one narrowly justified correspondence step,
+   is Luiz and Chat's decision.~~
+
+   **Decided:** after AB1d3, either SGBM is adopted as the current natural correspondence service, or natural-stereo
+   development stops and the North Star proceeds with the validated PERFECT / oracle correspondence service. AB1e is no
+   longer an obligatory prerequisite for returning to the North Star. The roadmap commit records the decision.
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, the quantitative review, an independent GitHub code review, the checker /
+corruption review and the visual inspection of the two primary figures, and **accept AB1d2** as committed at `cb73e56`:
+
+    ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_ACCEPTED
+
+- **Machine result accepted:**
+  - `ACTIVE_BOOTSTRAP1D2_4096SPP_OBSERVATION_QUALITY_COMPLETE`;
+  - `ACTIVE_BOOTSTRAP1D2_CHECKS_PASS` 41/41;
+  - `ACTIVE_BOOTSTRAP1D2_MUTATIONS_CAUGHT` 44/44 from a passing baseline, with a clean unmodified-mirror null probe;
+  - `AB1D2_PREFLIGHT_PASS` 69/69 and `AB1D2_REHEARSAL_PASS`.
+- **Scientific conclusion accepted** (stated without strengthening):
+  - At the three accepted safe-forward Classroom gazes, increasing Cycles sampling from 256 spp to 4096 spp — while
+    holding scene, gaze, calibration, seeds, stereo geometry, matcher and evaluation fixed — substantially improves
+    natural spherical epipolar correspondence.
+  - Therefore the AB1d failure was strongly limited by observation quality.
+  - However, large residual along-epipolar ambiguities remain. Cleaner observations alone do not make independent
+    5 × 5 local-patch matching generally sufficient.
+- **Accepted key measurements** (MEASURED in the sections above; unchanged; 256 → 4096 spp):
+
+  | quantity | gaze 1 | gaze 2 | gaze 3 |
+  |---|---|---|---|
+  | within 1 pixel-equivalent | 9.2 % → 35.9 % | 16.8 % → 66.6 % | 9.2 % → 49.2 % |
+  | median pixel-equivalent error | 93.1 → 26.4 px | 57.4 → 0.258 px | 129.2 → 1.748 px |
+  | oracle top-1 | 9.9 % → 36.5 % | 17.7 % → 67.0 % | 9.8 % → 49.7 % |
+  | median oracle ZNCC | 0.421 → 0.849 | 0.485 → 0.924 | 0.288 → 0.779 |
+  | median 3-D error vs perfect | 4.161 → 3.283 m | 3.569 m → 63.8 mm | 4.031 → 0.482 m |
+  | within the existing 12-mm persistent-map support | 0.9 % → 4.2 % | 2.9 % → 14.7 % | 1.3 % → 7.3 % |
+
+- **Accepted interpretation:** Outcome 1 strongly supported, with the Outcome-2 residual. Observation quality was a
+  MAJOR limitation, but residual local-patch ambiguity remains.
+- **Not claimed:**
+  - that 4096 spp is optimal;
+  - that this measures a physical sensor-noise variance;
+  - that local matching is now generally sufficient;
+  - that real cameras behave like this experiment.
+- **Figures accepted.** Luiz and Chat inspected the two primary figures:
+  - `visuals/active-bootstrap/ab1d2-4096spp-observation-quality/overview.png`
+    (`232467c8403d78cba932a73e8ea5cb95787ea96de5ca0552b8b3d395d055bfa8`);
+  - `visuals/active-bootstrap/ab1d2-4096spp-observation-quality/paired-cost-landscapes.png`
+    (`3aee6c8c38a61044543f3d249dfaa60347eab03b88fc0ec1757b3667dfcb14dc`).
+
+  Accepted qualitative reading:
+  - same scene / gaze / calibration / seeds / matcher; 256 → 4096 spp is the only intended change;
+  - formerly catastrophic median-error examples move onto the true correspondence at 4096;
+  - previously good examples remain good;
+  - some flat / repetitive cost landscapes remain ambiguous;
+  - one example even worsens / becomes unscorable;
+  - the improvement is broad rather than cherry-picked;
+  - metric error remains substantial in important regions.
+- **4096 spp becomes the synthetic natural-stereo reference.** For subsequent SYNTHETIC Classroom
+  natural-correspondence experiments, 4096 spp is the reference observation quality. This is a PROJECT CONTROL CHOICE.
+  It does NOT assert optimality of 4096 spp, biological plausibility or equivalence to a real sensor. Reason: 256 spp has
+  now been causally shown to contaminate evaluation of the correspondence mechanism substantially, and 4096 spp is
+  inexpensive enough for the bounded synthetic experiments.
+- **Small brightness shift: a nonblocking caveat.** The measured +0.08 to +0.17 u8 mean gray shift is recorded. Every
+  load-bearing rendering setting was verified identical. Its exact explanation is NOT established; the nonlinear
+  transfer explanation stays an untested interpretation, not a measured fact. No further experiment is launched for it.
+- **AB1d2 is complete.** Its run is the accepted record. Later steps read its frozen 4096-spp observations; nothing is
+  re-rendered.
+- **This acceptance step** made no new observation, ran no render, did not rerun the matcher and did no scientific
+  computation. It changed only this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout
+  checker's handoff assertion. The AB1d2 code, data, measurements, figures and contract definitions are unchanged.
