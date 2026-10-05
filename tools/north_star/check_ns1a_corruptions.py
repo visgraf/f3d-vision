@@ -377,7 +377,8 @@ def k_wrong_pixel(m, v):
     d = nload(p)
     il = nload(m / f"observations/{C.rd(r)}/oracle_aid/reference-observation.npz")["instance_L"]
     shifted = il[d["left_core_row"] + C.ORIGIN, d["left_core_col"] + C.ORIGIN + 1]
-    new = np.where(d["valid"], shifted, -1).astype(np.int32)
+    shifted = np.where(shifted > 0, shifted, d["temporary_entity_id"])   # positive wrong-pixel ids only (the
+    new = np.where(d["valid"], shifted, -1).astype(np.int32)              # seed construction refuses id 0)
     if np.array_equal(new, d["temporary_entity_id"]):
         return "a one-pixel shift changes no id"
     d["temporary_entity_id"] = new
