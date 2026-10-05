@@ -1,11 +1,16 @@
 # Active Bootstrap-1d — Safe-Forward Natural RGB Correspondence — report
 
-**Marker.**
+**Markers.**
 
     ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_COMPLETE
+    ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide what the measured result means. No ACCEPTED marker is written, and
-the branch is not merged.
+**Status: ACCEPTED — a valid NEGATIVE experiment.** Luiz and Chat accepted AB1d after scientific, quantitative,
+independent code, checker / corruption and qualitative visual review (see "Acceptance record" at the end). At the three
+accepted safe-forward AB1c observations, the frozen primitive natural matcher does **not** recover reliable
+correspondence over the full physically admissible epipolar interval. The causal role of Monte Carlo render noise is
+**not** established by AB1d (see the acceptance record). The sections below are the report as completed at `c541b96`,
+unchanged.
 
 > **Question.** In the favorable safe-forward regime established by AB1c, can a simple natural RGB matcher recover the
 > right-eye spherical epipolar correspondence accurately enough to provide useful local metric measurements?
@@ -417,11 +422,87 @@ Run manifest `manifest.json` `3f6a837d…`.
 
 ## Unresolved decisions (Luiz and Chat)
 
-1. Scientific, quantitative, code and visual review of AB1d, including the outcome reading (4 with 3).
-2. Review of contract section 33 (the pre-canonical synthetic clarification).
+1. ~~Scientific, quantitative, code and visual review of AB1d, including the outcome reading (4 with 3).~~ **ACCEPTED**
+   as a negative experiment (see "Acceptance record").
+2. ~~Review of contract section 33 (the pre-canonical synthetic clarification).~~
+
+   **Decided:** contract section 33 is accepted and is not reopened (see "Acceptance record").
 3. Whether the AB1c observation noise (256 spp, no denoising, independent L / R seeds; about 2–3 u8 per eye by the
    labelled diagnostic) is the intended sensor model for natural correspondence experiments.
+
+   **Recorded, not decided.** Its causal role is the question of the next step, AB1d2.
 4. How texture adequacy should relate to sensor noise. The accepted MIN_LOCAL_STD_U8 = 0.5 is below the measured noise
    here. This is recorded, not changed.
-5. The shortest route after AB1d — back toward the active loop or one narrowly justified correspondence improvement —
-   is Luiz and Chat's decision. This report does not propose a matcher.
+
+   **Recorded, not decided.** The threshold stays 0.5 u8; AB1d2 does not change it.
+5. ~~The shortest route after AB1d — back toward the active loop or one narrowly justified correspondence improvement —
+   is Luiz and Chat's decision. This report does not propose a matcher.~~
+
+   **Decided:** the next experiment is Active Bootstrap-1d2, 4096-spp Observation-Quality Control. It asks whether
+   substantially reducing Monte Carlo rendering noise materially improves the SAME frozen primitive matcher. It changes
+   observation quality only and does not redesign the matcher. AB1e (head recentering) remains future. The roadmap
+   commit that follows this acceptance records the decision.
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, the quantitative review, an independent GitHub code review, the checker /
+corruption review and the qualitative inspection of the two primary figures, and **accept AB1d** as committed at
+`c541b96` as a **valid negative experiment**:
+
+    ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_ACCEPTED
+
+- **Machine result accepted:**
+  - `ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_COMPLETE`;
+  - `ACTIVE_BOOTSTRAP1D_CHECKS_PASS` 38/38;
+  - `ACTIVE_BOOTSTRAP1D_MUTATIONS_CAUGHT` 40/40 from a passing baseline, with a clean unmodified-mirror null probe;
+  - `AB1D_SYNTHETIC_PASS` 24/24.
+- **Negative scientific result accepted** (stated without strengthening):
+  - At the three accepted safe-forward AB1c observations, the frozen primitive natural matcher — direct raw-image
+    spherical epipolar search + 5 × 5 angular grayscale patch + ZNCC + one quadratic sub-pixel refinement — does
+    **not** recover reliable correspondence over the full physically admissible epipolar interval.
+  - Measured primary result (MEASURED in the sections above; unchanged):
+
+    | quantity | gaze 1 | gaze 2 | gaze 3 |
+    |---|---|---|---|
+    | within 1 pixel-equivalent | 9.2 % | 16.8 % | 9.2 % |
+    | median pixel-equivalent error | 93.1 px | 57.4 px | 129.2 px |
+    | oracle is the top-1 photometric peak | 9.9 % | 17.7 % | 9.8 % |
+    | oracle worse than top 8 | 60.6 % | 54.9 % | 68.2 % |
+    | natural vs perfect metric error, median | 4.16 m | 3.57 m | 4.03 m |
+
+- **Accepted interpretation:**
+  - the spherical search geometry is correct;
+  - the oracle location is correctly registered on the frozen score;
+  - when the true peak wins, sub-pixel refinement is accurate (about 0.19–0.24 px median, 93–95 % within 1 px);
+  - therefore search geometry and refinement are **not** the main failure;
+  - the correct photometric hypothesis usually does not dominate the competing hypotheses along the long search
+    interval.
+
+  Two observed failure mechanisms are retained:
+  1. weak / noisy local appearance with many competing peaks;
+  2. genuine along-epipolar ambiguity, especially image structure approximately parallel to the search direction.
+
+  In the terminology of the AB1d contract: **Outcome 4 is supported, with Outcome 3 as an important mechanism.**
+- **Render-noise causal role remains unresolved.** AB1d does **not** establish that Monte Carlo render noise causes the
+  failure. The post-run diagnostic suggests roughly 2–3 u8 per-eye variation attributable to rendering noise under a
+  noise-only interpretation, against a typical 5 × 5 patch standard deviation of about 3–5 u8. That observation
+  motivates AB1d2; it is not a frozen causal claim.
+- **Figures accepted.** Luiz and Chat inspected the two primary figures. They support the accepted negative
+  interpretation: the correct location is often a minor peak; false winners occur far along the epipolar interval;
+  successful examples show a sharp dominant true peak; edge-parallel examples expose aperture-type ambiguity; large
+  correspondence errors become metre-scale metric errors.
+  - `visuals/active-bootstrap/ab1d-safe-forward-natural-correspondence/overview.png`
+    (`0d7217b5c7c925b0e4595cd0a72e04ed6b225487f4369cadbacb0f583bc85654`);
+  - `visuals/active-bootstrap/ab1d-safe-forward-natural-correspondence/cost-landscapes.png`
+    (`0669aa19c7899ea9de45943b42101f1b9d4ef9a26d9468be5343959549cae862`).
+
+  Two minor presentation caveats are accepted and do not require rerendering: the patch tiles are contrast-stretched for
+  display without an explicit caption saying so, and "natural κ" mostly describes wrong natural correspondences.
+- **Contract section 33 accepted; not reopened.** It was written before canonical Classroom matching. It corrected the
+  synthetic known-answer tolerances and test textures. It did not alter the canonical matcher constants, the evaluation
+  metrics or the outcome semantics, and it did not tune against Classroom truth.
+- **AB1d is complete.** Its run is the accepted record. Later steps read its frozen products; nothing is re-rendered or
+  re-matched.
+- **This acceptance step** made no new observation, ran no render, did not rerun the matcher and did no scientific
+  computation. It changed only this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout
+  checker's handoff assertion. The AB1d matcher, contract, canonical products, figures and measured numbers are unchanged.
