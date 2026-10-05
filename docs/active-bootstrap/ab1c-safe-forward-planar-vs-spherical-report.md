@@ -1,11 +1,16 @@
 # Active Bootstrap-1c — Safe-Forward Planar vs Spherical Geometry — report
 
-**Marker.**
+**Markers.**
 
     ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_COMPLETE
+    ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_ACCEPTED
 
-**Status: REVIEW PENDING.** Luiz and Chat decide what the measured result means. No ACCEPTED marker is written, and
-the branch is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted AB1c after scientific, quantitative, independent code, checker / corruption
+and qualitative visual review (see "Acceptance record" at the end). Within the predeclared safe-forward regime, at three
+independently selected RGB-attention gazes, planar and gaze-centered spherical epipolar geometry recover the same local
+metric structure under shared perfect correspondence. The accepted conclusion concerns **metric geometry**. The **image-
+support parameterization** is not identical (see the acceptance record); the "interchangeable" wording under "What is
+established" is read in that narrower sense. The sections below are the report as completed at `eecdbc3`, unchanged.
 
 > **Question.** Under favorable, well-conditioned head-relative viewing geometry, do conventional planar tangent stereo
 > geometry and gaze-centered spherical epipolar geometry recover the same local metric scene structure from the SAME
@@ -526,13 +531,93 @@ Synthetic 15/15:
 
 ## Unresolved decisions (Luiz and Chat)
 
-1. Scientific, quantitative, code and qualitative visual review of AB1c and its figures.
-2. Review of the pre-canonical clarification (contract section 23): two corrected synthetic / rehearsal tolerances, the
-   revised PROPOSED expectation and the added consistency-restored control.
-3. Whether outcome 1 settles the favorable-regime equivalence well enough for the roadmap's next step. AB1d remains
-   future and is not proposed here.
+1. ~~Scientific, quantitative, code and qualitative visual review of AB1c and its figures.~~ **ACCEPTED** (see
+   "Acceptance record").
+2. ~~Review of the pre-canonical clarification (contract section 23): two corrected synthetic / rehearsal tolerances, the
+   revised PROPOSED expectation and the added consistency-restored control.~~
+
+   **Decided:** contract section 23 is accepted as legitimate and is not reopened (see "Acceptance record").
+3. ~~Whether outcome 1 settles the favorable-regime equivalence well enough for the roadmap's next step.~~
+
+   **Decided:** geometry is now sufficiently settled for the intended favorable operating regime. The next experiment is
+   Active Bootstrap-1d, safe-forward natural RGB correspondence. It tests CORRESPONDENCE, not geometry. AB1e remains
+   future. The roadmap commit that follows this acceptance records the decision.
 4. The oracle's positive-instance rule excluded 16 % of gaze 1's core (non-catalog furniture). Should future oracle /
    evaluation include Object Index 0 geometry (cf. Breadth-1 open item 7)?
+
+   **Recorded, not decided.** The exclusion stays an explicit caveat of AB1c.
 5. The oracle's sub-millipixel skew (Blender Position offset) now appears as the limiting term both of oracle-vs-truth
    metric checks and of planar-vs-spherical agreement. Should future perfect-correspondence experiments use an exactly
    consistent oracle (e.g. the left-ray point at the reference range)?
+
+   **Recorded, not decided.**
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, the quantitative review, an independent GitHub code review, the checker /
+corruption review and the qualitative inspection of the two primary figures, and **accept AB1c** as committed at
+`eecdbc3`:
+
+    ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_ACCEPTED
+
+- **Machine result accepted:**
+  - `ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_COMPLETE`;
+  - `ACTIVE_BOOTSTRAP1C_CHECKS_PASS` 45/45;
+  - `ACTIVE_BOOTSTRAP1C_MUTATIONS_CAUGHT` 53/53 from a passing baseline, with a clean unmodified-mirror null probe;
+  - `ACTIVE_BOOTSTRAP1C_SELECTION_CHECKS_PASS` 10/10 before any Blender process;
+  - `AB1C_SYNTHETIC_PASS` 15/15; `AB1C_REHEARSAL_PASS` 3/3.
+- **Accepted scientific conclusion** (stated without strengthening):
+  - Within the predeclared safe-forward operating regime, at three independently selected RGB-attention gazes,
+    conventional planar and gaze-centered spherical epipolar geometry recover the same local metric structure from the
+    same binocular observations under shared perfect correspondence.
+  - Their direct disagreement is only micrometric and collapses to numerical precision for exactly consistent
+    correspondence.
+  - Therefore spherical epipolar geometry preserves the benign forward case while avoiding the near-baseline
+    representation pathology demonstrated by AB1a.
+- **Interpretation of the micrometre residual.** When correspondence is made geometrically consistent, the
+  planar-spherical difference collapses to numerical precision. Therefore the observed micrometre disagreement arises from
+  the two methods resolving the oracle's small epipolar inconsistency differently, rather than from disagreement in their
+  exact metric stereo geometry.
+- **Accepted measured facts** (MEASURED in the sections above; unchanged):
+
+  | quantity | gaze 1 | gaze 2 | gaze 3 |
+  |---|---|---|---|
+  | correspondences = common valid (planar-only 0, spherical-only 0) | 53,750 | 63,293 | 65,493 |
+  | ‖P_planar − P_spherical‖ median / p95 / max | 2.95 / 6.14 / 8.82 µm | 1.05 / 2.22 / 3.63 µm | 3.57 / 8.08 / 11.64 µm |
+  | consistency-restored control, max | 2.09e-12 m | 1.75e-12 m | 7.8e-13 m |
+  | 3-D error vs Blender Position median, planar / spherical | 0.157 / 0.157 mm | 0.125 / 0.125 mm | 0.140 / 0.140 mm |
+  | κ median | 80.2 | 69.2 | 76.2 |
+  | planar rectified core sourced from the nominal raw core | 0.871 | 0.968 | 1.000 |
+  | oracle pairs inside the fixed central planar rectified core (descriptive) | 80.9 % | 94.4 % | 83.4 % |
+
+- **Two distinct statements are preserved:**
+  - **METRIC GEOMETRY: benign equivalence established.** Both geometries reconstruct the same points from the same shared
+    correspondence, to micrometres, and to numerical precision for exactly consistent correspondence.
+  - **IMAGE-SUPPORT PARAMETERIZATION: not identical.** The conventional planar support is benign in the safe-forward
+    regime (finite, two-dimensional, within 1.4° of the gaze), but it is not the nominal raw support: its fixed central
+    rectified core is sourced 0.871 / 0.968 / 1.000 from the nominal raw core, and only about 81 % / 94 % / 83 % of the
+    oracle pairs lie inside it.
+
+  AB1c does **not** establish that the whole fixed-crop planar stereo pipeline is interchangeable with spherical stereo.
+- **Contract section 23 accepted as legitimate; not reopened.** The pre-canonical clarification occurred before the
+  canonical Classroom selection. It changed software known-answer tolerances (synthetic case 15, the Blender rehearsal)
+  and a PROPOSED numerical expectation only. It did not change the safe-forward envelope, the gaze selection, the planar
+  definition, the spherical definition, the oracle semantics, the scientific metric or the success semantics. The
+  exact-consistency controls remain at numerical precision.
+- **Visual review accepted.** Luiz and Chat inspected the two primary figures; they satisfy the scientific-visual
+  requirement:
+  - `visuals/active-bootstrap/ab1c-safe-forward-planar-vs-spherical/overview.png`
+    (`0b62d77bbf0c8f5cfaf82c541ca5051abd90dd88abd456295873fa67571177c6`);
+  - `visuals/active-bootstrap/ab1c-safe-forward-planar-vs-spherical/planar-vs-spherical-difference.png`
+    (`13a7c1c389a9470d10487a85aae28318fa91c10d16c297975f041a9ce95ab263`).
+- **Caveats retained:**
+  - no natural correspondence was established;
+  - no head motion was tested;
+  - the 20° / min-core leverage ≥ 0.90 envelope is a design choice, not proven necessary or optimal;
+  - non-catalog Object Index 0 geometry was excluded by the inherited oracle;
+  - AB1c does not establish generality beyond these three gazes, Classroom, this instrument and this range regime.
+- **AB1c is complete.** Its run is the accepted record. Later steps read its frozen products; nothing is re-rendered or
+  recomputed.
+- **This acceptance step** made no new observation, ran no render and did no scientific computation. It changed only
+  this status record, and (in the next commit) `CLAUDE.md`, the Chat Handoff and the layout checker's handoff assertion.
+  The AB1c code, contract, canonical run, figures and measured numbers are unchanged.
