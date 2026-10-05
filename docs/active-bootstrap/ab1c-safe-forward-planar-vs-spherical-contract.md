@@ -631,3 +631,45 @@ quantiles, planar and spherical truth error, conditioning, planar support diagno
 that no gaze was replaced after selection; the visual paths, hashes and regeneration command; the checker and
 corruption results; every implementation incident and deviation; what is and is not established; the unresolved
 decisions for Luiz and Chat. It does not propose AB1d's implementation, and it stops.
+
+## 23. Pre-canonical clarification (implementation, before any canonical step; within section 21)
+
+Added during implementation, **before** the canonical selection, any Classroom observation or any canonical product.
+Sections 1–22 above are preserved as committed at `d8a56aa`. Nothing here changes a scientific definition, rule,
+envelope, metric or the success semantics; it corrects two **software known-answer tolerances** and one **PROPOSED
+expectation**, and adds two pins.
+
+**Finding (synthetic and rehearsal data only).** The two triangulations are exact functions of exactly consistent rays:
+with exactly projected correspondences they agree to ≈ 4e-12 m (case 1). The oracle, however, pairs the left **pixel
+centre** with the projection of the left **Position** sample, and a Position sample does not lie exactly on the left
+pixel-centre ray (float32 storage; Blender's ≈ 7.8e-4 px offset, AB1b supporting diagnostic). The pair is then very
+slightly skew (a phi residual / rectified-row residual). The spherical route places the point on the mean epipolar
+plane `phi_bar`; the planar route on the left ray's rectified row. They therefore differ by an amount set by the oracle's
+own epipolar inconsistency, not by round-off. Measured on non-Classroom data:
+- synthetic case 15 (float32 analytic Position): |P_planar − P_spherical| max 2.9e-7 m; the exact-float64 control on the
+  same pairs 1.4e-12 m;
+- Blender rehearsal (synthetic room, 64 spp; Position ≈ 8e-4 px off the pixel centre): max 0.73–1.47 µm over 65,536
+  pairs per gaze; a **consistency-restored control** (the point on the left ray at the spherical range, projected into the
+  right camera, re-triangulated by both) ≤ 6.7e-13 m. Truth error median ≈ 0.03 mm for both.
+
+**Changes (software tolerances, synthetic / rehearsal only).**
+- Case 15: planar vs spherical within **1e-6 m** for the float32-Position pairs (`SYN_FLOAT32_AGREE_M`), plus an
+  exact-data control (left pixel-centre rays cast against the analytic planes in float64) within 1e-8 m.
+- Rehearsal: planar vs spherical within **1e-5 m** for the Blender pairs (`REHEARSAL_AGREE_M`, was 1e-6 m), plus the
+  consistency-restored control within 1e-8 m. 1e-5 m stays below the rehearsal's own truth error (≈ 3e-5 m median).
+- The EXR pass names are parsed with the accepted AB1a rule (`viewlayer.pass.channel`).
+
+**Revised PROPOSED expectation (section 11).** In Classroom, `||P_planar − P_spherical||` is expected at the
+**micrometre** level, tracking the oracle's sub-millipixel epipolar inconsistency (it scales with that inconsistency
+and the conditioning), well below the truth error, rather than at float64 round-off. This is an expectation, not a
+criterion; no threshold is declared. The report will show the consistency-restored decomposition descriptively.
+
+**Pins added** (accepted code reused read-only by the known answers): `tools/active_bootstrap/ab1b_run.py`
+`6088ab06ba52aa285bec9835e39e29c706db137a13d7527c9c76d90e46ac810a` (the AB1b analytic test scene `analytic_scene`,
+`cast`, `expected_set`).
+
+**Descriptive addition to the comparison (section 11).** Per gaze, the `compare` stage also records the
+consistency-restored control (truth-free: the point on the left ray at the spherical range, projected into the right
+camera, re-triangulated by both geometries) and the |phi residual| / |row residual| distributions next to the direct
+difference, so that the size of the oracle skew and its share of the disagreement are visible. The PRIMARY quantity is
+unchanged: the direct difference on the common valid set of the one shared product.
