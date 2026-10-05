@@ -234,6 +234,20 @@ def entity_tile(dd: Data, r: int, size: int) -> tuple[Image.Image, dict]:
     return tile, cent
 
 
+def place_label(px: float, py: float, w: float, h: float, placed: list, box) -> tuple[float, float]:
+    """Move a label down (then up) in fixed steps until it overlaps no placed label; presentation only."""
+    x0, y0, x1, y1 = box
+    for k in range(0, 40):
+        dy = (k // 2 + 1) * h * (1 if k % 2 == 0 else -1) if k else 0.0
+        ly = min(max(py + dy, y0 + 2), y1 - h - 2)
+        lx = min(max(px, x0 + 2), x1 - w - 2)
+        if not any(lx < a + aw and a < lx + w and ly < b + bh and b < ly + h for a, b, aw, bh in placed):
+            placed.append((lx, ly, w, h))
+            return lx, ly
+    placed.append((px, py, w, h))
+    return px, py
+
+
 def top_view(img: Image.Image, box, maps: dict, dd: Data, extent: float, new: set = frozenset(),
              fused: set = frozenset(), seen_only: dict | None = None, gaze_lines: bool = True, small: bool = False,
              view: str = "top") -> None:
@@ -276,6 +290,9 @@ def top_view(img: Image.Image, box, maps: dict, dd: Data, extent: float, new: se
         ok = (u > x0 + 2) & (u < x1 - 2) & (v > y0 + 2) & (v < y1 - 2)
         for a, b in zip(u[ok], v[ok]):
             d.rectangle([a - 1, b - 1, a + 1, b + 1], fill=col)
+    placed: list = []
+    fs = 14 if small else 17
+    labels = []
     for k in sorted(maps):
         col, gk = ent_style(k, dd.order)
         c = np.median(np.asarray(maps[k]["xyz_h"], float), axis=0)
@@ -286,13 +303,20 @@ def top_view(img: Image.Image, box, maps: dict, dd: Data, extent: float, new: se
             S.ring(d, a, b, r=17 if small else 21, color=S.INK, width=3)
         if k in fused:
             S.text(d, (a - 5, b - 34), "+", size=S.T_SMALL, bold=True)
-        S.text(d, (a + 12, b - 9), str(k), size=14 if small else 17, bold=True, fill=col)
+        labels.append((a + 12, b - 9, str(k), col, True))
     for k, c in (seen_only or {}).items():
         col, gk = ent_style(k, dd.order)
         a, b = proj(c)
         a, b = float(np.clip(a[0], x0 + 14, x1 - 14)), float(np.clip(b[0], y0 + 14, y1 - 14))
         glyph(d, a, b, gk, col, r=6 if small else 8, hollow=True)
-        S.text(d, (a + 10, b - 9), str(k), size=13 if small else 15, fill=col)
+        if not small:                                  # small panels: hollow glyphs only (counts below)
+            labels.append((a + 10, b - 9, str(k), col, False))
+    for lx, ly, s, col, bold in labels:
+        w = d.textlength(s, font=S.font(fs, bold)) + 4
+        qx, qy = place_label(lx, ly, w, fs + 4, placed, box)
+        if abs(qy - ly) > 1:
+            d.line([lx - 3, ly + fs / 2 + 2, qx, qy + fs / 2], fill=S.FAINT, width=1)
+        S.text(d, (qx, qy), s, size=fs, bold=bold, fill=col)
     d.polygon([(cx, cy - 9), (cx + 7, cy + 6), (cx - 7, cy + 6)], fill=S.INK)
     if not small:
         S.text(d, (cx + 10, cy + 2), "head (H0)", size=15, fill=S.INK2, outline=S.WHITE)
@@ -414,6 +438,8 @@ def overview(dd: Data) -> tuple[Image.Image, dict]:
                 continue
             col, gk = ent_style(k, dd.order)
             px, py = x + (cu + 0.5) * tile / SP.CORE_SIZE, y + (cv + 0.5) * tile / SP.CORE_SIZE
+            if px < x + 64 and py < y + 64:               # keep clear of the rank plate
+                px, py = x + 70, y + 30
             while any(abs(px - a) < 60 and abs(py - b) < 26 for a, b in placed) and py < y + tile - 30:
                 py += 28                                   # deterministic: move down until clear
             placed.append((px, py))
@@ -427,8 +453,16 @@ def overview(dd: Data) -> tuple[Image.Image, dict]:
         nfuse = sum(e["action"] == "FUSED" for e in here)
         S.text(d, (x, y + tile + 8), f"{len(ents)} local ids · {ninit} initialized · {nfuse} fused", size=S.T_SMALL,
                bold=True)
-        line = " ".join(f"{k}:{n / 1000:.1f}k" if n >= 1000 else f"{k}:{n}" for k, (_a, _b, n) in ents[:5])
-        S.text(d, (x, y + tile + 34), line + (f" +{len(ents) - 5}" if len(ents) > 5 else ""), size=17, fill=S.INK2)
+        parts = [f"{k}:{n / 1000:.1f}k" if n >= 1000 else f"{k}:{n}" for k, (_a, _b, n) in ents]
+        line, f17 = "", S.font(17)
+        for i_p, part in enumerate(parts):
+            more = f" +{len(parts) - i_p} more"
+            cand = (line + " " + part).strip()
+            if d.textlength(cand + (more if i_p < len(parts) - 1 else ""), font=f17) > tile:
+                line += more
+                break
+            line = cand
+        S.text(d, (x, y + tile + 34), line, size=17, fill=S.INK2)
         rq = np.quantile(dd.geo[r]["range_L"][dd.geo[r]["valid"]], [0.5]) if dd.geo[r]["valid"].any() else [np.nan]
         S.text(d, (x, y + tile + 58), f"median range {rq[0]:.2f} m" if np.isfinite(rq[0]) else "no measured geometry",
                size=17, fill=S.INK2)
