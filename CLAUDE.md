@@ -451,10 +451,10 @@ roadmap decision recorded in `docs/chat-handoff.md`:
       (NB1c), accepted.
     - Active Bootstrap / stereo investigation: AB1a through AB1d3,
       complete.
-    - North Star-1a (next): one six-gaze RGB bootstrap round -> perfect
-      local measurements -> persistent entity seeds. No controller run.
-    - After NS1a review: connect the resulting seed set to active local
-      growth / the Controller-02 infrastructure.
+    - North Star-1a: one six-gaze RGB bootstrap round -> perfect local
+      measurements -> persistent entity seeds. Accepted (below).
+    - North Star-1b (next): connect the seed set to the accepted local
+      controller (below).
     - Later: the full Classroom active scene loop and the final
       omnidirectional outputs.
   - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
@@ -464,6 +464,36 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     static-scene.
   - Head motion is not implemented yet. No natural matcher has been
     adopted.
+  - NS1a: Perfect Bootstrap Round is ACCEPTED as Outcome 1, with
+    documented Outcome-2 elements. One frozen six-gaze 360° RGB bootstrap
+    round, followed by PERFECT / oracle local correspondence, accepted
+    spherical metric geometry, local ORACLE SEGMENTATION AID identity and
+    the accepted persistent surface-map machinery, creates a substantial
+    persistent multi-entity seed set without using the global Blender
+    catalog to initialize the bootstrap: 22 positive local entities, 13
+    initialized, 9 never initialized; 302,936 surfels; five large maps
+    (entities 10, 110, 178, 12, 172); pooled instance-0 16.9 % (gaze 3
+    95.6 %); 100 % of measured points within 1 mm of Position. Caveats:
+    natural correspondence and natural identity are not established;
+    Blender instance identity merges disconnected pieces (10, 110, 178);
+    no 12-mm cross-gaze association occurred (the six cores are
+    disjoint); the controller has not yet serviced the seeds; none of the
+    six NB1c gaze centres lies inside the historical FSG6f yaw ±25°,
+    pitch ±20° chart.
+- North Star after NS1a (Luiz and Chat).
+  - Frozen North-Star seed handoff: the NS1a seed set, 13 initialized
+    persistent entities, 302,936 surfels.
+  - NS1b (next): prove a recentered local-controller handoff for one
+    deterministically selected NS1a entity; allow the accepted local
+    policy to select one post-bootstrap fixation; execute exactly that one
+    action using PERFECT correspondence; fuse the new metric result back
+    into canonical H0.
+  - NS1b uses a TEMPORARY POLICY COORDINATE CHART. It is NOT physical
+    head motion. The physical head remains fixed. Persistent scene
+    geometry remains authoritative in canonical H0. No controller
+    thresholds or FSG6f numerical rules are changed.
+  - After NS1b review, if the bridge succeeds: proceed toward the
+    multi-entity scene-level active loop.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

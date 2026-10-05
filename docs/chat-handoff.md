@@ -2,12 +2,24 @@
 
 ## Accepted main
 
-    main @ 9e0bae487012164921343925b04569111bdc9296
+    main @ 37c7e026f2ab514be392cd845d390fab2a2d86fc
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`9e0bae4` (the AB1d3 acceptance commit on branch `active-bootstrap/ab1d3-sgbm-viability`).
+`37c7e02` (the NS1a acceptance commit on branch `north-star/ns1a-perfect-bootstrap-round`).
 
 Accepted milestones:
+- **North Star-1a: RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds**, accepted by Luiz and Chat
+  as **Outcome 1, with documented Outcome-2 elements** (the machine result, the scientific conclusion, the retained
+  caveats and the three visuals):
+
+      NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_ACCEPTED
+
+  The accepted completion marker is `NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_COMPLETE`. **NS1a is complete.** Frozen
+  North-Star seed handoff: 13 initialized persistent entities, 302,936 surfels.
+- **North Star after NS1a — the recentered local-controller handoff** (a decision by Luiz and Chat, not an
+  experiment): North Star-1b proves a recentered local-controller handoff for one deterministically selected NS1a
+  entity, through a TEMPORARY POLICY COORDINATE CHART (not physical head motion; the physical head stays fixed). See
+  "North Star after NS1a".
 - **Active Bootstrap-1d3: One-Shot SGBM Viability**, accepted by Luiz and Chat as **Outcome 2** (the machine result,
   the scientific conclusion and the two primary visuals):
 
@@ -193,7 +205,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after AB1d3): RETURN TO THE NORTH STAR
+## Current roadmap (Luiz and Chat, after NS1a): THE NORTH STAR
 
     NATURAL BOOTSTRAP
         coarse 360 RGB
@@ -206,14 +218,20 @@ Accepted milestones:
 
     NORTH STAR CONCEPT DEMO
         local correspondence service:                PERFECT / ORACLE
-        next:
-            North Star-1a                            NEXT
+        North Star-1a                                ACCEPTED
             six-gaze RGB bootstrap round
             -> perfect local measurements
             -> persistent entity seeds
-        after NS1a review:
-            connect the resulting seed set to active local growth /
-            Controller-02 infrastructure
+            frozen seed handoff: 13 entities, 302,936 surfels
+        next:
+            North Star-1b                            NEXT
+            recentered local-controller handoff, ONE action
+            one deterministically selected NS1a entity
+            -> temporary POLICY COORDINATE CHART (not head motion)
+            -> accepted local policy selects one fixation
+            -> one PERFECT measurement fused into canonical H0
+        after NS1b review, if the bridge succeeds:
+            multi-entity scene-level active loop
         later:
             full Classroom active scene loop
             final omnidirectional outputs
@@ -222,7 +240,7 @@ Accepted milestones:
 - Head recentering / AB1e is not a prerequisite for the concept demo. The first North-Star concept-demo path remains
   fixed-head / static-scene.
 
-The full stage roadmap (updated after AB1d3):
+The full stage roadmap (updated after NS1a):
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -251,10 +269,13 @@ The full stage roadmap (updated after AB1d3):
            AB1e same difficult target, whole-head   not a prerequisite for the concept demo
                 recentering
       -> North Star concept demo (PERFECT / oracle correspondence; fixed head, static scene)
-           NS1a six-gaze RGB bootstrap round        NEXT (perfect local measurements -> persistent entity
-                                                          seeds; no controller run)
-           NS1b seed set -> active local growth /   after NS1a review
-                Controller-02 infrastructure
+           NS1a six-gaze RGB bootstrap round        ACCEPTED (Outcome 1 with Outcome-2 elements: 13 initialized
+                                                              persistent entities, 302,936 surfels; oracle identity
+                                                              merges disconnected pieces; no 12-mm association yet)
+           NS1b recentered local-controller         NEXT (one deterministic NS1a entity; temporary POLICY
+                handoff, one action                       COORDINATE CHART, not head motion; one PERFECT
+                                                          measurement fused into canonical H0)
+           multi-entity scene-level active loop     after NS1b review, if the bridge succeeds
            full Classroom active scene loop, final omnidirectional outputs
       -> Classroom validation
       -> Tabletop transfer
@@ -479,7 +500,42 @@ Decision record (durable):
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
 
+### North Star after NS1a (Luiz and Chat): the recentered local-controller handoff
+
+**NS1a is complete. The frozen NS1a seed set is the North-Star seed handoff; North Star-1b, a recentered
+local-controller handoff with ONE action, is next.**
+
+Decision record (durable):
+1. NS1a is accepted as Outcome 1, with documented Outcome-2 elements (see its section below). Frozen North-Star seed
+   handoff: 13 initialized persistent entities, 302,936 surfels (seed freeze `4ee36a1a…`, `seeds/seed-set.json`
+   `e2ff1ba3…`).
+2. NS1b NEXT:
+   - prove a recentered local-controller handoff for one deterministically selected NS1a entity;
+   - allow the accepted local policy to select one post-bootstrap fixation;
+   - execute exactly that one action using PERFECT correspondence;
+   - fuse the new metric result back into canonical H0.
+3. NS1b uses a **TEMPORARY POLICY COORDINATE CHART**. It is **NOT physical head motion**. The physical head remains
+   fixed. Persistent scene geometry remains authoritative in canonical H0. No controller thresholds or FSG6f numerical
+   rules are changed.
+4. The motivation is NS1a caveat 6: none of the six NB1c gaze centres lies inside the historical FSG6f global yaw ±25°,
+   pitch ±20° chart. NS1b moves the coordinate chart, not the policy.
+5. After NS1b review, if the bridge succeeds: proceed toward the multi-entity scene-level active loop.
+6. Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen unless explicitly reopened. Natural stereo stays
+   deferred. The North-Star concept-demo path stays fixed-head / static-scene.
+
+- **North Star-1b: Recentered Local-Controller Handoff — One Action** (branch
+  `north-star/ns1b-recentered-controller-handoff`, contract
+  `docs/north-star/ns1b-recentered-controller-handoff-contract.md`, committed before canonical execution).
+  - Question: can one persistent entity seed produced by the global 360° RGB bootstrap be handed to the accepted local
+    FSG6f -> Cyclopean / Controller-02 control semantics through a temporary recentered POLICY COORDINATE CHART, such
+    that the controller selects a valid new world fixation and exactly one PERFECT local measurement is fused back into
+    the canonical H0 map?
+  - Exactly one target entity, selected deterministically from the frozen NS1a seed set before any probe; at most one
+    new physical fixation; no scene scheduler, no target switch, no global STOP.
+
 ### Return to the North Star after AB1d3 (Luiz and Chat): the second mandate
+
+Historical record (the launch of NS1a; NS1a is now accepted, see its section below):
 
 **AB1d3 is complete. NATURAL STEREO IS DEFERRED. The North-Star concept demonstration uses the validated PERFECT /
 ORACLE correspondence service; North Star-1a is next.**
@@ -597,6 +653,65 @@ Decision record (durable):
     passes.
   - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
     is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## North Star-1a: RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds (accepted at `37c7e02`)
+
+Luiz and Chat accept NS1a as **Outcome 1, with documented Outcome-2 elements**: the machine result, the scientific
+conclusion, the retained caveats and the three visuals.
+
+Record (branch `north-star/ns1a-perfect-bootstrap-round`, base `dfe1626`):
+- contract: `docs/north-star/ns1a-perfect-bootstrap-round-contract.md` (`748411c`, before any implementation and any
+  NS1a Classroom render).
+- implementation: `tools/north_star/ns1a_{spec,render,core,run,synthetic,visuals}.py`, `check_ns1a.py` and
+  `check_ns1a_corruptions.py` (`aa2ca51`; every canonical stage ran from it); post-run figure-label fix `f1e3b9b`;
+  corruption-suite fixes `871303e`, `997b74b`.
+- report: `docs/north-star/ns1a-perfect-bootstrap-round-report.md` (completion `47e4bae`, acceptance `37c7e02`).
+- run: `/home/lvelho/rd/f3d-vision/previews/north-star/ns1a-perfect-bootstrap-round/` (the ONE six-gaze 4096-spp
+  render, 196.6 s; stages refuse to rerun; never re-render). Freezes: observation `46f0a22e…`, correspondence
+  `263da92c…`, geometry `7b0ae64d…`, seed set `4ee36a1a…`.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/north-star/ns1a-perfect-bootstrap-round/` (`overview.png`
+  `3580fe603545cc673fc22f9182bb9f9deb6d9e6f82cdc452e8a4561a6399e109`, `bootstrap-progression.png`
+  `adb472a2b0b77df65a50ded43ee02c1c79e6bc1f40ae4dbc5296da3ad6e41743`, `entity-seeds-3d.png`
+  `778c9862a9c73156f0ee2be0138055544626f9d4e931b28ff456e70d5bb5fe3b`, inspected and accepted).
+
+Accepted measured result:
+
+    NORTH_STAR1A_CHECKS_PASS          34 / 34
+    NORTH_STAR1A_MUTATIONS_CAUGHT     40 / 40 (from a passing baseline; clean null probe)
+    NS1A_SYNTHETIC_PASS               21 / 21
+
+Check 34 of `check_ns1a.py` is scoped to the NS1a base `dfe1626`. On later commits it reports every later accepted
+change outside the NS1a files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 33/34, only check 34). That is the guard's scope, not an NS1a regression; the
+frozen-product checks remain valid.
+
+| quantity | value |
+|---|---|
+| positive local entities observed | 22 |
+| persistent entities initialized | 13 |
+| seen but never initialized | 9 (all < 100 points) |
+| final persistent surfels | 302,936 |
+| five large maps | 10: 88,465 · 110: 86,381 · 178: 66,681 · 12: 36,126 · 172: 12,072 |
+| gazes producing an initialization | 1, 2, 3, 6 |
+| instance-0 / unassigned fraction | pooled 16.9 %; gaze 3 95.6 % |
+| metric consistency | 100 % of measured points within 1 mm of Position at every gaze |
+
+Truth labels: CORRESPONDENCE PERFECT / ORACLE; IDENTITY ORACLE SEGMENTATION AID; GEOMETRY DERIVED spherical geometry;
+ATTENTION accepted RGB-only NB1c.
+
+Accepted interpretation (durable):
+1. One frozen six-gaze 360° RGB bootstrap round, followed by PERFECT / oracle local correspondence, accepted spherical
+   metric geometry, local ORACLE SEGMENTATION AID identity and the accepted persistent surface-map machinery, creates a
+   substantial persistent multi-entity seed set without using the global Blender catalog to initialize the bootstrap.
+2. Accepted visual reading: the six attention actions are visibly frozen and global; local foveal observations vary
+   strongly in usefulness; oracle correspondence / derived geometry / oracle identity are visibly separated; persistent
+   state accumulates in frozen gaze order; the final result is actual canonical-H0 geometry, not merely a symbolic
+   object list.
+3. Caveats retained: natural correspondence is NOT established; natural identity is NOT established; Blender instance
+   identity can merge physically disconnected pieces (disconnected multi-gaze parts for entities 10, 110 and 178); no
+   12-mm cross-gaze surface association actually occurred (the six foveal cores were angularly disjoint); the
+   controller has NOT yet been shown to service these seeds; none of the six NB1c gaze centres lies inside the
+   historical FSG6f global yaw ±25°, pitch ±20° chart (this motivates NS1b).
 
 ## Active Bootstrap-1d3: One-Shot SGBM Viability (accepted at `9e0bae4`)
 
@@ -1609,20 +1724,22 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2 and AB1d3 are
-accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual Language 1 are frozen
-unless explicitly reopened.
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2, AB1d3 and
+NS1a are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual Language 1
+are frozen unless explicitly reopened.
 
-**Current next activity: North Star-1a — RGB Bootstrap -> Perfect Local Measurement -> Persistent Entity Seeds** (see
-"Return to the North Star after AB1d3"), on branch `north-star/ns1a-perfect-bootstrap-round` from this accepted `main`,
-with its contract at `docs/north-star/ns1a-perfect-bootstrap-round-contract.md`. The six frozen NB1c RGB gazes are
-executed once each, in frozen order, as one binocular 4096-spp acquisition per gaze (fixed head, static scene). The
-accepted AB1b PERFECT / oracle correspondence feeds the accepted AB1b spherical geometry; local Object Index attaches an
-explicit ORACLE SEGMENTATION AID to the frozen geometry; the accepted surface-map machinery builds persistent entity
-seed maps in frozen gaze order. The global catalog is opened only after the seed-set freeze, for descriptive evaluation.
-No controller, no FSG6f, no Cyclopean policy, no seventh gaze, no SGBM, no natural matcher, no head motion. Natural
-stereo is deferred. AB1e is not a prerequisite. Range-based reseeding, RGB segmentation, a background model and Natural
-Bootstrap-2 are not started. FSG6f is not repaired.
+**Current next activity: North Star-1b — Recentered Local-Controller Handoff — One Action** (see "North Star after
+NS1a"), on branch `north-star/ns1b-recentered-controller-handoff` from this accepted `main`, with its contract at
+`docs/north-star/ns1b-recentered-controller-handoff-contract.md`. One NS1a initialized entity is selected
+deterministically from the frozen seed set (single-patch entities only; maximum physical stereo leverage at the
+initialization gaze, then surfels, then id), before any probe. A temporary POLICY COORDINATE CHART centred on its
+initialization gaze carries the accepted FSG6f -> Cyclopean / Controller-02 local semantics unchanged (yaw ±25°,
+pitch ±20°, 5° step, every threshold); physical projections, calibration and observability stay in the fixed-head
+canonical H0 frame. At most ONE new fixed-head binocular 4096-spp observation, measured with PERFECT correspondence and
+the accepted AB1b spherical geometry, fused into the canonical-H0 target map (12 mm / 12 mm), then one read-only
+post-action probe. NOT physical head motion. No scene scheduler, no second entity, no second action, no global STOP, no
+threshold or FSG6f rule change, no natural stereo. Range-based reseeding, RGB segmentation, a background model and
+Natural Bootstrap-2 are not started. FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -1661,9 +1778,9 @@ Bootstrap-2 are not started. FSG6f is not repaired.
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
 6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c, AB1d, AB1d2 and AB1d3 acceptances, the revised roadmap, the post-NB1b pivot, the start of Active
-   Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy and the return to the North Star. These handoff
-   updates did not touch it.
+   AB1b, AB1c, AB1d, AB1d2, AB1d3 and NS1a acceptances, the revised roadmap, the post-NB1b pivot, the start of Active
+   Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star and the post-NS1a
+   handoff decision. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

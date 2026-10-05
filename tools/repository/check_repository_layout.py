@@ -57,7 +57,9 @@ Bootstrap-1d3 declares its contract (required), report and seven tools/active_bo
 handoff records AB1d3 accepted (Outcome 2; SGBM not adopted) and the return to the North Star (natural stereo deferred;
 the North Star uses PERFECT / oracle correspondence; North Star-1a is next). North Star-1a adds the docs/north-star/
 directory and declares its contract (required), report and eight tools/north_star/ ns1a tools (allowed); its
-implementation adds the tools/north_star/ directory.
+implementation adds the tools/north_star/ directory. The handoff records NS1a accepted (Outcome 1 with Outcome-2
+elements; 13 initialized seeds) and the post-NS1a decision (North Star-1b: a recentered local-controller handoff with
+one action, through a temporary policy coordinate chart, not physical head motion).
 """
 from __future__ import annotations
 
@@ -504,10 +506,15 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at AB1d3, with AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, "
+    check("chat handoff records accepted main at NS1a, with AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, "
           "Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
           "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 9e0bae487012164921343925b04569111bdc9296" in handoff
+          "main @ 37c7e026f2ab514be392cd845d390fab2a2d86fc" in handoff
+          and "NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_ACCEPTED" in handoff
+          and "NORTH_STAR1A_PERFECT_BOOTSTRAP_ROUND_COMPLETE" in handoff
+          and "NS1a is complete. The frozen NS1a seed set is the North-Star seed handoff; North Star-1b, a recentered "
+              "local-controller handoff with ONE action, is next." in squash(handoff)
+          and "NS1b uses a **TEMPORARY POLICY COORDINATE CHART**. It is **NOT physical head motion**." in squash(handoff)
           and "ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_ACCEPTED" in handoff
           and "ACTIVE_BOOTSTRAP1D3_SGBM_VIABILITY_COMPLETE" in handoff
           and "AB1d3 is complete. NATURAL STEREO IS DEFERRED. The North-Star concept demonstration uses the validated "
