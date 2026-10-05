@@ -55,7 +55,8 @@ AB1d2 accepted and the post-AB1d2 decision (the SGBM bet: AB1d3 is one bounded n
 SGBM configuration; otherwise natural stereo is deferred and the North Star uses PERFECT correspondence). Active
 Bootstrap-1d3 declares its contract (required), report and seven tools/active_bootstrap/ ab1d3 tools (allowed); the
 handoff records AB1d3 accepted (Outcome 2; SGBM not adopted) and the return to the North Star (natural stereo deferred;
-the North Star uses PERFECT / oracle correspondence; North Star-1a is next).
+the North Star uses PERFECT / oracle correspondence; North Star-1a is next). North Star-1a adds the docs/north-star/
+directory and declares its contract (required), report and eight tools/north_star/ ns1a tools (allowed).
 """
 from __future__ import annotations
 
@@ -75,7 +76,7 @@ LAYOUT = "docs/consolidation/consolidation-3-layout.json"
 PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
-             "controller", "methodology", "natural-bootstrap", "partition-graph", "repository"}
+             "controller", "methodology", "natural-bootstrap", "north-star", "partition-graph", "repository"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
               "natural_bootstrap", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
@@ -157,11 +158,16 @@ AB1D3_TOOLS = {f"tools/active_bootstrap/{n}" for n in ("ab1d3_spec.py", "ab1d3_s
                                                        "ab1d3_synthetic.py", "ab1d3_visuals.py", "check_ab1d3.py",
                                                        "check_ab1d3_core.py")}
 AB1D3_ALLOWED = AB1D3_REQUIRED | AB1D3_TOOLS | {"docs/active-bootstrap/ab1d3-sgbm-viability-report.md"}
+NS1A_REQUIRED = {"docs/north-star/ns1a-perfect-bootstrap-round-contract.md"}
+NS1A_TOOLS = {f"tools/north_star/{n}" for n in ("ns1a_spec.py", "ns1a_render.py", "ns1a_core.py", "ns1a_run.py",
+                                                "ns1a_synthetic.py", "ns1a_visuals.py", "check_ns1a.py",
+                                                "check_ns1a_corruptions.py")}
+NS1A_ALLOWED = NS1A_REQUIRED | NS1A_TOOLS | {"docs/north-star/ns1a-perfect-bootstrap-round-report.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
-                 | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED)
+                 | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -414,6 +420,8 @@ def main() -> int:
     check("the AB1d2 contract is tracked", not missing_ab1d2, str(missing_ab1d2))
     missing_ab1d3 = sorted(AB1D3_REQUIRED - set(index))
     check("the AB1d3 contract is tracked", not missing_ab1d3, str(missing_ab1d3))
+    missing_ns1a = sorted(NS1A_REQUIRED - set(index))
+    check("the NS1a contract is tracked", not missing_ns1a, str(missing_ns1a))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
