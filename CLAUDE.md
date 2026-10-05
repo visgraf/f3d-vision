@@ -372,13 +372,34 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     planar pipeline is interchangeable with spherical stereo.
 - Active Bootstrap after AB1c (Luiz and Chat). Geometry is now
   sufficiently settled for the intended favorable operating regime.
-  - AB1d: safe-forward natural RGB correspondence is the next experiment.
-    It tests CORRESPONDENCE, not geometry: it reuses the three accepted
-    AB1c observations (no render, no new gaze, fixed head) with the
-    accepted AB1b spherical geometry held fixed.
+  - AB1d: safe-forward natural RGB correspondence tests CORRESPONDENCE,
+    not geometry: it reuses the three accepted AB1c observations (no
+    render, no new gaze, fixed head) with the accepted AB1b spherical
+    geometry held fixed.
+  - AB1d: Safe-Forward Natural RGB Correspondence is accepted as a
+    NEGATIVE experiment. At the three accepted safe-forward AB1c
+    observations (256 spp, undenoised), the frozen primitive matcher
+    (direct raw-image spherical epipolar search, 5 x 5 angular gray
+    patch, ZNCC, one quadratic sub-pixel refinement) does not recover
+    reliable correspondence over the full physically admissible epipolar
+    interval: within 1 pixel-equivalent 9.2 / 16.8 / 9.2 %; oracle top-1
+    photometric peak 9.9 / 17.7 / 9.8 %; median metric error
+    4.16 / 3.57 / 4.03 m. Search geometry and refinement are not the main
+    failure (when the true peak wins, median 0.19–0.24 px); the correct
+    photometric hypothesis usually does not dominate the competing
+    hypotheses along the long interval. Outcome 4 is supported, with
+    Outcome 3 (along-epipolar ambiguity) as an important mechanism. The
+    causal role of Monte Carlo render noise is NOT established by AB1d.
+- Active Bootstrap after AB1d (Luiz and Chat).
+  - AB1d2: 4096-spp Observation-Quality Control is the next experiment.
+    It asks: does substantially reducing Monte Carlo rendering noise
+    materially improve the SAME frozen primitive natural correspondence
+    matcher? AB1d2 changes observation quality only (Cycles 256 -> 4096
+    spp at the same three gazes, calibration, seeds and render settings).
+    It does NOT redesign the matcher.
   - AB1e (head recentering) remains future.
   - Head motion is not implemented yet. No natural matcher has yet been
-    accepted.
+    accepted as useful.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.

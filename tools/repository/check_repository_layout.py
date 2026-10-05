@@ -47,7 +47,9 @@ AB1b accepted and the post-AB1b operating strategy (AB1c compares planar and sph
 safe-forward regime, with perfect correspondence). Active Bootstrap-1c declares its contract (required), report and eight
 tools/active_bootstrap/ ab1c tools (allowed); the handoff records AB1c accepted and the post-AB1c step (AB1d tests
 natural RGB correspondence in the safe-forward regime, with the accepted spherical geometry held fixed). Active
-Bootstrap-1d declares its contract (required), report and six tools/active_bootstrap/ ab1d tools (allowed).
+Bootstrap-1d declares its contract (required), report and six tools/active_bootstrap/ ab1d tools (allowed); the handoff
+records AB1d accepted as a negative experiment and the post-AB1d step (AB1d2 tests whether substantially reducing Monte
+Carlo rendering noise improves the same frozen matcher; it changes observation quality only).
 """
 from __future__ import annotations
 
@@ -474,10 +476,15 @@ def main() -> int:
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
     handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
-    check("chat handoff records accepted main at AB1c, with AB1b, AB1a, NB1c, NB1b, NB1a, Breadth-1, Visual Language 1, "
-          "Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, Policy 1, "
-          "Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 45b08ae81b09365c0744d204276038fe6046b4f9" in handoff
+    check("chat handoff records accepted main at AB1d, with AB1c, AB1b, AB1a, NB1c, NB1b, NB1a, Breadth-1, Visual "
+          "Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the Controller-01 visual package, "
+          "Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
+          "main @ c5f9bf599d2e537e7d4021adacc7e53269bd18c7" in handoff
+          and "ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_ACCEPTED" in handoff
+          and "ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_COMPLETE" in handoff
+          and "AB1d is complete. The next experiment tests whether substantially reducing Monte Carlo rendering noise "
+              "materially improves the SAME frozen primitive natural correspondence matcher. AB1d2 changes observation "
+              "quality only; it does not redesign the matcher." in squash(handoff)
           and "ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_ACCEPTED" in handoff
           and "ACTIVE_BOOTSTRAP1C_SAFE_FORWARD_PLANAR_SPHERICAL_COMPLETE" in handoff
           and "AB1c is complete. The next experiment tests natural RGB correspondence in the safe-forward regime, with "

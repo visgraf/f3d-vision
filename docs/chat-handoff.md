@@ -2,12 +2,23 @@
 
 ## Accepted main
 
-    main @ 45b08ae81b09365c0744d204276038fe6046b4f9
+    main @ c5f9bf599d2e537e7d4021adacc7e53269bd18c7
 
 `origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`45b08ae` (the AB1c acceptance commit on branch `active-bootstrap/ab1c-safe-forward-planar-vs-spherical`).
+`c5f9bf5` (the AB1d acceptance commit on branch `active-bootstrap/ab1d-safe-forward-natural-correspondence`).
 
 Accepted milestones:
+- **Active Bootstrap-1d: Safe-Forward Natural RGB Correspondence**, accepted by Luiz and Chat as an **accepted negative
+  experiment** (the machine result, the negative scientific conclusion, contract section 33 and the two primary
+  visuals):
+
+      ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_ACCEPTED
+
+  The accepted completion marker is `ACTIVE_BOOTSTRAP1D_SAFE_FORWARD_NATURAL_CORRESPONDENCE_COMPLETE`. **AB1d is
+  complete.**
+- **Active Bootstrap after AB1d** (a decision by Luiz and Chat, not an experiment): AB1d2, 4096-spp Observation-Quality
+  Control, is next. It changes observation quality only and does not redesign the matcher; AB1e remains future. See
+  "Active Bootstrap after AB1d".
 - **Active Bootstrap-1c: Safe-Forward Planar vs Spherical Geometry**, accepted by Luiz and Chat (the machine result,
   the scientific conclusion, contract section 23 and the two primary visuals):
 
@@ -159,7 +170,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after AB1c)
+## Current roadmap (Luiz and Chat, after AB1d)
 
     Controller-02                                   ACCEPTED
       -> Visual Language 1                          ACCEPTED
@@ -174,8 +185,11 @@ Accepted milestones:
                 geometry                                      conditioning poor at gaze #1)
            AB1c safe-forward planar vs spherical    ACCEPTED (metric geometry equivalent in the
                 geometry                                      favorable regime; image support not identical)
-           AB1d safe-forward natural RGB            NEXT (tests correspondence, not geometry;
-                correspondence                            AB1c observations, spherical geometry fixed)
+           AB1d safe-forward natural RGB            ACCEPTED (negative: the frozen primitive matcher does not
+                correspondence                                recover reliable correspondence; render-noise
+                                                              causal role not established)
+           AB1d2 4096-spp observation-quality       NEXT (same three views, calibration, seeds and frozen
+                control                                   matcher; 256 -> 4096 spp only)
            AB1e same difficult target, whole-head   future
                 recentering
       -> Classroom validation
@@ -374,6 +388,8 @@ Decision record (durable):
 
 ### Active Bootstrap after AB1c (Luiz and Chat)
 
+Historical record (the launch of AB1d; AB1d is now accepted, see its section below):
+
 **AB1c is complete. The next experiment tests natural RGB correspondence in the safe-forward regime, with the accepted
 spherical geometry held fixed.**
 
@@ -398,6 +414,85 @@ Decision record (durable):
     Position is opened. The AB1c perfect correspondence is a post-freeze benchmark only.
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
+
+### Active Bootstrap after AB1d (Luiz and Chat)
+
+**AB1d is complete. The next experiment tests whether substantially reducing Monte Carlo rendering noise materially
+improves the SAME frozen primitive natural correspondence matcher. AB1d2 changes observation quality only; it does not
+redesign the matcher.**
+
+Decision record (durable):
+1. AB1d is accepted as a valid negative experiment (see its section below).
+2. AB1d does not establish the causal role of Monte Carlo render noise. Its labelled post-run diagnostic (roughly
+   2–3 u8 per-eye variation under a noise-only interpretation, against a typical 5 × 5 patch standard deviation of about
+   3–5 u8) motivates the next step; it is not a frozen causal claim.
+3. The inserted causal question: **does substantially reducing Monte Carlo rendering noise materially improve the SAME
+   frozen primitive natural correspondence matcher?**
+4. AB1e (the same difficult world target with whole-head recentering) remains future. Head motion is not implemented.
+
+- **AB1d2: 4096-spp Observation-Quality Control** (branch `active-bootstrap/ab1d2-4096spp-observation-quality`,
+  contract `docs/active-bootstrap/ab1d2-4096spp-observation-quality-contract.md`, committed before any 4096-spp
+  Classroom render).
+  - The single intentional change: Cycles samples per pixel 256 -> 4096, at the same three accepted AB1c / AB1d gazes,
+    with the same scene, fixed head, calibration, camera matrices, resolution, device, filter, seeds (L 2111, R 2112),
+    denoising OFF and adaptive sampling OFF.
+  - The accepted AB1d matcher is used read-only and unchanged (including MIN_LOCAL_STD_U8 = 0.5 and the full
+    admissible search interval). The benchmark is the accepted AB1c oracle and Position reference, not new truth
+    passes.
+  - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
+    is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## Active Bootstrap-1d: Safe-Forward Natural RGB Correspondence (accepted at `c5f9bf5`)
+
+Luiz and Chat accept AB1d as a **valid negative experiment**: the machine result, the negative scientific conclusion,
+contract section 33 and the two primary visuals.
+
+Record (branch `active-bootstrap/ab1d-safe-forward-natural-correspondence`, base `56840ca`):
+- contract: `docs/active-bootstrap/ab1d-safe-forward-natural-correspondence-contract.md` (`850724d`); section 33 is the
+  pre-canonical clarification (in `3c7853e`), accepted: it was written before canonical Classroom matching, corrected
+  the synthetic known-answer tolerances and test textures, and did not alter the canonical matcher constants, the
+  evaluation metrics or the outcome semantics, nor tune against Classroom truth.
+- implementation: `tools/active_bootstrap/ab1d_{spec,match,run,synthetic,visuals}.py` and `check_ab1d.py`, frozen at
+  `3c7853e` before the canonical match.
+- report: `docs/active-bootstrap/ab1d-safe-forward-natural-correspondence-report.md` (completion `c541b96`, acceptance
+  `c5f9bf5`).
+- run: `/home/lvelho/rd/f3d-vision/previews/active-bootstrap/ab1d-safe-forward-natural-correspondence/`. It reads the
+  three accepted AB1c observations in place (no render). Correspondence freeze `match/correspondence-freeze.json`
+  `006c9116…`; geometry freeze `freeze/geometry-freeze.json` `0c2d7b0a…`. The canonical steps refuse to rerun.
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/active-bootstrap/ab1d-safe-forward-natural-correspondence/`
+  (`overview.png` `0d7217b5c7c925b0e4595cd0a72e04ed6b225487f4369cadbacb0f583bc85654` and `cost-landscapes.png`
+  `0669aa19c7899ea9de45943b42101f1b9d4ef9a26d9468be5343959549cae862`, inspected and accepted; two minor presentation
+  caveats accepted: patch tiles are contrast-stretched without a caption saying so, and "natural κ" mostly describes
+  wrong natural correspondences).
+
+Accepted measured result:
+
+    ACTIVE_BOOTSTRAP1D_CHECKS_PASS          38 / 38
+    ACTIVE_BOOTSTRAP1D_MUTATIONS_CAUGHT     40 / 40 (from a passing baseline; clean null probe)
+
+Check 33 of `check_ab1d.py` is scoped to the AB1d base `56840ca`. On later commits it reports every later accepted
+change outside the AB1d files as "undeclared". The first such change is this handoff's `CLAUDE.md` and
+`docs/chat-handoff.md` (measured: 37/38, only check 33). That is the guard's scope, not an AB1d regression; the
+frozen-product checks remain valid.
+
+| gaze | within 1 px-equiv | median px-equiv error | oracle top-1 | oracle worse than top 8 | metric error median (natural vs perfect) |
+|---|---|---|---|---|---|
+| 1 | 9.2 % | 93.1 px | 9.9 % | 60.6 % | 4.16 m |
+| 2 | 16.8 % | 57.4 px | 17.7 % | 54.9 % | 3.57 m |
+| 3 | 9.2 % | 129.2 px | 9.8 % | 68.2 % | 4.03 m |
+
+Accepted interpretation (durable):
+1. At the three accepted safe-forward AB1c observations, the frozen primitive natural matcher (direct raw-image
+   spherical epipolar search + 5 × 5 angular grayscale patch + ZNCC + one quadratic sub-pixel refinement) does NOT
+   recover reliable correspondence over the full physically admissible epipolar interval.
+2. The spherical search geometry is correct and the oracle location is correctly registered on the frozen score. When
+   the true peak wins, sub-pixel refinement is accurate (about 0.19–0.24 px median, 93–95 % within 1 px). Search
+   geometry and refinement are therefore not the main failure.
+3. The correct photometric hypothesis usually does not dominate the competing hypotheses along the long search
+   interval. Two failure mechanisms are retained: weak / noisy local appearance with many competing peaks, and genuine
+   along-epipolar ambiguity (structure approximately parallel to the search direction).
+4. Outcome 4 is supported, with Outcome 3 as an important mechanism.
+5. **The causal role of Monte Carlo render noise is NOT established by AB1d.** That is the question of AB1d2.
 
 ## Active Bootstrap-1c: Safe-Forward Planar vs Spherical Geometry (accepted at `45b08ae`)
 
@@ -1259,18 +1354,17 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a and AB1b are accepted. The
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c and AB1d are accepted. The
 Controller-01 investigation is closed. Controller-01 and Controller-02 are frozen unless Luiz explicitly reopens them.
 
-**Current next activity: Active Bootstrap-1c — Safe-Forward Planar vs Spherical Geometry** (see "Active Bootstrap
-operating strategy after AB1b"), on branch `active-bootstrap/ab1c-safe-forward-planar-vs-spherical` from this
-accepted `main`, with its contract at `docs/active-bootstrap/ab1c-safe-forward-planar-vs-spherical-contract.md`. Three
-frozen RGB gazes inside the predeclared SAFE-FORWARD envelope, one binocular observation each (fixed head), one shared
-perfect-correspondence product per gaze consumed by both the accepted planar rectification geometry and the accepted
-spherical epipolar geometry, both frozen before Position truth is reopened. The primary quantity is the direct planar
-vs spherical agreement on the common valid set; no success threshold. No natural matcher, no head motion, no
-controller. AB1d and AB1e are not started. Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not
-started. FSG6f is not repaired.
+**Current next activity: Active Bootstrap-1d2 — 4096-spp Observation-Quality Control** (see "Active Bootstrap after
+AB1d"), on branch `active-bootstrap/ab1d2-4096spp-observation-quality` from this accepted `main`, with its contract at
+`docs/active-bootstrap/ab1d2-4096spp-observation-quality-contract.md`. The same three accepted AB1c / AB1d gazes are
+re-rendered once each at 4096 spp (instead of 256), with every other render setting, the calibration and the seeds
+unchanged. The accepted AB1d matcher runs unchanged on the new pairs, and the result is compared pixel by pixel with
+AB1d against the same accepted AB1c benchmark. No success threshold. No matcher change, no denoising, no head motion,
+no controller. AB1e is not started. Range-based reseeding, RGB segmentation and Natural Bootstrap-2 are not started.
+FSG6f is not repaired.
 
 ## Decision-critical open items
 
@@ -1308,9 +1402,9 @@ started. FSG6f is not repaired.
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
-6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a
-   and AB1b acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap, the post-AB1a pivot
-   and the post-AB1b operating strategy. These handoff updates did not touch it.
+6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
+   AB1b, AB1c and AB1d acceptances, the revised roadmap, the post-NB1b pivot, the start of Active Bootstrap, the
+   post-AB1a pivot and the post-AB1b operating strategy. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.
