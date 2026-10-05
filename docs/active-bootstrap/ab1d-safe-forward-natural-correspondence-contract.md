@@ -668,3 +668,62 @@ The report does not propose or implement a more complex matcher. After the repor
 | metric fractions (descriptive) | 12, 25, 50 mm |
 | checker subset | core index ≡ 7 (mod 32) + landscape examples |
 | threads | 16 (execution only) |
+
+## 33. Pre-canonical clarification (2026-10-04; before any Classroom matching)
+
+Made under section 24's provision, after the synthetic known answers and before the canonical match. No Classroom
+observation was matched or inspected. The matcher, its constants (section 32), the evaluation metrics and the outcome
+semantics are **unchanged**. Only the synthetic test design, its software tolerances and the checker's
+corruption-attribution rule change.
+
+**Diagnosis (MEASURED, design-time synthetic scenes only; scratch harness).**
+- **Exactness of the frozen chain.** With exact analytic sampling, which replaces bilinear interpolation by the analytic
+  texture, the frozen ZNCC evaluated on a 0.01-px grid peaks exactly at the true line coordinate (offset 0.00 px; ZNCC
+  0.99999 at the truth). The geometry, epipolar line, angular patch and score are therefore exact.
+- **Bias of the 3-point parabola.** Under the same exact sampling, the declared refinement has an inherent fitting bias
+  of ≈ 0.05 px median, because the score curve of a finite 5 × 5 window is not parabolic and not symmetric. With
+  bilinear pixel images the median refined error is ≈ 0.06 px, even when the truth lies exactly on a sample (discrete
+  error 0.012 px). The section 24 tolerances (median ≤ 0.05 / 0.08 px, p95 ≤ 0.20 px) were therefore too tight for a
+  correct implementation.
+- **Declared texture too smooth.** The declared smooth texture (wavelengths 8–32 px) is nearly planar over a 5 × 5
+  patch. Its ZNCC landscapes are ambiguous: median peak margin ≈ 0.025, ≈ 1–2 % of pixels locked to distant false
+  peaks, integer-bin refined error ≈ 0.14 px. This is recorded as a design-time property of the primitive matcher on
+  smooth texture. It is not used to change the matcher.
+- **Half-sample phase penalty.** When the truth lies half-way between samples (the 0.50 bin), both neighbouring samples
+  score below a true-centred sample, and a competing false peak elsewhere can win. With texture structured at the patch
+  scale (3–8 px), 11.4 % of the 0.50-bin pixels did so; the correct-discrete fraction was 0.886. The integer and
+  0.25 / 0.75 bins were 0.999–1.000. This is a property of the frozen 1-pixel discrete search.
+- **Constant parallax hides a φ-sign error.** With constant parallax (case 9 as declared), a φ-sign error is invisible
+  in θ: the mirrored plane has the same parallax. The case needs a parallax that varies with φ.
+
+**Revised known-answer design (software tolerances; synthetic data only).**
+- **Main scene:** wavelengths **3–8 px** (texture structured at the 5 × 5 patch scale), constant Δθ = 40 δ, left core
+  pixels with core index ≡ 0 (mod 3).
+- **Case 3:**
+  - discrete k = round(s_true) for **≥ 99 %** of the integer bin;
+  - refined |s_est − s_true| median **≤ 0.12 px** and p95 **≤ 0.35 px**, among correct discrete peaks;
+  - plus the analytic-sampler exactness above: continuous maximum within 0.01 px of s_true, and ZNCC ≥ 0.9999 at the
+    truth.
+- **Case 4, per sub-pixel bin:**
+  - discrete k within 1 px of s_true for **≥ 80 %** (a sanity bound; the measured half-sample penalty is recorded
+    above);
+  - among those, refined error median ≤ 0.12 px and p95 ≤ 0.35 px;
+  - refined median < discrete median.
+- **Case 9:** scene with parallax Δθ(φ) = δ (40 + 10 (φ − φ_gaze) / 0.1).
+- **Case 13 and case 15:** a rough scene (wavelengths 2.2–3.5 px), so that spacing and peak-separation changes manifest.
+- **Case 14:** a low-contrast disc (patch std in (0.5, 2)).
+- **Case 21:** the u8 values are compared exactly; the gray values within 1e-9, since the weighted sum of 255 is
+  255.00000000000003.
+
+**Checker corruption attribution (strengthened).** Each corruption declares the checks that must catch it. It counts
+as caught only if at least one of them fails. A failure of only an incidental file-hash check (a side effect of
+writing the mirror) does not count. An unmodified-mirror null probe must pass all checks first.
+
+**Implementation notes (no semantic change).**
+- **φ step.** Computed as j · (δ / sin θ_c), algebraically identical to j δ / sin θ_c.
+- **cv2 tripwire.** cv2 is loaded only as an import dependency of the accepted `fsg_stereo.linear_to_u8`. The guarded
+  match stage installs a tripwire on `StereoSGBM_create`, `StereoBM_create`, `stereoRectify`,
+  `initUndistortRectifyMap` and `remap`, and records any call.
+- **Truth-read counters.** The read counters use exact AB1c sub-directory prefixes, not substrings; the AB1c run's own
+  name contains "planar".
+- **Outside the segment.** An oracle location lies "outside the admissible segment" iff s_oc < k_first or s_oc > k_last.
