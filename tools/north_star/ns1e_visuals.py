@@ -163,6 +163,87 @@ def entity_labels(d, box, dd: Data, ents: dict) -> None:
         S.text(d, (lx, ly), str(i), size=16, bold=True)
 
 
+def clusters(dd: Data, ents: dict, gap_deg: float = 40.0) -> list[dict]:
+    """Entities grouped by H0 yaw (a gap of more than ``gap_deg`` starts a new group), each with a padded yaw / pitch
+    extent (2-98 % of its map points, wrap-safe around its centre yaw)."""
+    rows = []
+    for i in dd.ids:
+        xyz = dd.map_xyz(ents[str(i)])
+        if not len(xyz):
+            continue
+        y, p = BV.angles(xyz[sub(len(xyz), 3000)])
+        c = float(np.degrees(np.arctan2(np.sin(np.radians(y)).mean(), np.cos(np.radians(y)).mean())))
+        rows.append((c, i, y, p))
+    rows.sort()
+    groups, cur = [], []
+    for r in rows:
+        if cur and abs(((r[0] - cur[-1][0] + 180) % 360) - 180) > gap_deg:
+            groups.append(cur)
+            cur = []
+        cur.append(r)
+    if cur:
+        groups.append(cur)
+    out = []
+    for gr in groups:
+        c = float(np.mean([r[0] for r in gr]))
+        ys = np.concatenate([((r[2] - c + 180) % 360) - 180 + c for r in gr])
+        ps = np.concatenate([r[3] for r in gr])
+        out.append({"ids": [r[1] for r in gr], "centre": c,
+                    "yaw": (float(np.percentile(ys, 1)) - 6, float(np.percentile(ys, 99)) + 6),
+                    "pitch": (max(-90.0, float(np.percentile(ps, 1)) - 6), min(90.0, float(np.percentile(ps, 99)) + 6))})
+    return out
+
+
+def zoom_frame(img, box, title, ext):
+    """A zoomed equirectangular H0 panel with the box's aspect ratio; returns (inner, yrange, prange, centre)."""
+    BV.sky(img, box, title, SP.LABEL_H0)
+    d = ImageDraw.Draw(img)
+    inner = (box[0] + 10, box[1] + 46, box[2] - 10, box[3] - 30)
+    (y0, y1), (p0, p1) = ext["yaw"], ext["pitch"]
+    w, h = inner[2] - inner[0], inner[3] - inner[1]
+    span = max((y1 - y0) / w, (p1 - p0) / h)
+    cy, cp = (y0 + y1) / 2, (p0 + p1) / 2
+    yr, pr = (cy - span * w / 2, cy + span * w / 2), (cp - span * h / 2, cp + span * h / 2)
+    step = 10 if span * w > 40 else 5
+    for yy in np.arange(math.ceil(yr[0] / step) * step, yr[1], step):
+        u, _ = BV.eq_xy(yy, 0, inner, yr, pr)
+        d.line([float(np.asarray(u)), inner[1], float(np.asarray(u)), inner[3]], fill=S.GRID, width=1)
+    for pp in np.arange(math.ceil(pr[0] / step) * step, pr[1], step):
+        _, v = BV.eq_xy(0, pp, inner, yr, pr)
+        d.line([inner[0], float(np.asarray(v)), inner[2], float(np.asarray(v))], fill=S.GRID, width=1)
+    S.text(d, (box[0] + 12, box[3] - 26), f"yaw {((yr[0] + 180) % 360) - 180:+.0f}..{((yr[1] + 180) % 360) - 180:+.0f} "
+                                          f"deg, pitch {pr[0]:+.0f}..{pr[1]:+.0f} deg (grid {step} deg)", size=14,
+           fill=S.INK2)
+    return inner, yr, pr, cy
+
+
+def zoom_points(d, inner, yr, pr, c, dd: Data, ents: dict, ids, nmax=4000, faded=False, labels=True):
+    placed = []
+    for i in ids:
+        xyz = dd.map_xyz(ents[str(i)])
+        if not len(xyz):
+            continue
+        y, p = BV.angles(xyz[sub(len(xyz), nmax)])
+        y = ((y - c + 180) % 360) - 180 + c
+        u, v = BV.eq_xy(y, p, inner, yr, pr)
+        col, g = ent_style(i, dd.ids)
+        if faded:
+            col = tuple(int(cc + (255 - cc) * 0.55) for cc in col)
+        dots(d, u, v, col, r=1, box=inner)
+        if labels:
+            ym, pm = BV.angles(np.median(xyz, axis=0)[None])
+            ym = ((ym - c + 180) % 360) - 180 + c
+            um, vm = (float(np.atleast_1d(a)[0]) for a in BV.eq_xy(ym, pm, inner, yr, pr))
+            lx, ly = um + 16, vm - 10
+            while any(abs(lx - a) < 46 and abs(ly - b) < 20 for a, b in placed):
+                ly += 21
+            placed.append((lx, ly))
+            if abs(ly - (vm - 10)) > 1:
+                d.line([um, vm, lx - 2, ly + 9], fill=S.INK2, width=1)
+            NV.glyph(d, um, vm, g, col, r=8)
+            S.text(d, (lx, ly), str(i), size=16, bold=True)
+
+
 def h0_frame(img, box, title):
     BV.sky(img, box, title, SP.LABEL_H0)
     d = ImageDraw.Draw(img)
@@ -181,14 +262,19 @@ def panel_a(img: Image.Image, y: int, dd: Data) -> int:
     nxt = h["next_decision"]
     y = NV.panel_title(img, y, "A", "Start state: the accepted post-NS1c2 scene + the accepted NS1d M2 memory (events 0-8)",
                        [SP.LABEL_H0, "NS1d ACCEPTED"])
-    box = (40, y, 1240, y + 640)
-    inner = h0_frame(img, box, "ten coherent persistent maps in canonical H0 (equirect.)")
+    groups = clusters(dd, dd.initial["entities"])
+    gw = 1200 // max(1, len(groups))
+    for n_, gr in enumerate(groups):
+        box = (40 + n_ * gw, y, 40 + (n_ + 1) * gw - 10, y + 640)
+        inner, yr, pr, c = zoom_frame(img, box, f"H0 zoom {n_ + 1}", gr)
+        d = ImageDraw.Draw(img)
+        zoom_points(d, inner, yr, pr, c, dd, dd.initial["entities"], gr["ids"])
+        if 202 in gr["ids"]:
+            wy = ((nxt["world_gaze_deg"][0] - c + 180) % 360) - 180 + c
+            u, v = (float(np.atleast_1d(a)[0]) for a in BV.eq_xy(wy, nxt["world_gaze_deg"][1], inner, yr, pr))
+            S.crosshair(d, u, v, r=18, solid=False, color=S.OI_VERM)
+            S.text(d, (u + 20, v + 14), "next action (202)", size=16, bold=True, fill=S.OI_VERM)
     d = ImageDraw.Draw(img)
-    sky_points(d, inner, dd, dd.initial["entities"])
-    entity_labels(d, inner, dd, dd.initial["entities"])
-    u, v = (np.atleast_1d(a) for a in BV.eq_xy(nxt["world_gaze_deg"][0], nxt["world_gaze_deg"][1], inner))
-    S.crosshair(d, float(u[0]), float(v[0]), r=18, solid=False, color=S.OI_VERM)
-    S.text(d, (float(u[0]) + 20, float(v[0]) + 14), "next action (202)", size=16, bold=True, fill=S.OI_VERM)
     tx = 1280
     rows = [("entity  looks  map     memory own / cross   revision          state       next proposal", S.INK)]
     for r in dd.initial["table"]:
@@ -549,20 +635,30 @@ def final_geometry(dd: Data) -> tuple[Image.Image, dict]:
                   ["left: equirectangular H0 view (faded = initial NS1c2 map points); right: top view x / z in metres",
                    "memory samples are NOT drawn here (they are not fused geometry)"],
                   BADGES["multi-entity-final-geometry.png"])
-    box = (40, y, 1440, y + 760)
-    inner = h0_frame(img, box, "persistent maps in H0 (yaw / pitch)")
+    groups = clusters(dd, dd.final["entities"])
+    gw = 1400 // max(1, len(groups))
+    for n_, gr in enumerate(groups):
+        box = (40 + n_ * gw, y, 40 + (n_ + 1) * gw - 10, y + 760)
+        inner, yr, pr, c = zoom_frame(img, box, f"H0 zoom {n_ + 1}", gr)
+        d = ImageDraw.Draw(img)
+        zoom_points(d, inner, yr, pr, c, dd, dd.initial["entities"], gr["ids"], faded=True, labels=False)
+        zoom_points(d, inner, yr, pr, c, dd, dd.final["entities"], gr["ids"], nmax=6000)
     d = ImageDraw.Draw(img)
-    sky_points(d, inner, dd, dd.initial["entities"], faded=True)
-    sky_points(d, inner, dd, dd.final["entities"], nmax=5000)
-    entity_labels(d, inner, dd, dd.final["entities"])
     tb = (1480, y, W - 40, y + 760)
     d.rectangle(tb, fill=S.PANEL, outline=S.FAINT, width=2)
     S.text(d, (tb[0] + 12, tb[1] + 8), "top view (x right, -z forward), metres", size=S.T_BODY, bold=True)
-    allp = np.vstack([dd.map_xyz(dd.final["entities"][str(i)]) for i in dd.ids])
-    lim = float(np.nanmax(np.abs(allp[:, [0, 2]]))) * 1.05 if len(allp) else 1.0
-    inner2 = (tb[0] + 20, tb[1] + 50, tb[2] - 20, tb[3] - 20)
-    sc = min(inner2[2] - inner2[0], inner2[3] - inner2[1]) / (2 * lim)
-    cx, cy = (inner2[0] + inner2[2]) / 2, (inner2[1] + inner2[3]) / 2
+    allp = np.vstack([dd.map_xyz(dd.final["entities"][str(i)]) for i in dd.ids] + [np.zeros((1, 3))])
+    allp = allp[np.isfinite(allp).all(axis=1)]
+    lo = np.percentile(allp[:, [0, 2]], 0.5, axis=0) - 0.3
+    hi = np.percentile(allp[:, [0, 2]], 99.5, axis=0) + 0.3
+    lo, hi = np.minimum(lo, -0.3), np.maximum(hi, 0.3)
+    inner2 = (tb[0] + 20, tb[1] + 50, tb[2] - 20, tb[3] - 40)
+    sc = min((inner2[2] - inner2[0]) / (hi[0] - lo[0]), (inner2[3] - inner2[1]) / (hi[1] - lo[1]))
+    mid = (lo + hi) / 2
+    cx = (inner2[0] + inner2[2]) / 2 - mid[0] * sc
+    cy = (inner2[1] + inner2[3]) / 2 - mid[1] * sc
+    S.text(d, (tb[0] + 12, tb[3] - 30), "1 m = " + f"{sc:.0f} px; zoom groups: " + "; ".join(
+        f"{n_ + 1}: {', '.join(str(i) for i in gr['ids'])}" for n_, gr in enumerate(groups)), size=14, fill=S.INK2)
     for i in dd.ids:
         xyz = dd.map_xyz(dd.final["entities"][str(i)])
         if not len(xyz):
