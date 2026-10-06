@@ -77,6 +77,24 @@ def arc(a: np.ndarray, b: np.ndarray, step_deg: float = 0.5) -> np.ndarray:
     return (np.sin((1 - t) * om) * a + np.sin(t * om) * b) / math.sin(om)
 
 
+def dashed_polyline(d, pts, color, width=3, dash=14.0, gap=9.0):
+    """Dashes measured along the whole polyline (S.dashed_line restarts per segment, so short arc pieces go solid)."""
+    pos, on = 0.0, True
+    for (x0, y0), (x1, y1) in zip(pts[:-1], pts[1:]):
+        L = math.hypot(x1 - x0, y1 - y0)
+        s = 0.0
+        while s < L:
+            left = (dash if on else gap) - pos
+            e = min(L, s + left)
+            if on:
+                d.line([x0 + (x1 - x0) * s / L, y0 + (y1 - y0) * s / L, x0 + (x1 - x0) * e / L,
+                        y0 + (y1 - y0) * e / L], fill=color, width=width)
+            pos += e - s
+            s = e
+            if pos >= (dash if on else gap) - 1e-9:
+                pos, on = 0.0, not on
+
+
 def draw_path(d, box, pts_dir, color, dashed, width=3):
     yaw, pitch = X.yaw_pitch(pts_dir)
     xs, ys = to_xy(yaw, pitch, box)
@@ -92,10 +110,11 @@ def draw_path(d, box, pts_dir, color, dashed, width=3):
     for r in runs:
         if len(r) < 2:
             continue
-        d.line(r, fill=S.WHITE, width=width + 4)
         if dashed:
-            S.dashed_line(d, r, color, width=width, dash=12, gap=8)
+            dashed_polyline(d, r, S.WHITE, width=width + 4)
+            dashed_polyline(d, r, color, width=width)
         else:
+            d.line(r, fill=S.WHITE, width=width + 4)
             d.line(r, fill=color, width=width)
 
 
@@ -134,7 +153,7 @@ def panel_a(img, d, box, traj, arr):
     d.line([lx, ly + 10, lx + 46, ly + 10], fill=C_LOCAL, width=3)
     S.text(d, (lx + 56, ly), f"local saccade ({traj['local_saccades']})", size=S.T_SMALL, outline=None)
     lx += 300
-    S.dashed_line(d, [(lx, ly + 10), (lx + 46, ly + 10)], C_GLOBAL, width=3, dash=12, gap=8)
+    dashed_polyline(d, [(lx, ly + 10), (lx + 46, ly + 10)], C_GLOBAL, width=3)
     S.text(d, (lx + 56, ly), f"global saccade ({traj['global_saccades']}; target numbered)", size=S.T_SMALL,
            outline=None)
     lx += 470
