@@ -768,13 +768,15 @@ def coverage_fig(dd: Data) -> tuple[Image.Image, dict]:
                 d.rectangle([px, py, px + max(1, sc - 1), py + max(1, sc - 1)], fill=S.OI_GREEN)
             else:
                 S.xmark(d, px + sc / 2, py + sc / 2, r=max(1.5, sc / 2.5), color=S.OI_VERM, width=1)
+        st = dd.statuses()[str(i)]
         S.text(d, (x + 8, yy + tile + 4), f"map {r['covered_cells']:,}/{r['reference_cells']:,} = "
                                           f"{r['coverage_fraction'] * 100:.1f} % cells, "
                                           f"{r['coverage_fraction_weighted'] * 100:.1f} % sr", size=14)
-        S.text(d, (x + 8, yy + tile + 26), f"effective (diagnostic) {r['effective_coverage_fraction'] * 100:.1f} % cells",
-               size=14, fill=S.INK2)
-        S.text(d, (x + 8, yy + tile + 48), f"{r['final_persistent_surfels']:,} surfels; {r['own_looks']} looks; "
-                                           f"{r['terminal_state']}", size=14, fill=S.INK2)
+        S.text(d, (x + 8, yy + tile + 24), f"effective (diagnostic) {r['effective_coverage_fraction'] * 100:.1f} % cells; "
+                                           f"{r['final_persistent_surfels']:,} surfels; {r['own_looks']} looks", size=13,
+               fill=S.INK2)
+        S.text(d, (x + 8, yy + tile + 44), f"terminal: {st['local']}/{st['disposition']}"
+                                           + (f" ({st['reason']})" if st["reason"] else ""), size=13, fill=S.INK2)
     return img.crop((0, 0, W, y + 2 * (tile + 90) + 20)), {"entities": len(dd.ids)}
 
 
@@ -800,7 +802,8 @@ def rank1_fig(dd: Data) -> tuple[Image.Image, dict]:
                                                          f"{first['source']} {fmt(first['local_gaze_deg'])}, M2 effective "
                                                          f"{first['m2_effective_points']:,}") +
                f"; terminal {st['local']}/{st['disposition']} {st['reason'] or ''}", size=16, bold=True)
-        vmax = max([lk["north_star_spherical_target_points"] for lk in looks] + [1])
+        vmax = max([lk["north_star_spherical_target_points"] for lk in looks]
+                   + [lk["controller_state_target_support"] for lk in looks] + [1])
         for m, lk in enumerate(looks[:40]):
             x = 90 + m * 55
             h1 = 90 * lk["north_star_spherical_target_points"] / vmax
