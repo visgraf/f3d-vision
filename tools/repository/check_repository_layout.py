@@ -71,7 +71,8 @@ established) and the post-NS1c2 decision (North Star-1d: controller-phase cross-
 no-new-render causal replay; persistent maps stay target-only). North Star-1d declares its contract (required), report
 and seven tools/north_star/ ns1d tools (allowed). The handoff records NS1d accepted (Outcome 2; cross-target causal
 measurement memory established) and the post-NS1d decision (North Star-1e: the full coherent multi-entity loop with M2
-measurement memory, continuing from the accepted NS1d state).
+measurement memory, continuing from the accepted NS1d state). North Star-1e declares its contract (required), report and
+eight tools/north_star/ ns1e tools (allowed).
 """
 from __future__ import annotations
 
@@ -193,13 +194,18 @@ NS1D_REQUIRED = {"docs/north-star/ns1d-cross-target-measurement-memory-contract.
 NS1D_TOOLS = {f"tools/north_star/{n}" for n in ("ns1d_spec.py", "ns1d_core.py", "ns1d_run.py", "ns1d_synthetic.py",
                                                 "ns1d_visuals.py", "check_ns1d.py", "check_ns1d_corruptions.py")}
 NS1D_ALLOWED = NS1D_REQUIRED | NS1D_TOOLS | {"docs/north-star/ns1d-cross-target-measurement-memory-report.md"}
+NS1E_REQUIRED = {"docs/north-star/ns1e-coherent-full-loop-m2-memory-contract.md"}
+NS1E_TOOLS = {f"tools/north_star/{n}" for n in ("ns1e_spec.py", "ns1e_core.py", "ns1e_render.py", "ns1e_run.py",
+                                                "ns1e_synthetic.py", "ns1e_visuals.py", "check_ns1e.py",
+                                                "check_ns1e_corruptions.py")}
+NS1E_ALLOWED = NS1E_REQUIRED | NS1E_TOOLS | {"docs/north-star/ns1e-coherent-full-loop-m2-memory-report.md"}
 NS1C_ACCEPTED_MARKER = "NORTH_STAR1C_COHERENT_FIRST_SCENE_SWITCH_ACCEPTED"   # must never appear (NS1c not accepted)
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
                  | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED | NS1B_ALLOWED
-                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED)
+                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | NS1E_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -462,6 +468,8 @@ def main() -> int:
     check("the NS1c2 contract is tracked", not missing_ns1c2, str(missing_ns1c2))
     missing_ns1d = sorted(NS1D_REQUIRED - set(index))
     check("the NS1d contract is tracked", not missing_ns1d, str(missing_ns1d))
+    missing_ns1e = sorted(NS1E_REQUIRED - set(index))
+    check("the NS1e contract is tracked", not missing_ns1e, str(missing_ns1e))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
