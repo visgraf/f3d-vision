@@ -455,8 +455,10 @@ roadmap decision recorded in `docs/chat-handoff.md`:
       measurements -> persistent entity seeds. Accepted (below).
     - North Star-1b: connect the seed set to the accepted local
       controller. Accepted (below).
-    - North Star-1c (next): coherent multi-entity control, first scene
-      switch (below).
+    - North Star-1c: coherent multi-entity control, first scene switch.
+      Reviewed, NOT accepted, NOT merged (below).
+    - North Star-1c2 (next): the first scene switch under the exact
+      Controller-02 NORMAL / RESIDUE semantics (below).
     - Later: the full Classroom active scene loop and the final
       omnidirectional outputs.
   - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
@@ -513,7 +515,7 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     (4,118 vs 12,072 points at the initialization look).
 - North Star after NS1b (Luiz and Chat).
   - Bootstrap-to-controller bridge: ESTABLISHED.
-  - NS1c (next): coherent multi-entity control, first scene switch. It
+  - NS1c: coherent multi-entity control, first scene switch. It
     continues from the ACTUAL accepted NS1b state (current target 172;
     map 21,243 surfels; 2 own looks; visited local gazes (0, 0),
     (0, −5); next accepted proposal (−5, −10)). The accepted scheduler
@@ -526,6 +528,34 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     multi-part oracle identities 10, 110, 178 remain DEFERRED.
   - Physical head fixed; one fixed policy chart per entity; no threshold,
     scheduler or watchdog change; no SCENE_CLOSED claim.
+- NS1c review (Luiz and Chat; `docs/north-star/ns1c-review-decision.md`).
+  - NS1c is REVIEWED, NOT ACCEPTED and NOT MERGED. Its branch stays
+    unchanged at `4107be8`; its run is retained as diagnostic evidence.
+    It faithfully implemented its committed contract: the error was in
+    the experiment design / mandate, not in the implementation.
+  - Reason: NS1c applied `final_look_gate_v1` to every ordinary probe
+    (NORMAL service). Accepted Controller-02 calls the gate only in
+    RESIDUE, for an ACTIONABLE DEFERRED object after NORMAL work is
+    exhausted; in NORMAL any FSG6f or Cyclopean proposal is ACTIONABLE.
+    NS1c's measured 172 -> 123 switch is mechanically real but is not
+    accepted evidence of the Controller-02 scene-switch semantics.
+  - Retained NS1c measurements: the coherent set, the charts, the exact
+    NS1b import, four valid FSG6f actions on 172 (21,243 -> 45,267
+    surfels), one action on 123 (1,672 -> 6,194), the fixed-head /
+    PERFECT / spherical / H0-fusion invariants.
+  - Historical known answer: accepted Controller-01 with the ideal
+    matcher (141 observations, 26 switches, 2 natural reactivations,
+    98.34 % reachable 12-mm coverage) and accepted Controller-02 (all
+    141 ordinary actions replayed, the gate only after NORMAL
+    exhaustion). The local controller is already proven; the North Star
+    transports it without changing it unnecessarily.
+  - NS1c2 (next): Correct Controller-02 NORMAL / RESIDUE semantics. Its
+    only independent variable relative to NS1c is the placement of
+    `final_look_gate_v1` (RESIDUE only). It reuses NS1c's first four
+    172 actions read-only (no re-render) after proving the corrected
+    decisions select them, and stops after the first NORMAL action on a
+    target other than 172. FSG6f, Cyclopean, the scheduler, the 24-look
+    budget, the gate, target-only fusion and the fixed head stay frozen.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.
