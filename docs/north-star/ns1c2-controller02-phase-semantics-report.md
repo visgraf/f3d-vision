@@ -1,10 +1,14 @@
 # North Star-1c2 — Correct Controller-02 NORMAL / RESIDUE Semantics — report
 
-**Marker.**
+**Markers.**
 
     NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_COMPLETE
+    NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_ACCEPTED
 
-**Status: REVIEW PENDING.** No ACCEPTED marker is written. Neither NS1c2 nor NS1c is merged.
+**Status: ACCEPTED.** Luiz and Chat accepted NS1c2 as **Outcome 1 — natural quiet switch** after scientific review,
+independent GitHub review, checker / corruption review and visual review of `overview.png`,
+`ns1c-vs-ns1c2-divergence.png` and `controller-phase-timeline.png` (see "Acceptance record" at the end). NS1c remains
+REVIEWED, NOT ACCEPTED and NOT MERGED. The sections below are the report as completed at `ff6ab3c`, unchanged.
 
 > **Question.** Starting from the accepted NS1b North-Star state, does the first scene-level attention switch occur under
 > the ACTUAL ACCEPTED Controller-02 NORMAL / RESIDUE semantics?
@@ -477,7 +481,11 @@ Regenerate:
 
 ## 28. Unresolved decision for Luiz / Chat
 
-    READY TO RELEASE THE CORRECT MULTI-ENTITY NORTH-STAR LOOP?
+~~READY TO RELEASE THE CORRECT MULTI-ENTITY NORTH-STAR LOOP?~~
+
+**Decided:** NS1c2 is accepted (Outcome 1). Correct multi-entity NORMAL controller semantics and a genuine natural scene
+switch are established. Before the full loop is released, North Star-1d (Controller-Phase Cross-Target Measurement
+Memory) restores the historical instance-keyed measurement memory (see "Acceptance record").
 
 The measured inputs:
 - Outcome 1, with a natural quiet switch 172 → 202 under the exact Controller-02 NORMAL semantics.
@@ -495,4 +503,88 @@ This report makes no loop design.
 Layout, `scripts/verify_baseline.sh`, `git diff --check` and a read-only `check_ns1c2.py` rerun are recorded in the report
 commit message.
 
-NS1c2 REVIEW PENDING · DECISION PENDING: READY TO RELEASE THE CORRECT MULTI-ENTITY NORTH-STAR LOOP?
+~~NS1c2 REVIEW PENDING · DECISION PENDING: READY TO RELEASE THE CORRECT MULTI-ENTITY NORTH-STAR LOOP?~~
+
+NS1c2 ACCEPTED · OUTCOME 1 — NATURAL QUIET SWITCH · NS1d NEXT
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, an independent GitHub review, the checker / corruption review and a
+visual review of `overview.png`, `ns1c-vs-ns1c2-divergence.png` and `controller-phase-timeline.png`, and **accept NS1c2**
+as committed at `ff6ab3c`:
+
+    NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_ACCEPTED
+
+- **Outcome accepted:** OUTCOME 1 — NATURAL QUIET SWITCH.
+- **Machine result accepted:**
+  - `NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_COMPLETE`;
+  - `NORTH_STAR1C2_CHECKS_PASS` 32/32;
+  - `NORTH_STAR1C2_MUTATIONS_CAUGHT` 41/41, with a clean unmodified-mirror null probe;
+  - `NS1C2_SYNTHETIC_PASS` 17/17.
+- **Accepted result** (stated without strengthening):
+
+      Moving final_look_gate_v1 from every ordinary probe to its accepted Controller-02 location — RESIDUE only —
+      restores the intended NORMAL service semantics.
+
+  - The four NS1c prefix actions on 172 reproduce exactly.
+  - At the first true divergence, in the same state (172; 6 own looks; 45,267 surfels) and with the same local probe
+    (FSG6f `no_frontier`; Cyclopean proposal (+6.2°, −1.2°)):
+    - NS1c: gate called in NORMAL → rejected → QUIET → switch 123;
+    - NS1c2: gate calls in NORMAL 0 → ACTIONABLE → RETAIN 172.
+  - 172 then executed:
+
+    | step | source | local | map |
+    |---|---|---|---|
+    | 4 | Cyclopean | (+6.2°, −1.2°) | 45,267 → 46,920 |
+    | 5 | FSG6f | (+6.2°, +3.8°) | 46,920 → 47,892 |
+    | 6 | Cyclopean | (+0.2°, −10.7°) | 47,892 (unchanged) |
+
+  - After step 6: FSG6f `no_frontier`; Cyclopean `attention_complete`; ProbeResult no action; local state QUIET; 9 own
+    looks; ordinary budget 24. **172 became naturally QUIET, not budget-limited.**
+  - The accepted scheduler then switched **172 → 202** at global step 7.
+  - Entity 202 executed one ordinary Cyclopean action: local (−5.9°, +5.5°) → H0 (−151.282°, +22.052°); 17,447 target
+    points; map 217 → 17,371 (293 matched, 17,154 new). Its post-action probe remained ACTIONABLE but was **NOT
+    executed**.
+- **Accepted phase result:**
+  - all 8 actions in the NS1c2 trace: NORMAL;
+  - final-gate calls in NORMAL: 0;
+  - DEFERRED objects: 0;
+  - RESIDUE entered: no;
+  - final residue observations: 0.
+
+  The RESIDUE implementation remains supported by the accepted historical Controller-02 replay, the synthetic known
+  answers and the one-entity North-Star harness, but was not naturally entered by this scene run.
+- **Visuals accepted** (the reported hashes):
+  - `visuals/north-star/ns1c2-controller02-phase-semantics/overview.png`
+    (`39f19feddb7508c547deb333d92ca19d57aec65985c35423673ef20e006ec830`);
+  - `visuals/north-star/ns1c2-controller02-phase-semantics/ns1c-vs-ns1c2-divergence.png`
+    (`d8a3e7bd8f12f6bad03f3f768a31811ddf61566e0efd15dec1db4e27aa0b3e69`);
+  - `visuals/north-star/ns1c2-controller02-phase-semantics/controller-phase-timeline.png`
+    (`9c189b3fb8163e730e73938139f7eda795c1774865d4c6002da64b59cf3ebd17`);
+  - supporting, retained: `multi-entity-growth-3d.png`
+    (`1a072adcaf365025f399390ad6cd76a3577d273ce82f7d79b74f442648f4d170`) and `controller-vs-northstar-support.png`
+    (`d9a18b90c232b17db5f3a698a81bd523f9f37b1bbf88d6b932437e128ea0f6a7`).
+
+  Accepted visual reading:
+  - the historical controller known answer is context only;
+  - the NS1c / NS1c2 difference occurs at exactly one semantic seam;
+  - 172 is retained under correct NORMAL semantics;
+  - its local work genuinely terminates;
+  - the first valid scene switch is 172 → 202;
+  - no final-look gate appears in NORMAL.
+
+  Presentation note, for FUTURE figures only: avoid the short label "deferred id" for ids 10 / 110 / 178, because
+  DEFERRED is a formal Controller-02 disposition. Prefer `AMBIGUOUS ORACLE ID — EXCLUDED` or the full durable label
+  `DEFERRED_AMBIGUOUS_ORACLE_IDENTITY`. The accepted NS1c2 figures are not modified for this wording.
+- **Retained limitations** (part of the acceptance):
+  1. Persistent fusion is currently target-only.
+  2. Five rank-1 seeds have valid North-Star spherical geometry but zero target support in the inherited planar
+     controller-state matcher.
+  3. RESIDUE has not been reached naturally on North-Star data.
+  4. PERFECT correspondence remains an oracle aid.
+  5. Identity remains an ORACLE SEGMENTATION AID.
+- **Unchanged by this acceptance:** the run, the figures, the scientific implementation, the contract and the
+  measurements.
+- **Next (Luiz and Chat):** North Star-1d — Controller-Phase Cross-Target Measurement Memory, a no-new-render causal
+  replay that restores the accepted Controller-01 instance-keyed `InstanceMeasurementMemory` and
+  `effective_target_geometry` mechanism before the full multi-entity North-Star loop is released.
