@@ -69,7 +69,9 @@ semantics) next. North Star-1c2 declares its contract (required), report and nin
 (allowed). The handoff records NS1c2 accepted (Outcome 1, natural quiet switch; correct multi-entity NORMAL semantics
 established) and the post-NS1c2 decision (North Star-1d: controller-phase cross-target measurement memory, a
 no-new-render causal replay; persistent maps stay target-only). North Star-1d declares its contract (required), report
-and seven tools/north_star/ ns1d tools (allowed).
+and seven tools/north_star/ ns1d tools (allowed). The handoff records NS1d accepted (Outcome 2; cross-target causal
+measurement memory established) and the post-NS1d decision (North Star-1e: the full coherent multi-entity loop with M2
+measurement memory, continuing from the accepted NS1d state).
 """
 from __future__ import annotations
 
@@ -558,13 +560,25 @@ def main() -> int:
           and "**Status: ACCEPTED.**" in ns1c2_report
           and "NS1c2 is complete. Correct multi-entity NORMAL controller semantics and a genuine natural scene switch are "
               "ESTABLISHED; North Star-1d, Controller-Phase Cross-Target Measurement Memory, is next." in squash(handoff)
-          and "Current next activity: North Star-1d — Controller-Phase Cross-Target Measurement Memory" in squash(handoff)
-          and "NS1c2 is ACCEPTED as Outcome 1" in squash(claude)
-          and "North Star-1d (next)" in squash(claude))
-    check("chat handoff records accepted main at NS1c2, with NS1b, NS1a, AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, "
+          and "NS1c2 is ACCEPTED as Outcome 1" in squash(claude))
+    ns1d_report = disk("docs/north-star/ns1d-cross-target-measurement-memory-report.md")
+    ns1d_report = ns1d_report.read_text(encoding="utf-8") if ns1d_report.is_file() else ""
+    check("NS1d is recorded accepted (Outcome 2) and North Star-1e (full coherent loop with M2 memory) next",
+          "NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED" in handoff
+          and "NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_COMPLETE" in handoff
+          and "NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED" in ns1d_report
+          and "**Status: ACCEPTED.**" in ns1d_report
+          and "NS1d is complete. Cross-target causal measurement memory, correct NORMAL scene switching and policy-chart "
+              "global transport are ESTABLISHED; North Star-1e, the Full Coherent Multi-Entity Loop with Cross-Target "
+              "Measurement Memory, is next." in squash(handoff)
+          and "Current next activity: North Star-1e — Full Coherent Multi-Entity Loop with Cross-Target Measurement "
+              "Memory" in squash(handoff)
+          and "NS1d is ACCEPTED as Outcome 2" in squash(claude)
+          and "North Star-1e (next)" in squash(claude))
+    check("chat handoff records accepted main at NS1d, with NS1c2, NS1b, NS1a, AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, "
           "NB1b, NB1a, Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
           "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 5fe0684bae6ab4bc8a2080b1a93089fdb2a935af" in handoff
+          "main @ 25bb929b4d39e1e73cabf0df582bc3c5d3e45e06" in handoff
           and "NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_ACCEPTED" in handoff
           and "NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_COMPLETE" in handoff
           and "NS1b is complete. The bootstrap-to-controller bridge is ESTABLISHED; North Star-1c, coherent "

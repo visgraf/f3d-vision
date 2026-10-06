@@ -2,13 +2,27 @@
 
 ## Accepted main
 
-    main @ 5fe0684bae6ab4bc8a2080b1a93089fdb2a935af
+    main @ 25bb929b4d39e1e73cabf0df582bc3c5d3e45e06
 
-`origin/main` is fast-forwarded to the NS1c2 acceptance commit `5fe0684` on branch
-`north-star/ns1c2-controller02-phase-semantics` (no merge commit); the docs-only post-NS1c2 roadmap commit that adds
-this entry follows it. NS1c2 is the latest accepted experiment.
+`origin/main` is fast-forwarded to the NS1d acceptance commit `25bb929` on branch
+`north-star/ns1d-cross-target-measurement-memory` (no merge commit); the docs-only post-NS1d roadmap commit that adds
+this entry follows it. NS1d is the latest accepted experiment.
 
 Accepted milestones:
+- **North Star-1d: Controller-Phase Cross-Target Measurement Memory**, accepted by Luiz and Chat as **Outcome 2** (the
+  machine result, the scientific conclusion, the historical known answer, the architectural distinction, the retained
+  limitations and the visual review of `overview.png`, `memory-causal-timeline.png` and
+  `effective-geometry-before-after.png`):
+
+      NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED
+
+  The accepted completion marker is `NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_COMPLETE`. **NS1d is complete.**
+  Cross-target causal measurement memory: ESTABLISHED. Correct NORMAL scene switching: ESTABLISHED. Policy-chart global
+  transport: ESTABLISHED.
+- **North Star after NS1d — the full coherent loop** (a decision by Luiz and Chat, not an experiment): North Star-1e
+  releases the coherent ten-entity Controller-02 loop with full M2 measurement memory, continuing from the accepted
+  post-NS1c2 / NS1d state (not restarting from bootstrap), and runs it to its honest terminal state or its derived hard
+  action cap. See "North Star after NS1d".
 - **North Star-1c2: Correct Controller-02 NORMAL / RESIDUE Semantics**, accepted by Luiz and Chat as **Outcome 1 —
   natural quiet switch** (the machine result, the phase result, the retained limitations and the visual review of
   `overview.png`, `ns1c-vs-ns1c2-divergence.png` and `controller-phase-timeline.png`):
@@ -233,7 +247,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after NS1c2): THE NORTH STAR
+## Current roadmap (Luiz and Chat, after NS1d): THE NORTH STAR
 
     NATURAL BOOTSTRAP
         coarse 360 RGB
@@ -270,17 +284,22 @@ Accepted milestones:
             -> schedule_normal switch 172 -> 202; one action on 202
             correct multi-entity NORMAL semantics: ESTABLISHED
             genuine natural scene switch: ESTABLISHED
-        next:
-            North Star-1d                            NEXT
+        North Star-1d                                ACCEPTED (Outcome 2)
             controller-phase cross-target measurement memory
-            no-new-render causal replay (no Blender, no new action)
-            accepted InstanceMeasurementMemory + effective_target_geometry
-            over the NS1b + NS1c2 controller-phase observations
-            persistent maps stay target-only; memory != map fusion
-            stop at the first controller-decision divergence
-            bootstrap cross-target memory: NOT DECIDED by NS1d
-        after NS1d review:
-            full coherent multi-entity North-Star loop
+            no-new-render causal replay of 9 controller-phase observations
+            581,882 memory samples; cross-target re-probes 212, 129, 123
+            no action divergence through NS1c2 step 7; no reactivation
+            persistent maps unchanged; memory != map fusion
+            cross-target causal measurement memory: ESTABLISHED
+            correct NORMAL scene switching: ESTABLISHED
+            policy-chart global transport: ESTABLISHED
+        next:
+            North Star-1e                            NEXT
+            full coherent multi-entity loop with M2 measurement memory
+            continue from the accepted post-NS1c2 / NS1d state (target 202)
+            run Controller-02 to its honest terminal or the derived hard cap
+            then a strictly post-control Breadth-1 0.5-deg 12-mm evaluation
+            bootstrap cross-target memory: NOT PART OF NS1e
         later:
             full Classroom active scene loop
             final omnidirectional outputs
@@ -332,12 +351,13 @@ The full stage roadmap (updated after the NS1c review):
            NS1c2 Controller-02 NORMAL / RESIDUE     ACCEPTED (Outcome 1: natural quiet switch; gate v1 in
                 phase semantics                           RESIDUE only, 0 NORMAL gate calls; 172 naturally QUIET at
                                                           9 own looks; switch 172 -> 202; RESIDUE not reached)
-           NS1d controller-phase cross-target       NEXT (no-new-render causal replay of the accepted
-                measurement memory                        InstanceMeasurementMemory mechanism over the NS1b / NS1c2
-                                                          controller-phase observations; stop at the first
-                                                          controller-decision divergence)
-           full coherent multi-entity North-Star    after NS1d review
-                loop
+           NS1d controller-phase cross-target       ACCEPTED (Outcome 2: the accepted memory runs unchanged on
+                measurement memory                        North-Star data; cross-target evidence changes revisions,
+                                                          effective geometry and non-selected proposals; no action
+                                                          divergence through NS1c2 step 7; no reactivation)
+           NS1e full coherent multi-entity loop     NEXT (coherent ten-entity Controller-02 loop with full M2
+                with M2 measurement memory                memory, from the accepted NS1d state, to honest terminal
+                                                          or the derived hard cap; post-control evaluation)
            full Classroom active scene loop, final omnidirectional outputs
       -> Classroom validation
       -> Tabletop transfer
@@ -562,7 +582,39 @@ Decision record (durable):
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
 
+### North Star after NS1d (Luiz and Chat): the full coherent loop with M2 measurement memory
+
+**NS1d is complete. Cross-target causal measurement memory, correct NORMAL scene switching and policy-chart global
+transport are ESTABLISHED; North Star-1e, the Full Coherent Multi-Entity Loop with Cross-Target Measurement Memory, is
+next.**
+
+Decision record (durable):
+1. NS1d is accepted as Outcome 2 (see its section below).
+2. NS1e NEXT: **Full Coherent Multi-Entity Loop with Cross-Target Measurement Memory** (branch
+   `north-star/ns1e-coherent-full-loop-m2-memory`, contract `docs/north-star/ns1e-coherent-full-loop-m2-memory-contract.md`,
+   committed before implementation / canonical run). The accepted Controller-02 scene machine (`ns1c2_phase.SceneMachine`)
+   is released over the ten coherent entities and runs to its honest terminal state, with no artificial first-switch,
+   one-action or one-object stop. It stops only at Controller-02 closure of the declared coherent universe, at the
+   mathematically derived hard action cap (from the 24-look budget and at most one final residue observation per
+   entity), or at an implementation / scientific invariant failure.
+3. NS1e continues from the accepted post-NS1c2 / NS1d state, not from bootstrap: the NS1c2 final persistent maps, the
+   NS1d M2 memory after memory event 8, current target 202, own looks 172: 9, 202: 2, others 1; the accepted NS1d next
+   decision (retain 202, FSG6f (−10.9°, +10.5°)) is reproduced before any new render.
+4. M2 is the live controller geometry: `effective_target_geometry(persistent map, memory.snapshot(i).xyz_h)` with
+   revision (own looks, measured points). Persistent maps stay target-only; every new observation is appended once to the
+   memory for every positive observed id.
+5. Unchanged: FSG6f, Cyclopean, Controller-02 (NORMAL ungated; DEFERRED at the 24-look budget; `final_look_gate_v1` only
+   in RESIDUE), the scheduler, the fixed policy charts, the fixed physical head, the 4096-spp PERFECT observation path,
+   the 12-mm H0 fusion. 10 / 110 / 178 stay out of scheduling. The rank-1 planar seam is observed, not repaired.
+   Bootstrap cross-target memory is NOT PART OF NS1e.
+6. After the controller freezes, a separate post-control evaluation measures the final persistent maps against the
+   accepted Breadth-1 0.5° whole-sphere reference at 12 mm. The historical Controller-01 98.34 % is context only (not
+   numerically comparable). A Controller-02 `scene_closed` over the ten coherent ids is reported as
+   `COHERENT_SUBSET_CLOSED`, never as full-Classroom closure.
+
 ### North Star after NS1c2 (Luiz and Chat): controller-phase cross-target measurement memory
+
+Historical record (the launch of NS1d; NS1d is now accepted, see its section below):
 
 **NS1c2 is complete. Correct multi-entity NORMAL controller semantics and a genuine natural scene switch are
 ESTABLISHED; North Star-1d, Controller-Phase Cross-Target Measurement Memory, is next.**
@@ -823,6 +875,66 @@ Decision record (durable):
     passes.
   - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
     is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## North Star-1d: Controller-Phase Cross-Target Measurement Memory (accepted at `25bb929`)
+
+Luiz and Chat accept NS1d as **Outcome 2**: the machine result, the scientific conclusion, the historical known answer,
+the architectural distinction, the retained limitations and the visuals.
+
+Record (branch `north-star/ns1d-cross-target-measurement-memory`, base `3720d74`):
+- contract: `docs/north-star/ns1d-cross-target-measurement-memory-contract.md` (`93f51d3`, before any implementation,
+  memory patch, probe or replay).
+- implementation: `tools/north_star/ns1d_{spec,core,run,synthetic,visuals}.py`, `check_ns1d.py` and
+  `check_ns1d_corruptions.py` (`723b3ac`; every canonical stage ran from it).
+- report: `docs/north-star/ns1d-cross-target-measurement-memory-report.md` (completion `1d2ea2d`, acceptance `25bb929`).
+- run: `/home/lvelho/rd/f3d-vision/previews/north-star/ns1d-cross-target-measurement-memory/` (no-new-render causal
+  replay; stages refuse to rerun; the frozen post-step-7 state is `replay/state-after-event-08.json`).
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/north-star/ns1d-cross-target-measurement-memory/` (`overview.png`
+  `6f2f77092d1e3da15e9297a794941aa02f67b942d64cd365d08b3e70bd2dcb84`, `memory-causal-timeline.png`
+  `71ffb93492615ca0c5e47db21241f1940ea6d9960e3f8c10c6861ebb0d6cb401`, `effective-geometry-before-after.png`
+  `b883e7bae2d60386a5d220149d4d6c666718ab57cb159b1badcc7285c0735109`, inspected and accepted).
+
+Accepted measured result:
+
+    NORTH_STAR1D_CHECKS_PASS           24 / 24
+    NORTH_STAR1D_MUTATIONS_CAUGHT      40 / 40 (clean null probe)
+    NS1D_SYNTHETIC_PASS                20 / 20
+
+Check 22 of `check_ns1d.py` forbids the NS1d ACCEPTED marker in the report (it was written for REVIEW PENDING), and
+check 24 is scoped to the NS1d base `3720d74`. Measured: 24/24 at `1d2ea2d`; 23/24 at the acceptance commit `25bb929`
+(only check 22, flagging exactly the decided marker). On later commits check 24 also reports later accepted changes
+outside the NS1d files as "undeclared". That is the guards' scope, not an NS1d regression.
+
+| memory (after event 8) | samples |
+|---|---|
+| total | 581,882 in 11 observed ids |
+| scheduler-entity own-target | 149,142 (172: 131,695; 202: 17,447) |
+| scheduler-entity cross-target | 44,753 (212: 38,197; 123: 5,779; 129: 777) |
+| non-scheduler id 110 | 361,891 |
+
+Accepted interpretation (durable):
+1. The accepted Controller-01 instance-keyed measurement-memory mechanism runs unchanged on frozen North-Star spherical
+   measurements (the NS1b action + NS1c2 steps 0–7, nine unique observations).
+2. Memory changed revisions, effective controller geometry, probe-cache validity and some local proposals (129 Cyclopean
+   (+5.1°, +4.5°) -> (+7.1°, +5.5°); 123 FSG6f (−5°, +5°) -> (0°, +5°)) without changing the persistent SurfaceMaps, the
+   own-look histories or any accepted NS1c2 next action through step 7. No action divergence; no natural reactivation in
+   this short trace.
+3. Historical known answer (ACCEPTED HISTORICAL REFERENCE): Controller-01 memory rebuilt from 141 saved patches, 7,843,577
+   samples; localized-object own 2,274,857, cross-target 5,494,429 (70.7 %). The object-109 natural reactivation (109
+   QUIET -> observation with active target 110 -> +4 measurements of 109 -> revision change -> Cyclopean eligible 0 -> 28
+   -> ACTIONABLE, proposal (−7.0°, +14.1°)) was reproduced exactly: cross-target memory -> revision invalidation ->
+   re-probe -> natural reactivation is an accepted known mechanism.
+4. PERSISTENT MAP != MEASUREMENT MEMORY. Entity i's persistent SurfaceMap holds only its accepted target-active fusion;
+   its controller geometry is `effective_target_geometry(persistent_map(i), measurement_memory(i))`. Cross-target
+   measurements change effective geometry and revision; they never fuse into another entity's map, never become another
+   entity's own look and never enter another entity's visited-gaze list.
+5. Accepted visual reading: measured memory is visibly distinct from fused map geometry; cross-target evidence reaches
+   non-active entities; revisions / proposals change without map mutation; the scheduler trajectory remains identical
+   through NS1c2 step 7.
+6. Limitations retained: bootstrap cross-target memory NOT DEFINED; the scheduler universe is only the ten coherent
+   single-patch NS1a entities; 10 / 110 / 178 outside scheduling; rank-1 planar controller-state zero-support seam;
+   RESIDUE not reached naturally in a North-Star scene run; PERFECT correspondence is an oracle aid; identity is an
+   ORACLE SEGMENTATION AID.
 
 ## North Star-1c2: Correct Controller-02 NORMAL / RESIDUE Semantics (accepted at `5fe0684`)
 
@@ -2014,23 +2126,24 @@ automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
 Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a,
-NS1b and NS1c2 are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual
+NS1b, NS1c2 and NS1d are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual
 Language 1 are frozen unless explicitly reopened.
 
 NS1c (coherent multi-entity control, first scene switch) was reviewed and is **NOT accepted and NOT merged** (see "NS1c
 review"); its branch stays at `4107be8` and its run is diagnostic evidence only.
 
-**Current next activity: North Star-1d — Controller-Phase Cross-Target Measurement Memory** (see "North Star after
-NS1c2"), on branch `north-star/ns1d-cross-target-measurement-memory` from this `main`, with its contract at
-`docs/north-star/ns1d-cross-target-measurement-memory-contract.md`. The question: if the accepted instance-keyed
-measurement-memory mechanism is restored using the already measured North-Star controller-phase observations, does
-cross-target metric evidence alter any entity's effective geometry, revision, local service probe or next controller
-decision relative to the accepted NS1c2 target-only trace? It is a no-new-render causal replay (no Blender, no new
-observation, no new controller action) over the accepted NS1b action on 172 and the accepted NS1c2 trace, with the
-accepted `InstanceMeasurementMemory` / `effective_target_geometry` unchanged, and it stops at the first
-controller-decision divergence. Persistent maps stay target-only; cross-target memory never enters another entity's map
-or own-look context. Bootstrap cross-target memory is not decided by NS1d. FSG6f, Cyclopean, Controller-02, the
-scheduler, the 24-look budget, the fixed head and the rank-1 planar support stay unchanged.
+**Current next activity: North Star-1e — Full Coherent Multi-Entity Loop with Cross-Target Measurement Memory** (see
+"North Star after NS1d"), on branch `north-star/ns1e-coherent-full-loop-m2-memory` from this `main`, with its contract at
+`docs/north-star/ns1e-coherent-full-loop-m2-memory-contract.md`. The question: starting from the accepted NS1d
+M2-enriched post-NS1c2 state, can the accepted Controller-02 scene machine autonomously service the entire coherent
+ten-entity North-Star scheduler universe to its honest terminal state (fixed physical head, fixed recentered policy
+charts, FSG6f -> Cyclopean, PERFECT local correspondence, spherical H0 geometry, target-only persistent fusion,
+instance-keyed cross-target measurement memory, revision-driven natural reactivation, NORMAL / DEFERRED / RESIDUE
+semantics) without controller retuning? It continues from current target 202 and the frozen NS1d memory (events 0–8),
+runs until Controller-02 closure, the derived hard action cap or an invariant failure, and is followed by a strictly
+post-control 12-mm evaluation against the accepted Breadth-1 0.5° reference. FSG6f, Cyclopean, Controller-02, the
+scheduler, the 24-look budget, the final gate, the fixed head and the rank-1 planar support stay unchanged; 10 / 110 /
+178 stay out of scheduling; bootstrap cross-target memory is not part of NS1e.
 
 ## Decision-critical open items
 
@@ -2069,9 +2182,9 @@ scheduler, the 24-look budget, the fixed head and the rank-1 planar support stay
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
 6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a, NS1b and NS1c2 acceptances, the revised roadmap, the post-NB1b pivot, the
-   start of Active Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star, the
-   post-NS1a, post-NS1b and post-NS1c2 decisions and the NS1c review. These handoff updates did not touch it.
+   AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a, NS1b, NS1c2 and NS1d acceptances, the revised roadmap, the post-NB1b pivot,
+   the start of Active Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star,
+   the post-NS1a, post-NS1b, post-NS1c2 and post-NS1d decisions and the NS1c review. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

@@ -459,8 +459,10 @@ roadmap decision recorded in `docs/chat-handoff.md`:
       Reviewed, NOT accepted, NOT merged (below).
     - North Star-1c2: the first scene switch under the exact
       Controller-02 NORMAL / RESIDUE semantics. Accepted (below).
-    - North Star-1d (next): controller-phase cross-target measurement
-      memory (below).
+    - North Star-1d: controller-phase cross-target measurement memory.
+      Accepted (below).
+    - North Star-1e (next): the full coherent ten-entity Controller-02
+      loop with full M2 measurement memory (below).
     - Later: the full Classroom active scene loop and the final
       omnidirectional outputs.
   - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
@@ -576,7 +578,7 @@ roadmap decision recorded in `docs/chat-handoff.md`:
 - North Star after NS1c2 (Luiz and Chat).
   - Correct multi-entity NORMAL controller semantics: ESTABLISHED.
     Genuine natural scene switch: ESTABLISHED.
-  - NS1d (next): Controller-Phase Cross-Target Measurement Memory. The
+  - NS1d: Controller-Phase Cross-Target Measurement Memory. The
     accepted Controller-01 did not use only active target maps: every
     observation routed all valid positive-instance samples into
     `InstanceMeasurementMemory`, and each object's policy used
@@ -590,6 +592,38 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     the accepted NS1b / NS1c2 controller-phase observations. Persistent
     maps stay target-only; memory is not map fusion. Bootstrap
     cross-target memory is not decided by NS1d.
+  - NS1d is ACCEPTED as Outcome 2. The accepted Controller-01
+    instance-keyed measurement-memory mechanism runs unchanged on frozen
+    North-Star spherical measurements: nine controller-phase
+    observations (the NS1b action and NS1c2 steps 0–7) give 581,882
+    samples in 11 observed ids (coherent own 149,142; coherent
+    cross-target 44,753: 212 38,197, 123 5,779, 129 777; id 110
+    361,891). Memory changed revisions, effective geometry, probe-cache
+    validity and two non-selected proposals (129, 123) without changing
+    the persistent maps, the own-look histories or any accepted NS1c2
+    next action through step 7; no natural reactivation in the trace.
+    The historical Controller-01 memory (7,843,577 samples, 70.7 %
+    cross-target) and its 109 natural reactivation were reproduced
+    exactly. PERSISTENT MAP != MEASUREMENT MEMORY. Limitations retained:
+    bootstrap cross-target memory NOT DEFINED; ten coherent entities
+    only; 10 / 110 / 178 excluded; rank-1 planar zero-support seam;
+    RESIDUE not reached naturally; PERFECT correspondence and identity
+    are oracle aids.
+- North Star after NS1d (Luiz and Chat).
+  - Cross-target causal measurement memory: ESTABLISHED. Correct NORMAL
+    scene switching: ESTABLISHED. Policy-chart global transport:
+    ESTABLISHED.
+  - NS1e (next): Full Coherent Multi-Entity Loop with Cross-Target
+    Measurement Memory. The coherent ten-entity Controller-02 scene
+    machine is released to run to its honest terminal state (scene
+    closure over the coherent subset, or the mathematically derived
+    hard action cap), with full M2 measurement memory as the live
+    controller geometry, fixed policy charts, the fixed physical head,
+    PERFECT local correspondence, target-only persistent fusion and
+    revision-driven natural reactivation. It continues from the accepted
+    post-NS1c2 / NS1d state (current target 202), not from bootstrap. A
+    strictly post-control evaluation against the accepted Breadth-1
+    0.5° reference follows the controller freeze.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.
