@@ -1,10 +1,14 @@
 # North Star-1d — Controller-Phase Cross-Target Measurement Memory — report
 
-**Marker.**
+**Markers.**
 
     NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_COMPLETE
+    NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED
 
-**Status: REVIEW PENDING.** No ACCEPTED marker is written. NS1d is not merged.
+**Status: ACCEPTED.** Luiz and Chat accepted NS1d as **Outcome 2** after scientific review, independent GitHub review,
+checker / corruption review and visual review of `overview.png`, `memory-causal-timeline.png` and
+`effective-geometry-before-after.png` (see "Acceptance record" at the end). The sections below are the report as
+completed at `1d2ea2d`, unchanged.
 
 > **Question.** If the accepted instance-keyed measurement-memory mechanism is restored using the already measured
 > North-Star controller-phase observations, does cross-target metric evidence alter any entity's effective geometry,
@@ -491,7 +495,11 @@ Regenerate:
 
 ## 24. Final unresolved decision for Luiz / Chat
 
-    READY TO RELEASE THE MULTI-ENTITY NORTH-STAR LOOP WITH CROSS-TARGET MEMORY?
+~~READY TO RELEASE THE MULTI-ENTITY NORTH-STAR LOOP WITH CROSS-TARGET MEMORY?~~
+
+**Decided:** NS1d is accepted (Outcome 2). Cross-target causal measurement memory is established. North Star-1e releases
+the coherent ten-entity Controller-02 loop with full M2 measurement memory, continuing from the accepted post-NS1c2 /
+NS1d state (see "Acceptance record").
 
 The measured inputs:
 - Outcome 2.
@@ -509,4 +517,98 @@ This report makes no loop design.
 Layout, `scripts/verify_baseline.sh`, `git diff --check` and a read-only `check_ns1d.py` rerun are recorded in the report
 commit message.
 
-NS1d REVIEW PENDING · DECISION PENDING: READY TO RELEASE THE MULTI-ENTITY NORTH-STAR LOOP WITH CROSS-TARGET MEMORY?
+~~NS1d REVIEW PENDING · DECISION PENDING: READY TO RELEASE THE MULTI-ENTITY NORTH-STAR LOOP WITH CROSS-TARGET MEMORY?~~
+
+NS1d ACCEPTED · OUTCOME 2 · NS1e NEXT
+
+## Acceptance record
+
+Luiz and Chat completed the scientific review, an independent GitHub review, the checker / corruption review and a
+visual review of `overview.png`, `memory-causal-timeline.png` and `effective-geometry-before-after.png`, and **accept
+NS1d** as committed at `1d2ea2d`:
+
+    NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED
+
+- **Outcome accepted:** OUTCOME 2.
+- **Machine result accepted:**
+  - `NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_COMPLETE`;
+  - `NORTH_STAR1D_CHECKS_PASS` 24/24;
+  - `NORTH_STAR1D_MUTATIONS_CAUGHT` 40/40, with a clean unmodified-mirror null probe;
+  - `NS1D_SYNTHETIC_PASS` 20/20.
+- **Accepted scientific conclusion** (stated without strengthening):
+
+      The accepted Controller-01 instance-keyed measurement-memory mechanism runs unchanged on frozen North-Star
+      spherical measurements.
+
+  - Nine unique controller-phase observations were replayed: the accepted NS1b action plus accepted NS1c2 steps 0–7.
+  - Measured memory:
+
+    | | samples |
+    |---|---|
+    | total | 581,882 |
+    | observed ids | 11 |
+    | scheduler-entity own-target | 149,142 |
+    | scheduler-entity cross-target | 44,753 |
+    | cross-target, entity 212 | 38,197 |
+    | cross-target, entity 123 | 5,779 |
+    | cross-target, entity 129 | 777 |
+    | non-scheduler id 110 | 361,891 |
+
+  - Memory changed revisions, effective controller geometry, probe-cache validity and some local proposals, without
+    changing the persistent SurfaceMaps, the own-look histories, or any accepted NS1c2 next action through step 7.
+    Examples:
+    - entity 129: Cyclopean proposal (+5.1°, +4.5°) → (+7.1°, +5.5°);
+    - entity 123: FSG6f proposal (−5°, +5°) → (0°, +5°).
+  - No action divergence occurred. No natural reactivation occurred inside this short North-Star trace.
+- **Historical known answer** (ACCEPTED HISTORICAL REFERENCE, retained prominently). The accepted Controller-01 memory,
+  rebuilt from 141 saved patches:
+  - 7,843,577 measured samples;
+  - localized-object own: 2,274,857;
+  - localized-object cross-target: 5,494,429;
+  - cross-target fraction: 70.7 %.
+
+  The historical object-109 natural reactivation was reproduced exactly:
+
+      109 QUIET
+        -> later observation with active target 110
+        -> +4 measurements of 109
+        -> revision changes
+        -> Cyclopean eligible cells 0 -> 28
+        -> 109 ACTIONABLE
+        -> proposal (-7.0, +14.1)
+
+  Thus `cross-target memory -> revision invalidation -> re-probe -> natural reactivation` is an accepted known
+  mechanism.
+- **Architectural distinction accepted:**
+
+      PERSISTENT MAP  !=  MEASUREMENT MEMORY
+
+  For entity i, the persistent SurfaceMap(i) contains only its accepted target-active fusion. Its controller geometry is
+  `effective_target_geometry(persistent_map(i), measurement_memory(i))`. Cross-target measurements DO change effective
+  geometry and revision; they DO NOT fuse into another entity's persistent map, DO NOT become another entity's own look,
+  and DO NOT enter another entity's visited-gaze list.
+- **Visuals accepted** (the reported hashes):
+  - `visuals/north-star/ns1d-cross-target-measurement-memory/overview.png`
+    (`6f2f77092d1e3da15e9297a794941aa02f67b942d64cd365d08b3e70bd2dcb84`);
+  - `visuals/north-star/ns1d-cross-target-measurement-memory/memory-causal-timeline.png`
+    (`71ffb93492615ca0c5e47db21241f1940ea6d9960e3f8c10c6861ebb0d6cb401`);
+  - `visuals/north-star/ns1d-cross-target-measurement-memory/effective-geometry-before-after.png`
+    (`b883e7bae2d60386a5d220149d4d6c666718ab57cb159b1badcc7285c0735109`).
+
+  Accepted visual reading:
+  - measured memory is visibly distinct from fused map geometry;
+  - cross-target evidence reaches non-active entities;
+  - revisions / proposals change without map mutation;
+  - the scheduler trajectory remains identical through NS1c2 step 7.
+- **Retained limitations** (part of the acceptance):
+  1. BOOTSTRAP cross-target memory is still NOT DEFINED.
+  2. The scheduler universe remains only the ten coherent single-patch NS1a entities.
+  3. Ambiguous oracle identities 10 / 110 / 178 remain outside scheduling.
+  4. Rank-1 seeds still have the inherited planar controller-state zero-support seam.
+  5. Controller-02 RESIDUE has still not been reached naturally in a North-Star scene run.
+  6. PERFECT correspondence remains an oracle aid.
+  7. Identity remains an ORACLE SEGMENTATION AID.
+- **Unchanged by this acceptance:** the canonical replay, the memory products, the figures, the implementation and the
+  contract.
+- **Next (Luiz and Chat):** North Star-1e — release the coherent ten-entity Controller-02 loop with full M2 measurement
+  memory, continuing from the accepted post-NS1c2 / NS1d state (not restarting from bootstrap).
