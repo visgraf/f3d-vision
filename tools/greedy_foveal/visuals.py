@@ -203,7 +203,7 @@ def panel_e(img, d, box, ev_npz, ev):
                                               C_COVERED), ("not covered", C_MISSED), ("no first hit", C_NOHIT)])
 
 
-def panel_c(img, d, box, cov, traj):
+def panel_c(img, d, box, cov, traj, mark_fix: int | None = None):
     x0, y0, x1, y1 = box
     sh, dh = np.asarray(cov["seen_history"]) * 100, np.asarray(cov["depth_history"]) * 100
     n = len(sh)
@@ -212,7 +212,7 @@ def panel_c(img, d, box, cov, traj):
         y = y1 - v / ymax * (y1 - y0)
         d.line([x0, y, x1, y], fill=S.GRID, width=1)
         S.text(d, (x0 - 8, y), f"{v:.0f}%", size=S.T_SMALL, fill=S.MUTED, outline=None, anchor="rm")
-    step = 25 if n > 60 else (5 if n > 10 else 1)
+    step = 50 if n > 250 else (25 if n > 60 else (5 if n > 10 else 1))
     for k in range(0, n + 1, step):
         x = x0 + k / max(1, n) * (x1 - x0)
         S.text(d, (x, y1 + 6), str(k), size=S.T_SMALL, fill=S.MUTED, outline=None, anchor="ma")
@@ -223,6 +223,13 @@ def panel_c(img, d, box, cov, traj):
             x = x0 + e["n"] / max(1, n) * (x1 - x0)
             d.line([x, y1 - 12, x, y1], fill=C_GLOBAL, width=2)
     xs = x0 + np.arange(1, n + 1) / max(1, n) * (x1 - x0)
+    if mark_fix and mark_fix < n:
+        xm = x0 + mark_fix / n * (x1 - x0)
+        ym = y1 - sh[mark_fix - 1] / ymax * (y1 - y0)
+        dashed_polyline(d, [(xm, y1), (xm, y0 + 60)], S.INK2, width=2, dash=8.0, gap=6.0)
+        d.ellipse([xm - 6, ym - 6, xm + 6, ym + 6], fill=S.WHITE, outline=S.INK, width=2)
+        S.text(d, (xm - 10, ym - 34), f"v0 stopped here (#{mark_fix}): SEEN {sh[mark_fix - 1]:.1f}%",
+               size=S.T_SMALL, bold=True, anchor="rm", outline=S.WHITE)
     for hist, col, lab in ((sh, S.OI_SKY, "SEEN"), (dh, C_DEPTH, "DEPTH")):
         pts = [(float(x), float(y1 - v / ymax * (y1 - y0))) for x, v in zip(xs, hist)]
         if len(pts) > 1:
@@ -246,8 +253,8 @@ def panel_d(d, x, y, traj, ev):
                                          f"{100 * p['cell_coverage']:.2f}%  ({100 * p['solid_angle_coverage']:.2f}% sr)"),
                  ("authored (Index > 0)", f"{100 * a['cell_coverage']:.2f}%  ({100 * a['solid_angle_coverage']:.2f}% sr)")]
     rows += [("final surfels", f"{traj['final_surfels']:,d}"),
-             ("wall time", f"{traj['wall_seconds']:.0f} s  (render {s['render']:.0f} s, correspondence "
-                           f"{s['correspondence']:.0f} s, fusion {s['fusion']:.0f} s, policy {s['policy']:.0f} s)"),
+             ("wall time", f"{traj['wall_seconds']:.0f} s  (render {s['render']:.0f} / corr. "
+                           f"{s['correspondence']:.0f} / fusion {s['fusion']:.0f} / policy {s['policy']:.0f} s)"),
              ("render", f"{traj['spp']} spp, OPTIX, 640 × 640 per eye, 12° core"),
              ("correspondence", "PERFECT / ORACLE (+ instance-0 extension)")]
     for k, v in rows:
@@ -279,7 +286,7 @@ def oracle_colors(ids):
     return np.clip(col, 0, 255).astype(np.uint8)
 
 
-def overview(run: Path, vis: Path) -> dict:
+def overview(run: Path, vis: Path, mark_fix: int | None = None) -> dict:
     vis.mkdir(parents=True, exist_ok=True)
     traj = json.loads((run / "trajectory.json").read_text())
     with np.load(run / "final-map.npz") as z:
@@ -313,7 +320,7 @@ def overview(run: Path, vis: Path) -> dict:
     y = boxB[3] + 150
     boxC = (M + 60, y, M + half - 120, y + 380)
     frame_box(img, d, boxC, "C  SEEN / DEPTH vs fixation", "% of 4π")
-    panel_c(img, d, boxC, cov, traj)
+    panel_c(img, d, boxC, cov, traj, mark_fix)
     S.text(d, (M + half + 80, y - 34), "D  statistics", size=S.T_HEAD, bold=True, outline=None)
     panel_d(d, M + half + 80, y + 6, traj, ev)
     y = boxC[3] + 140
@@ -343,3 +350,13 @@ def overview(run: Path, vis: Path) -> dict:
     img.save(out, optimize=True)
     print(f"[gfe-visuals] wrote {out} {img.size}", flush=True)
     return {"overview": str(out)}
+
+
+if __name__ == "__main__":
+    import argparse
+    ap = argparse.ArgumentParser(description="overview.png; --mark-fix annotates an earlier stop on the coverage curve")
+    ap.add_argument("--run", required=True)
+    ap.add_argument("--vis", required=True)
+    ap.add_argument("--mark-fix", type=int, default=None)
+    a = ap.parse_args()
+    overview(Path(a.run).resolve(), Path(a.vis).resolve(), a.mark_fix)
