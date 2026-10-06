@@ -66,7 +66,9 @@ first scene switch, continuing from the accepted NS1b state; multi-part oracle i
 decision adds docs/north-star/ns1c-review-decision.md (required); the handoff, CLAUDE.md and the decision record NS1c
 reviewed, NOT accepted and NOT merged (no NS1c ACCEPTED marker), and North Star-1c2 (exact Controller-02 NORMAL / RESIDUE
 semantics) next. North Star-1c2 declares its contract (required), report and nine tools/north_star/ ns1c2 tools
-(allowed).
+(allowed). The handoff records NS1c2 accepted (Outcome 1, natural quiet switch; correct multi-entity NORMAL semantics
+established) and the post-NS1c2 decision (North Star-1d: controller-phase cross-target measurement memory, a
+no-new-render causal replay; persistent maps stay target-only).
 """
 from __future__ import annotations
 
@@ -537,15 +539,25 @@ def main() -> int:
     check("the NS1c review is recorded: NOT accepted, NOT merged, no NS1c ACCEPTED marker; North Star-1c2 next",
           "NS1c is REVIEWED, NOT ACCEPTED and NOT MERGED. North Star-1c2, the first scene switch under the exact accepted "
           "Controller-02 NORMAL / RESIDUE semantics, is next." in squash(handoff)
-          and "Current next activity: North Star-1c2 — Correct Controller-02 NORMAL / RESIDUE Semantics" in squash(handoff)
           and "NS1c: REVIEWED · NOT ACCEPTED · NOT MERGED" in review
           and "NS1c is REVIEWED, NOT ACCEPTED and NOT MERGED." in squash(claude)
-          and "North Star-1c2 (next)" in squash(claude)
           and all(NS1C_ACCEPTED_MARKER not in t for t in (handoff, review, claude)))
-    check("chat handoff records accepted main at NS1b, with NS1a, AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, NB1b, "
-          "NB1a, Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
+    ns1c2_report = disk("docs/north-star/ns1c2-controller02-phase-semantics-report.md")
+    ns1c2_report = ns1c2_report.read_text(encoding="utf-8") if ns1c2_report.is_file() else ""
+    check("NS1c2 is recorded accepted (Outcome 1) and North Star-1d (cross-target measurement memory) next",
+          "NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_ACCEPTED" in handoff
+          and "NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_COMPLETE" in handoff
+          and "NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_ACCEPTED" in ns1c2_report
+          and "**Status: ACCEPTED.**" in ns1c2_report
+          and "NS1c2 is complete. Correct multi-entity NORMAL controller semantics and a genuine natural scene switch are "
+              "ESTABLISHED; North Star-1d, Controller-Phase Cross-Target Measurement Memory, is next." in squash(handoff)
+          and "Current next activity: North Star-1d — Controller-Phase Cross-Target Measurement Memory" in squash(handoff)
+          and "NS1c2 is ACCEPTED as Outcome 1" in squash(claude)
+          and "North Star-1d (next)" in squash(claude))
+    check("chat handoff records accepted main at NS1c2, with NS1b, NS1a, AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, "
+          "NB1b, NB1a, Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
           "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",
-          "main @ 255355108863022f931574dae4b2df8cdd2a772e" in handoff
+          "main @ 5fe0684bae6ab4bc8a2080b1a93089fdb2a935af" in handoff
           and "NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_ACCEPTED" in handoff
           and "NORTH_STAR1B_RECENTERED_CONTROLLER_HANDOFF_COMPLETE" in handoff
           and "NS1b is complete. The bootstrap-to-controller bridge is ESTABLISHED; North Star-1c, coherent "

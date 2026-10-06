@@ -2,14 +2,25 @@
 
 ## Accepted main
 
-    main @ 255355108863022f931574dae4b2df8cdd2a772e
+    main @ 5fe0684bae6ab4bc8a2080b1a93089fdb2a935af
 
-`origin/main` is fast-forwarded to the docs-only handoff commit that adds this entry, whose parent is
-`2553551` (the NS1b acceptance commit on branch `north-star/ns1b-recentered-controller-handoff`). Docs-only decision
-commits follow it on `main`: `2815bf1` (the post-NS1b roadmap) and the NS1c review decision. NS1b remains the latest
-accepted experiment.
+`origin/main` is fast-forwarded to the NS1c2 acceptance commit `5fe0684` on branch
+`north-star/ns1c2-controller02-phase-semantics` (no merge commit); the docs-only post-NS1c2 roadmap commit that adds
+this entry follows it. NS1c2 is the latest accepted experiment.
 
 Accepted milestones:
+- **North Star-1c2: Correct Controller-02 NORMAL / RESIDUE Semantics**, accepted by Luiz and Chat as **Outcome 1 —
+  natural quiet switch** (the machine result, the phase result, the retained limitations and the visual review of
+  `overview.png`, `ns1c-vs-ns1c2-divergence.png` and `controller-phase-timeline.png`):
+
+      NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_ACCEPTED
+
+  The accepted completion marker is `NORTH_STAR1C2_CONTROLLER02_PHASE_SEMANTICS_COMPLETE`. **NS1c2 is complete.**
+  Correct multi-entity NORMAL controller semantics: ESTABLISHED. Genuine natural scene switch: ESTABLISHED.
+- **North Star after NS1c2 — controller-phase cross-target measurement memory** (a decision by Luiz and Chat, not an
+  experiment): North Star-1d restores the accepted Controller-01 instance-keyed measurement memory as a no-new-render
+  causal replay over the accepted NS1b / NS1c2 controller-phase observations, before the full multi-entity North-Star
+  loop is released. See "North Star after NS1c2".
 - **NS1c review decision** (a decision by Luiz and Chat, not an experiment; `docs/north-star/ns1c-review-decision.md`):
   **NS1c is REVIEWED, NOT ACCEPTED and NOT MERGED.** Its branch stays at `4107be8` and its run is retained as diagnostic
   evidence. NS1c applied `final_look_gate_v1` to every ordinary probe; accepted Controller-02 calls it only in RESIDUE.
@@ -222,7 +233,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after the NS1c review): THE NORTH STAR
+## Current roadmap (Luiz and Chat, after NS1c2): THE NORTH STAR
 
     NATURAL BOOTSTRAP
         coarse 360 RGB
@@ -251,15 +262,24 @@ Accepted milestones:
             coherent multi-entity control, first scene switch
             gate v1 applied to every NORMAL probe (not Controller-02)
             run retained as diagnostic evidence
-        next:
-            North Star-1c2                           NEXT
+        North Star-1c2                               ACCEPTED (Outcome 1: natural quiet switch)
             exact Controller-02 NORMAL / RESIDUE semantics
-            only change vs NS1c: final_look_gate_v1 in RESIDUE only
-            reuse NS1c's four FSG6f actions on 172 read-only (no re-render)
-            -> continue 172 under NORMAL semantics (ordinary budget 24)
-            -> stop after the first NORMAL action on a target other than 172
-            multi-part oracle identities 10 / 110 / 178: DEFERRED
-        after NS1c2 review:
+            final_look_gate_v1 in RESIDUE only; 0 gate calls in NORMAL
+            NS1c's four FSG6f actions on 172 reproduced read-only
+            172 retained, 3 more actions, naturally QUIET at 9 own looks
+            -> schedule_normal switch 172 -> 202; one action on 202
+            correct multi-entity NORMAL semantics: ESTABLISHED
+            genuine natural scene switch: ESTABLISHED
+        next:
+            North Star-1d                            NEXT
+            controller-phase cross-target measurement memory
+            no-new-render causal replay (no Blender, no new action)
+            accepted InstanceMeasurementMemory + effective_target_geometry
+            over the NS1b + NS1c2 controller-phase observations
+            persistent maps stay target-only; memory != map fusion
+            stop at the first controller-decision divergence
+            bootstrap cross-target memory: NOT DECIDED by NS1d
+        after NS1d review:
             full coherent multi-entity North-Star loop
         later:
             full Classroom active scene loop
@@ -309,10 +329,14 @@ The full stage roadmap (updated after the NS1c review):
                 first scene switch                        NORMAL service; the 172 -> 123 switch is mechanically
                                                           real but not Controller-02 evidence; run retained as
                                                           diagnostic evidence)
-           NS1c2 Controller-02 NORMAL / RESIDUE     NEXT (gate v1 in RESIDUE only; NS1c's four FSG6f actions on
-                phase semantics                           172 reused read-only; stop after the first NORMAL action
-                                                          on a target other than 172; 10 / 110 / 178 deferred)
-           full coherent multi-entity North-Star    after NS1c2 review
+           NS1c2 Controller-02 NORMAL / RESIDUE     ACCEPTED (Outcome 1: natural quiet switch; gate v1 in
+                phase semantics                           RESIDUE only, 0 NORMAL gate calls; 172 naturally QUIET at
+                                                          9 own looks; switch 172 -> 202; RESIDUE not reached)
+           NS1d controller-phase cross-target       NEXT (no-new-render causal replay of the accepted
+                measurement memory                        InstanceMeasurementMemory mechanism over the NS1b / NS1c2
+                                                          controller-phase observations; stop at the first
+                                                          controller-decision divergence)
+           full coherent multi-entity North-Star    after NS1d review
                 loop
            full Classroom active scene loop, final omnidirectional outputs
       -> Classroom validation
@@ -538,7 +562,35 @@ Decision record (durable):
   - The primary metric is the angular correspondence error θ_R(natural) − θ_R(oracle). Metric error is secondary. No
     acceptance threshold is declared; a poor primitive matcher is the result, not a reason to tune it.
 
+### North Star after NS1c2 (Luiz and Chat): controller-phase cross-target measurement memory
+
+**NS1c2 is complete. Correct multi-entity NORMAL controller semantics and a genuine natural scene switch are
+ESTABLISHED; North Star-1d, Controller-Phase Cross-Target Measurement Memory, is next.**
+
+Decision record (durable):
+1. NS1c2 is accepted as Outcome 1 — natural quiet switch (see its section below).
+2. Reason for NS1d: the historically successful Controller-01 did not use only active target maps. Every observation
+   routed all valid positive-instance metric samples into `InstanceMeasurementMemory`, and each object's policy used
+   `effective_target_geometry(persistent_map, measured_instance_memory)`. An observation of object A could therefore
+   change the causal geometry and revision of object B, causing B to be re-probed and possibly naturally reactivated.
+   The accepted Controller-01 measured 7,843,577 total instance points; over the 25 localized objects, 2,274,857
+   own-target and 5,494,429 cross-target (70.7 %); and 2 genuine natural reactivations (ACCEPTED HISTORICAL REFERENCE).
+3. NS1d NEXT: **Controller-Phase Cross-Target Measurement Memory** (branch
+   `north-star/ns1d-cross-target-measurement-memory`, contract
+   `docs/north-star/ns1d-cross-target-measurement-memory-contract.md`, committed before implementation / canonical
+   replay). It restores this MECHANISM before the full North-Star loop is released, as a NO-NEW-RENDER causal replay: no
+   Blender, no new observation, no new controller action. It uses the accepted `fov3d/reconstruction/measurement_memory.py`
+   unchanged over the accepted NS1b controller action and the accepted NS1c2 trace, and stops at the first
+   controller-decision divergence (or after the complete accepted NS1c2 trace).
+4. Persistent maps stay target-only: cross-target measurements enter the memory only, never another entity's map, and
+   never another entity's own-look context. Memory is not map fusion.
+5. Bootstrap cross-target memory (the six untargeted NB1c gazes) is NOT DECIDED by NS1d.
+6. FSG6f, Cyclopean, Controller-02, the scheduler, the 24-look budget, the fixed head and the rank-1 planar
+   controller-state support stay unchanged; 10 / 110 / 178 stay out of scheduling.
+
 ### NS1c review (Luiz and Chat): NOT ACCEPTED; North Star-1c2 next
+
+Historical record (the launch of NS1c2; NS1c2 is now accepted, see its section below):
 
 **NS1c is REVIEWED, NOT ACCEPTED and NOT MERGED. North Star-1c2, the first scene switch under the exact accepted
 Controller-02 NORMAL / RESIDUE semantics, is next.** The durable record is `docs/north-star/ns1c-review-decision.md`.
@@ -771,6 +823,66 @@ Decision record (durable):
     passes.
   - The primary result is a paired, pixel-by-pixel 256 vs 4096 comparison against the same oracle. No success threshold
     is declared. AB1d2 changes observation quality only; it does NOT redesign the matcher.
+
+## North Star-1c2: Correct Controller-02 NORMAL / RESIDUE Semantics (accepted at `5fe0684`)
+
+Luiz and Chat accept NS1c2 as **Outcome 1 — natural quiet switch**: the machine result, the phase result, the retained
+limitations and the visuals.
+
+Record (branch `north-star/ns1c2-controller02-phase-semantics`, base `e2a7bb6`):
+- contract: `docs/north-star/ns1c2-controller02-phase-semantics-contract.md` (`fa1da52`, before any implementation,
+  probe, replay or render).
+- implementation: `tools/north_star/ns1c2_{spec,phase,core,render,run,synthetic,visuals}.py`, `check_ns1c2.py` and
+  `check_ns1c2_corruptions.py` (`0c83bb0`; every canonical stage ran from it).
+- report: `docs/north-star/ns1c2-controller02-phase-semantics-report.md` (completion `ff6ab3c`, acceptance `5fe0684`).
+- run: `/home/lvelho/rd/f3d-vision/previews/north-star/ns1c2-controller02-phase-semantics/` (prefix steps 0–3 replay
+  NS1c's products in place; new steps 4–7 rendered; stages refuse to rerun; never re-render).
+- visuals: `/home/lvelho/rd/f3d-vision/visuals/north-star/ns1c2-controller02-phase-semantics/` (`overview.png`
+  `39f19feddb7508c547deb333d92ca19d57aec65985c35423673ef20e006ec830`, `ns1c-vs-ns1c2-divergence.png`
+  `d8a3e7bd8f12f6bad03f3f768a31811ddf61566e0efd15dec1db4e27aa0b3e69`, `controller-phase-timeline.png`
+  `9c189b3fb8163e730e73938139f7eda795c1774865d4c6002da64b59cf3ebd17`, inspected and accepted; supporting
+  `multi-entity-growth-3d.png` `1a072adcaf365025f399390ad6cd76a3577d273ce82f7d79b74f442648f4d170` and
+  `controller-vs-northstar-support.png` `d9a18b90c232b17db5f3a698a81bd523f9f37b1bbf88d6b932437e128ea0f6a7`).
+
+Accepted measured result:
+
+    NORTH_STAR1C2_CHECKS_PASS          32 / 32
+    NORTH_STAR1C2_MUTATIONS_CAUGHT     41 / 41 (clean null probe)
+    NS1C2_SYNTHETIC_PASS               17 / 17
+
+Check 30 of `check_ns1c2.py` forbids the NS1c2 ACCEPTED marker in the report (it was written for REVIEW PENDING), and
+check 32 is scoped to the NS1c2 base `e2a7bb6`. Measured: 32/32 at `ff6ab3c`; 31/32 at the acceptance commit `5fe0684`
+(only check 30, flagging exactly the decided marker). On later commits check 32 also reports later accepted changes
+outside the NS1c2 files as "undeclared". That is the guards' scope, not an NS1c2 regression.
+
+| step | target | scheduler | source | local | map |
+|---|---|---|---|---|---|
+| 0–3 (NS1c, replayed) | 172 | retain | FSG6f | (−5,−10), (−5,−15), (−5,−20), (0,−20) | 21,243 -> 45,267 |
+| 4 | 172 | retain | Cyclopean | (+6.2, −1.2) | 45,267 -> 46,920 |
+| 5 | 172 | retain | FSG6f | (+6.2, +3.8) | 46,920 -> 47,892 |
+| 6 | 172 | retain | Cyclopean | (+0.2, −10.7) | 47,892 (unchanged) -> 172 QUIET |
+| 7 | 202 | switch | Cyclopean | (−5.9, +5.5) -> H0 (−151.282, +22.052) | 217 -> 17,371 |
+
+Accepted interpretation (durable):
+1. Moving `final_look_gate_v1` from every ordinary probe to its accepted Controller-02 location — RESIDUE only — restores
+   the intended NORMAL service semantics. At the first true divergence (same state: 172, 6 own looks, 45,267 surfels;
+   same probe: FSG6f `no_frontier`, Cyclopean (+6.2°, −1.2°)) NS1c called the gate in NORMAL (reject -> QUIET -> switch
+   123); NS1c2 made 0 gate calls in NORMAL (ACTIONABLE -> RETAIN 172).
+2. After step 6, FSG6f `no_frontier` and Cyclopean `attention_complete`: 172 became naturally QUIET at 9 own looks, not
+   budget-limited (budget 24). The accepted scheduler switched 172 -> 202 at global step 7; 202's post-action probe
+   remained ACTIONABLE and was NOT executed.
+3. Phase result: all 8 actions NORMAL; 0 final-gate calls in NORMAL; 0 DEFERRED objects; RESIDUE not entered; 0 final
+   residue observations. The RESIDUE implementation remains supported by the accepted historical Controller-02 replay,
+   the synthetic known answers and the one-entity North-Star harness, but was not naturally entered by this scene run.
+4. Accepted visual reading: the historical controller known answer is context only; the NS1c / NS1c2 difference occurs at
+   exactly one semantic seam; 172 is retained under correct NORMAL semantics; its local work genuinely terminates; the
+   first valid scene switch is 172 -> 202; no final-look gate appears in NORMAL. Future figures avoid the short label
+   "deferred id" for 10 / 110 / 178 (DEFERRED is a formal Controller-02 disposition) and prefer `AMBIGUOUS ORACLE ID —
+   EXCLUDED` or `DEFERRED_AMBIGUOUS_ORACLE_IDENTITY`.
+5. Limitations retained: persistent fusion is currently target-only; five rank-1 seeds have valid North-Star spherical
+   geometry but zero target support in the inherited planar controller-state matcher; RESIDUE has not been reached
+   naturally on North-Star data; PERFECT correspondence remains an oracle aid; identity remains an ORACLE SEGMENTATION
+   AID.
 
 ## North Star-1b: Recentered Local-Controller Handoff — One Action (accepted at `2553551`)
 
@@ -1901,26 +2013,24 @@ Earlier accepted Cores (1–13) are summarised in their reports. The cleanup of
 automatically and do not create a new migration branch.
 
 Controller-01, 01A, 01B and 01C, Policy 1, the Controller-01 visual package, Foveal Controller Stage
-Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a
-and NS1b are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual
+Charter 1, Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a, AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a,
+NS1b and NS1c2 are accepted. The Controller-01 investigation is closed. Controller-01, Controller-02, NB1c and Visual
 Language 1 are frozen unless explicitly reopened.
 
 NS1c (coherent multi-entity control, first scene switch) was reviewed and is **NOT accepted and NOT merged** (see "NS1c
 review"); its branch stays at `4107be8` and its run is diagnostic evidence only.
 
-**Current next activity: North Star-1c2 — Correct Controller-02 NORMAL / RESIDUE Semantics** (see "NS1c review"), on
-branch `north-star/ns1c2-controller02-phase-semantics` from this `main`, with its contract at
-`docs/north-star/ns1c2-controller02-phase-semantics-contract.md`. The question: starting from the accepted NS1b
-North-Star state, does the first scene-level attention switch occur under the actual accepted Controller-02 NORMAL /
-RESIDUE semantics? The only change relative to NS1c is the placement of `final_look_gate_v1`: never in NORMAL; only in
-RESIDUE, for an ACTIONABLE DEFERRED object after `controller02.schedule_normal` reports no ordinary work. The coherent set
-is derived by the same frozen rule (10, 110, 178 deferred); the charts, contexts, probes (FSG6f -> Cyclopean), scheduler,
-24-look ordinary budget, target-only 12-mm H0 fusion, fixed head and 4096-spp PERFECT observation path are unchanged.
-NS1c's first four 172 actions are replayed read-only from the NS1c run (no Blender) after the corrected NORMAL decisions
-are shown to select them; from the post-step-3 state (172: 6 own looks, 45,267 surfels) the loop continues under NORMAL
-semantics, with at most (24 − 6) + 1 = 19 new actions, and stops after the first executed NORMAL action on a target other
-than 172 (one read-only probe of the new target, one scene table, freeze). No physical head motion, no cross-target
-fusion, no SCENE_CLOSED, no natural stereo, no identity decomposition, no background model.
+**Current next activity: North Star-1d — Controller-Phase Cross-Target Measurement Memory** (see "North Star after
+NS1c2"), on branch `north-star/ns1d-cross-target-measurement-memory` from this `main`, with its contract at
+`docs/north-star/ns1d-cross-target-measurement-memory-contract.md`. The question: if the accepted instance-keyed
+measurement-memory mechanism is restored using the already measured North-Star controller-phase observations, does
+cross-target metric evidence alter any entity's effective geometry, revision, local service probe or next controller
+decision relative to the accepted NS1c2 target-only trace? It is a no-new-render causal replay (no Blender, no new
+observation, no new controller action) over the accepted NS1b action on 172 and the accepted NS1c2 trace, with the
+accepted `InstanceMeasurementMemory` / `effective_target_geometry` unchanged, and it stops at the first
+controller-decision divergence. Persistent maps stay target-only; cross-target memory never enters another entity's map
+or own-look context. Bootstrap cross-target memory is not decided by NS1d. FSG6f, Cyclopean, Controller-02, the
+scheduler, the 24-look budget, the fixed head and the rank-1 planar support stay unchanged.
 
 ## Decision-critical open items
 
@@ -1959,9 +2069,9 @@ fusion, no SCENE_CLOSED, no natural stereo, no identity decomposition, no backgr
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
 6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a and NS1b acceptances, the revised roadmap, the post-NB1b pivot, the start of
-   Active Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star, the
-   post-NS1a and post-NS1b decisions and the NS1c review. These handoff updates did not touch it.
+   AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a, NS1b and NS1c2 acceptances, the revised roadmap, the post-NB1b pivot, the
+   start of Active Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star, the
+   post-NS1a, post-NS1b and post-NS1c2 decisions and the NS1c review. These handoff updates did not touch it.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

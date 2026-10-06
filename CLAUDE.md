@@ -457,8 +457,10 @@ roadmap decision recorded in `docs/chat-handoff.md`:
       controller. Accepted (below).
     - North Star-1c: coherent multi-entity control, first scene switch.
       Reviewed, NOT accepted, NOT merged (below).
-    - North Star-1c2 (next): the first scene switch under the exact
-      Controller-02 NORMAL / RESIDUE semantics (below).
+    - North Star-1c2: the first scene switch under the exact
+      Controller-02 NORMAL / RESIDUE semantics. Accepted (below).
+    - North Star-1d (next): controller-phase cross-target measurement
+      memory (below).
     - Later: the full Classroom active scene loop and the final
       omnidirectional outputs.
   - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
@@ -549,13 +551,45 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     141 ordinary actions replayed, the gate only after NORMAL
     exhaustion). The local controller is already proven; the North Star
     transports it without changing it unnecessarily.
-  - NS1c2 (next): Correct Controller-02 NORMAL / RESIDUE semantics. Its
+  - NS1c2: Correct Controller-02 NORMAL / RESIDUE semantics. Its
     only independent variable relative to NS1c is the placement of
     `final_look_gate_v1` (RESIDUE only). It reuses NS1c's first four
     172 actions read-only (no re-render) after proving the corrected
     decisions select them, and stops after the first NORMAL action on a
     target other than 172. FSG6f, Cyclopean, the scheduler, the 24-look
     budget, the gate, target-only fusion and the fixed head stay frozen.
+  - NS1c2 is ACCEPTED as Outcome 1 — natural quiet switch. Moving
+    `final_look_gate_v1` from every ordinary probe to its accepted
+    Controller-02 location (RESIDUE only) restores the intended NORMAL
+    service semantics. The four NS1c prefix actions on 172 reproduce
+    exactly; at the first divergence (172: 6 own looks, 45,267 surfels;
+    FSG6f `no_frontier`, Cyclopean (+6.2°, −1.2°)) NS1c2 made 0 NORMAL
+    gate calls and retained 172. 172 then took 3 more actions
+    (45,267 -> 47,892 surfels) and became naturally QUIET at 9 own looks
+    (budget 24); `schedule_normal` switched 172 -> 202 at global step 7;
+    one Cyclopean action on 202 (H0 (−151.282°, +22.052°); 217 -> 17,371
+    surfels); its ACTIONABLE post-action probe was NOT executed. All 8
+    actions NORMAL; 0 DEFERRED; RESIDUE not entered. Limitations
+    retained: target-only persistent fusion; five rank-1 seeds with zero
+    planar controller-state support; RESIDUE not reached naturally on
+    North-Star data; PERFECT correspondence and identity are oracle aids.
+- North Star after NS1c2 (Luiz and Chat).
+  - Correct multi-entity NORMAL controller semantics: ESTABLISHED.
+    Genuine natural scene switch: ESTABLISHED.
+  - NS1d (next): Controller-Phase Cross-Target Measurement Memory. The
+    accepted Controller-01 did not use only active target maps: every
+    observation routed all valid positive-instance samples into
+    `InstanceMeasurementMemory`, and each object's policy used
+    `effective_target_geometry(persistent_map, measured_instance_memory)`,
+    so an observation of A could change B's causal geometry and
+    revision, re-probe B and possibly reactivate it (historically
+    7,843,577 measured points; over the 25 localized objects 2,274,857
+    own-target and 5,494,429 cross-target, 70.7 %; 2 natural
+    reactivations). NS1d restores this mechanism before the full
+    North-Star loop is released, as a no-new-render causal replay over
+    the accepted NS1b / NS1c2 controller-phase observations. Persistent
+    maps stay target-only; memory is not map fusion. Bootstrap
+    cross-target memory is not decided by NS1d.
 - Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.
