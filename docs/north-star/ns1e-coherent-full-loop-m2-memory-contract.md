@@ -505,3 +505,28 @@ decisions, terminal composition and the post-freeze 12-mm coverage of its persis
 May NOT establish: full-Classroom closure or global quiescence; anything about ids 10 / 110 / 178, bootstrap cross-target
 memory, natural correspondence or natural identity, background modelling, head motion, other scenes; a numerical
 comparison with Controller-01's 98.34 %.
+
+## 36. Amendment before implementation (development findings; committed before the implementation commit)
+
+Two clarifications found while developing on scratch runs (synthetic fixtures, the handoff and the gate-wiring harness on
+copies of the frozen state, and the factory-startup rehearsal room). Neither changes a scientific rule of sections 5–27;
+where they differ, the sentences below supersede the corresponding sentences of sections 12 and 21.
+
+1. **Gate-wiring harness, P3 requirement (section 12).** The accepted `final_look_gate_v1` traces an FSG6f proposal and
+   predicts its observability (P3), but rejects a Cyclopean proposal as `untraceable_final_support` before any predicted
+   calibration. The harness therefore requires: every P3 call the gate makes uses the real fixed-head H0 sensor at the
+   mapped world gaze (never the fake local-baseline sensor); the FSG6f proposal is traced (at least one P3 call); the
+   Cyclopean proposal makes no P3 call and is rejected `untraceable_final_support`. Development measurement on copies of
+   the handoff state: 202 FSG6f (−10.9°, +10.5°) admitted (`novel_support_in_predicted_cores`, one real-sensor P3 call);
+   9 Cyclopean (−6.0°, −2.1°) rejected (`untraceable_final_support`, no P3 call). These are wiring evidence only.
+2. **Process guards (section 21).** The accepted `NoProcessGuard` lives in the Classroom Controller-02 module, whose import
+   loads the controller stack (cv2, `fsg_stereo`, FSG6f). The measurement stages must show that no such module is loaded
+   (the accepted NS1c2 freeze checks). Therefore the policy stages (`source`, `handoff`, `gate-harness`, `schedule`,
+   `update`, `freeze-control`, `evaluate`) run under the accepted `NoProcessGuard`, and the measurement, fusion and
+   memory stages (`freeze-observation` through `memory`) run under `ns1e_core.ProcessGuard`, the same audit-hook
+   mechanism with exactly the accepted guard's audit events (checker-verified), which imports no controller module.
+3. **Checkpoint completion (section 21).** A step is complete only when its checkpoint freeze
+   `freeze/checkpoint-step-KKK.json` exists; `update` computes every hash it records before it writes any output, and
+   `loop` resumes after the last checkpoint freeze. The planar controller-state target support of each entity's last own
+   look at the handoff is carried from the accepted NS1c2 records (`contexts/contexts.json` diagnostics or the step's
+   `update/update.json`), pinned through the NS1c2 manifest.
