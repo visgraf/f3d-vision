@@ -1,6 +1,44 @@
 # Chat Handoff
 
-## Read first: Greedy Foveal Explorer v0 is CLOSED
+## Read first: the official Greedy Foveal Playground baseline is ACCEPTED
+
+**OFFICIAL PLAYGROUND ESTABLISHED. NEXT: TECHNICAL REPORT.**
+
+    GREEDY_FOVEAL_PLAYGROUND_BASELINE_ACCEPTED
+    GREEDY_FOVEAL_PLAYGROUND_BASELINE_OFFICIAL
+
+| item | value |
+|---|---|
+| `main` | the Engineering-1 acceptance commit that adds this entry, fast-forwarded from branch `engineering/greedy-playground-baseline` (no merge commit). The previous `main` was `3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f`, the Greedy v0 closure. |
+| tag | **`greedy-foveal-playground-baseline`**, pointing to the accepted `main` commit |
+| official code | `tools/greedy_foveal/` (`explorer.py`, `run.py`, `render_server.py`, `visuals.py`, `demo.py`, plus `check_equivalence.py` and `README.md`) |
+| front door | root `README.md`; the former README is in `docs/repository/README-history.md` |
+| architecture | `docs/architecture/greedy-foveal-playground.md` (coordinate systems, data products, dependency map, truth boundaries, extension points) |
+| contract / report | `docs/engineering/greedy-foveal-playground-baseline-contract.md` / `-report.md` |
+| official run | `previews/greedy-foveal-official-baseline/` (`freeze.json` sha256 `6bc9b190e4e15d8482865b3b98c0e8e95044912205a744b56591b48ca56e7bf9`) |
+
+Official reproduction (MEASURED; run at `b77b1d9`, 64 spp, cap 600):
+
+- **542** fixations, then stop: SEEN ≥ 99 % of 4π;
+- **99.00 %** SEEN and **98.28 %** DEPTH;
+- **322** local / **219** global saccades;
+- **16,517,811** surfels;
+- 733 s;
+- post-freeze Breadth-1 within 12 mm: **98.52 %** of cells (251,966 / 255,758) and **98.32 %** of solid angle.
+
+It is **bitwise equivalent** to the frozen grow600 control path: 23 / 23 equivalence checks.
+
+- **The Greedy executable behavior is unchanged.** The five files are AST-equal to the v0 tags once docstrings are
+  removed (`check_equivalence.py source`).
+- **Architectural fact:** the gaze policy does not read the 3-D map. It uses the cyclopean coverage plus the current
+  fixation's evidence. The map is persistent reconstruction memory and output.
+- **Next: TECHNICAL REPORT**, then the slide presentation. Their outlines are in the Engineering-1 report, §11. No
+  policy redesign is authorized. Later playground experiments change one component at a time against the official
+  baseline, each one explicitly authorized.
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.** The prototype branch, which descends from NS1e, is never
+  merged into `main`.
+
+## Greedy Foveal Explorer v0 is CLOSED (closure at `3f92ac3`)
 
 **THE PROOF OF CONCEPT IS CLOSED. NEXT: ENGINEERING / PRESENTATION.**
 
@@ -10,7 +48,7 @@
 | item | value |
 |---|---|
 | canonical repository | `visgraf/f3d-vision` (https://github.com/visgraf/f3d-vision) |
-| `main` | the closure commit that adds this entry, on branch `project/greedy-v0-closure`. It is a docs / project-state commit whose parent is the post-NS1d roadmap `5aa223109ec829d41945f19b4c5223928fd0dde9`. |
+| `main` at closure | `3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f`, the closure commit on branch `project/greedy-v0-closure`. It is a docs / project-state commit whose parent is the post-NS1d roadmap `5aa223109ec829d41945f19b4c5223928fd0dde9`. |
 | frozen implementation | tag `greedy-foveal-explorer-v0-impl` -> `a437df048b555d5b59f6855b6572eea2665ab0da` (`tools/greedy_foveal/{explorer.py, run.py, render_server.py}`) |
 | frozen demo | tag `greedy-foveal-explorer-v0-demo` -> `8066a246bf251fb1e2d66b7061899c32df236bf1`, the head of `prototype/greedy-foveal-explorer-v0` |
 | successful run | `previews/greedy-foveal-explorer-v0-grow600/`; `freeze.json` sha256 `a4283ab7436f03d8a5babd1086da760d0bfb614fdcefd73928f3a25c1ff72f55`; `final-map.npz` sha256 `90730b43f150c271cc27de1d4e7d7649b302e00bf7ca49f4fddaefd3cd362aed` |
@@ -56,7 +94,13 @@ optimized.
 
 ## Accepted main
 
-`main` = the Greedy Foveal Explorer v0 closure commit that adds the section above. Its parent is
+`main` = the Engineering-1 acceptance commit that adds the "Read first" section above (tag
+`greedy-foveal-playground-baseline`). It is a fast-forward of `engineering/greedy-playground-baseline`:
+
+    3f92ac3 (Greedy v0 closure) -> 202feb2 contract -> 99a3047 implementation -> b77b1d9 documentation
+    -> 09685be checker label -> db14029 report -> 4baca8b README front door -> acceptance
+
+Previous accepted main (Greedy Foveal Explorer v0 closure): `3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f`. Its parent is
 `5aa223109ec829d41945f19b4c5223928fd0dde9`, the post-NS1d roadmap.
 
 Previous accepted main (NS1d):
@@ -68,6 +112,14 @@ Previous accepted main (NS1d):
 this entry follows it. NS1d is the latest accepted experiment.
 
 Accepted milestones:
+- **Engineering-1: official Greedy Foveal Playground baseline**, accepted by Luiz and Chat
+  (`docs/engineering/greedy-foveal-playground-baseline-report.md`):
+
+      GREEDY_FOVEAL_PLAYGROUND_BASELINE_ACCEPTED
+      GREEDY_FOVEAL_PLAYGROUND_BASELINE_OFFICIAL
+
+  Tag `greedy-foveal-playground-baseline`. The official reproduction is bitwise equivalent to the frozen Greedy v0
+  control path (23 / 23). The root README is the playground's front door.
 - **Greedy Foveal Explorer v0: controlled proof-of-concept baseline**, accepted and closed by Luiz and Chat (a project
   baseline decision, not a new experiment; `docs/prototype/greedy-foveal-explorer-v0-closure.md`):
 
@@ -314,16 +366,21 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after Greedy v0): ENGINEERING / PRESENTATION
+## Current roadmap (Luiz and Chat, after Engineering-1): ENGINEERING / PRESENTATION
 
     GREEDY FOVEAL EXPLORER V0                        ACCEPTED BASELINE, CLOSED
         frozen implementation  greedy-foveal-explorer-v0-impl  (a437df0)
         frozen demo            greedy-foveal-explorer-v0-demo  (8066a24)
         542 fixations, 99.00 % SEEN, 98.32 % first-hit solid angle within 12 mm
 
-    ENGINEERING / PRESENTATION                       NEXT
-        preserve the frozen Greedy v0 behavior first; no policy redesign
-        packaging, clean extraction, simplification, storage, visualization, presentation
+    ENGINEERING-1: OFFICIAL PLAYGROUND BASELINE      ACCEPTED
+        tools/greedy_foveal/ on main; tag greedy-foveal-playground-baseline
+        bitwise equivalent to the frozen v0 control path (23 / 23)
+
+    TECHNICAL REPORT                                 NEXT
+    SLIDE PRESENTATION                               after the technical report
+    PLAYGROUND EXPERIMENTS                           later; one component at a time, explicitly authorized
+        no policy redesign is authorized now
 
     CONTROLLER RESEARCH LINE (below)                 PRESERVED HISTORICAL WORK
         not deleted; not on the demonstration critical path
@@ -2218,10 +2275,12 @@ NS1c (coherent multi-entity control, first scene switch) was reviewed and is **N
 review"); its branch stays at `4107be8` and its run is diagnostic evidence only.
 
 **Current next activity: ENGINEERING / PRESENTATION on the frozen Greedy Foveal Explorer v0 baseline** (see "Read
-first" and `docs/prototype/greedy-foveal-explorer-v0-closure.md`). THE PROOF OF CONCEPT IS CLOSED.
+first" and `docs/prototype/greedy-foveal-explorer-v0-closure.md`). THE PROOF OF CONCEPT IS CLOSED. Engineering-1 has
+established the official Greedy Foveal Playground baseline (tag `greedy-foveal-playground-baseline`). **The TECHNICAL
+REPORT is next**, then the slide presentation.
 
-- Engineering must first reproduce the frozen Greedy v0 behavior: tags `greedy-foveal-explorer-v0-impl` /
-  `greedy-foveal-explorer-v0-demo`, run `previews/greedy-foveal-explorer-v0-grow600/`. Only then may it optimize.
+- The frozen Greedy v0 behavior is reproduced bitwise by the official baseline. Any later optimization must keep
+  reproducing it (`tools/greedy_foveal/check_equivalence.py run` against `previews/greedy-foveal-explorer-v0-grow600/`).
 - No policy redesign is authorized. No new research experiment is open.
 - Each engineering step is still specified by Luiz and Chat before it is executed.
 
@@ -2231,12 +2290,14 @@ branch nor the Greedy prototype branch, which descends from it, is merged into `
 
 ## Decision-critical open items
 
-0. Greedy v0 engineering (current):
-   - how to extract the small explorer onto a clean engineering branch, given that the prototype branch descends from
-     the unaccepted NS1e;
-   - what behavior-preservation evidence engineering must show against the frozen run (exact trajectory, coverage,
-     map);
-   - the map and storage cost (16.5 M surfels, 1 GB `final-map.npz`).
+0. Greedy playground (current):
+   - The extraction and the behavior-preservation evidence are settled by Engineering-1 (accepted).
+   - Next deliverables: the technical report, then the slide presentation.
+   - Still open: the map and storage cost (16.5 M surfels, 1 GB `final-map.npz`).
+   - The remaining executable "PROTOTYPE" labels (trajectory label, overview subtitle, demo poster footer) are still
+     there.
+   - `run.py` / `demo.py` use absolute workstation paths, which limits portability.
+   - The gaze policy does not read the 3-D map.
 
    Any policy change would be a new, explicitly authorized step.
 1. (Controller research line: preserved historical work, not on the demonstration critical path.) Controller design is led by Luiz with Chat, under Stage Charter 1. Controller-02 settled the
@@ -2273,10 +2334,9 @@ branch nor the Greedy prototype branch, which descends from it, is merged into `
      (Policy 1). The earlier stages' reference trees stay in OLD-PREVIEWS,
      `/home/lvelho/temp/previews-2026.09.28`. Historical gates that name those `previews/…` trees
      need them linked until a dependency audit retires them.
-6. `README.md`'s status paragraph predates the Controller-02, Visual Language 1, Breadth-1, NB1a, NB1b, NB1c, AB1a,
-   AB1b, AB1c, AB1d, AB1d2, AB1d3, NS1a, NS1b, NS1c2 and NS1d acceptances, the revised roadmap, the post-NB1b pivot,
-   the start of Active Bootstrap, the post-AB1a pivot, the post-AB1b operating strategy, the return to the North Star,
-   the post-NS1a, post-NS1b, post-NS1c2 and post-NS1d decisions and the NS1c review. These handoff updates did not touch it.
+6. Resolved by Engineering-1. The root `README.md` is now the Active Foveal Playground front door. The former README
+   is preserved verbatim in `docs/repository/README-history.md`; its status paragraph predated everything from
+   Controller-02 to NS1d.
 7. Breadth-1 evaluation universe (intentionally open): how collection-instanced Classroom geometry (desks,
    chairs, lamps, …), rendered but outside the 234-object catalog, should enter future reference /
    evaluation. It is left for Natural Bootstrap and later evaluation design.

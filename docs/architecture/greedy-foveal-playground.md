@@ -448,6 +448,7 @@ Two cautions:
 
 | item | value |
 |---|---|
+| official playground baseline | tag `greedy-foveal-playground-baseline` (accepted Engineering-1 `main`) |
 | frozen implementation | tag `greedy-foveal-explorer-v0-impl` → `a437df048b555d5b59f6855b6572eea2665ab0da` |
 | frozen demo | tag `greedy-foveal-explorer-v0-demo` → `8066a246bf251fb1e2d66b7061899c32df236bf1` |
 | frozen run | `previews/greedy-foveal-explorer-v0-grow600/`, `freeze.json` sha256 `a4283ab7436f03d8a5babd1086da760d0bfb614fdcefd73928f3a25c1ff72f55` |
@@ -482,8 +483,8 @@ oracle ids, fusion, coverage, the final map and the evaluation (`check_equivalen
 
 ## 19. How to start a new experiment
 
-1. **Branch** from the official baseline commit (on `main` once accepted):
-   `git switch -c playground/<topic> <baseline commit>`. Work in its own worktree; set up the `.venv` and
+1. **Branch** from the official baseline (tag `greedy-foveal-playground-baseline`, on `main`):
+   `git switch -c playground/<topic> greedy-foveal-playground-baseline`. Work in its own worktree; set up the `.venv` and
    `scenes/classroom` symlinks.
 2. **Change one component** from section 16. Write down the question, the single variable and what you will compare,
    before you run.

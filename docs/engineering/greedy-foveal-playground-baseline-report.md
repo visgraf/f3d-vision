@@ -1,6 +1,13 @@
 # Engineering-1: Official Greedy Foveal Playground Baseline — report
 
-**Status: ENGINEERING REVIEW PENDING.** Nothing is merged to `main`. No accepted marker is recorded.
+**Status: ACCEPTED by Luiz and Chat.** The official Greedy Foveal Playground baseline is established. `main` is
+fast-forwarded to the acceptance commit, which carries the annotated tag `greedy-foveal-playground-baseline`.
+
+    GREEDY_FOVEAL_PLAYGROUND_BASELINE_ACCEPTED
+    GREEDY_FOVEAL_PLAYGROUND_BASELINE_OFFICIAL
+
+The step was executed and reported as ENGINEERING REVIEW PENDING (`db14029`). Before acceptance, the root README
+became the playground front door (`4baca8b`; section 12).
 
 **Acceptance gate (contract §8): all of A1–A7 PASS.** The official reproduction is bitwise equivalent to the frozen
 Greedy v0 grow600 run in every control-path product.
@@ -36,7 +43,9 @@ the presentation-only RGB differs, as expected. No deviation affected behavior.
 | documentation commit | `b77b1d9cdb9760cc6030d5e9ce7be017329535fc` (README, architecture document, one checker wording fix) |
 | checker label fix | `09685be14233f8e3bf3c8d7e1679d551f6a06b2d` (informative label only; section 8) |
 | official reproduction made at | `b77b1d9c…`, clean tracked tree (recorded in the run's `trajectory.json` `code`) |
-| report commit | the commit that adds this file |
+| report commit | `db14029d7f3b1bbeaf53a4df336f7f2f73c56f0d` (status ENGINEERING REVIEW PENDING) |
+| README front door | `4baca8b28f3e473bc7a5cc1d426b50d362080c0f` (section 12) |
+| acceptance | the commit that records the status above; `main` and the tag `greedy-foveal-playground-baseline` point to it |
 
 ## 3. Files promoted
 
@@ -280,7 +289,8 @@ timings.
 
 ## 10. Unresolved decisions (for Luiz and Chat)
 
-- Whether to accept the official baseline and merge `engineering/greedy-playground-baseline` into `main`.
+- ~~Whether to accept the official baseline and merge it into `main`.~~ Accepted. `main` was fast-forwarded and
+  tagged.
 - Whether a later presentation-only step should replace the remaining executable "PROTOTYPE" labels and parameterize
   the demo paths.
 - Which single-component playground experiment comes first (architecture §16).
@@ -331,7 +341,38 @@ timings.
 12. **Playground / next directions.** One component at a time: natural stereo, map-driven policy, head motion,
     segmentation, other scenes.
 
+## 12. README front door (before acceptance)
+
+As Luiz requested before acceptance, the root `README.md` was rewritten as the concise front door of the Active Foveal
+Playground (`4baca8b`). It covers:
+
+- the idea and the loop;
+- the Engineering-1 baseline numbers and the 23 / 23 equivalence;
+- what the baseline does;
+- the note that the gaze policy does not read the 3-D map;
+- a minimal quick start with no home-directory paths;
+- the code map and the extension points;
+- the demo, described as workstation-local and not hosted on GitHub;
+- limitations, documentation links and project history.
+
+The former README is preserved verbatim, below a short historical notice, in `docs/repository/README-history.md`.
+
+**Deviation, necessary for the README change:** the layout checker hard-coded the former README's structure (its
+title and its two sections). Its README contract now names the new title and section list, still exact, and still
+with no deeper headings. It adds one check that the history file ends with `git show 3f92ac3:README.md` verbatim.
+Both new checks were exercised with a temporary tamper; each failed as expected, and the files were restored. No other
+structural change was made.
+
+Checks at `4baca8b`:
+
+- `git diff --check`: clean;
+- the layout checker: `SUMMARY checked=645 failed=0` (36 Markdown links, 0 broken);
+- `check_equivalence.py source`: `SOURCE PASS (10/10 checks passed)`.
+
+No Blender, no experiment and no replay was run. Greedy executable code is unchanged since `99a3047`.
+
 ---
 
-    GREEDY FOVEAL PLAYGROUND BASELINE
-    ENGINEERING REVIEW PENDING
+    GREEDY FOVEAL PLAYGROUND BASELINE — ACCEPTED
+    OFFICIAL PLAYGROUND — ESTABLISHED
+    NEXT — TECHNICAL REPORT

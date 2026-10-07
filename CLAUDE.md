@@ -231,6 +231,26 @@ Greedy Foveal Explorer v0 is the accepted proof-of-concept baseline
     GREEDY_FOVEAL_EXPLORER_V0_BASELINE_ACCEPTED
     GREEDY_FOVEAL_EXPLORER_V0_CLOSED
 
+**Engineering-1 is ACCEPTED: the official Greedy Foveal Playground
+baseline is established**
+(`docs/engineering/greedy-foveal-playground-baseline-report.md`):
+
+    GREEDY_FOVEAL_PLAYGROUND_BASELINE_ACCEPTED
+    GREEDY_FOVEAL_PLAYGROUND_BASELINE_OFFICIAL
+
+- The official code is `tools/greedy_foveal/` on `main`, tag
+  `greedy-foveal-playground-baseline`. It was extracted from the frozen
+  Greedy v0 tags with docstring-only changes. Its official reproduction
+  is bitwise equivalent to the frozen grow600 control path (23 / 23
+  equivalence checks).
+- The architecture reference is
+  `docs/architecture/greedy-foveal-playground.md`. The root `README.md`
+  is the playground's front door; the former README is preserved in
+  `docs/repository/README-history.md`.
+- Next: the TECHNICAL REPORT, then the slide presentation. Later
+  playground experiments change one component at a time against the
+  official baseline, each one explicitly authorized.
+
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).
   The frozen demo is tag `greedy-foveal-explorer-v0-demo`
@@ -245,12 +265,14 @@ Greedy Foveal Explorer v0 is the accepted proof-of-concept baseline
   cyclopean coverage -> local or global saccade -> repeat. It uses a
   fixed head, a static synthetic Classroom, no object scheduler and no
   Controller-01/02 state machine.
-- The active baseline is the frozen Greedy v0 behavior. Engineering
-  must reproduce it before optimizing it. No policy redesign is
-  authorized, and no new research experiment is open.
+- The active baseline is the frozen Greedy v0 behavior, now reproduced
+  bitwise by the official playground baseline. Any later optimization
+  must keep reproducing it (`tools/greedy_foveal/check_equivalence.py`).
+  No policy redesign is authorized, and no new research experiment is
+  open.
 - The prototype branch `prototype/greedy-foveal-explorer-v0` descends
   from the unaccepted NS1e branch. It is never merged or fast-forwarded
-  into `main`; engineering extracts the small explorer onto a clean
+  into `main`; Engineering-1 extracted the small explorer onto a clean
   branch instead.
 - The controller research line below (Controller-01 / Controller-02 /
   North Star) is preserved historical work. It is not deleted, and it
@@ -679,7 +701,8 @@ For future behavior-preserving refactoring, the standing rule remains:
 - The `tools/` root holds only the sealed compatibility engine: the 16 modules that
   `fov3d` re-exports (`docs/consolidation/consolidation-3-layout.json`). It is a
   compatibility baseline where the current contracts say it is sealed.
-- Other tools live in stage/topic directories: `tools/<stage>/`.
+- Other tools live in stage/topic directories: `tools/<stage>/`. The official Active
+  Foveal Playground (Greedy Foveal Explorer) is `tools/greedy_foveal/`.
 - Documentation lives in `docs/<stage>/`. `docs/chat-handoff.md` is the fixed recovery
   entry point.
 - `scripts/` holds the stable top-level entry points.
