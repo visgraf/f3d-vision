@@ -460,11 +460,14 @@ surfels and the run took 729 s. Post hoc, Breadth-1 coverage within 12 mm is **9
 (251,966 / 255,758) and **98.32 %** of first-hit solid angle.
 
 **Determinism.** The Position and Object Index passes, and therefore every control decision, point, fusion and coverage
-value, reproduce bitwise run to run. Cycles OPTIX RGB does not: in the Engineering-1 smoke run (fixations 1–75) the
-per-point RGB differed from the frozen run by at most 0.0074 (linear), MEASURED. RGB is display-only.
+value, reproduce bitwise run to run. Cycles OPTIX RGB does not. In the Engineering-1 official reproduction, per-point
+RGB differed from the frozen run by up to 0.118 (linear), and 3,127 of 49.6 M display-PLY colour values changed
+(MEASURED). RGB is display-only.
 
-The official reproduction from this branch and its equivalence result are recorded in the Engineering-1 report,
-`docs/engineering/greedy-foveal-playground-baseline-report.md`.
+**Official reproduction (Engineering-1, MEASURED).** Run from this branch at `b77b1d9`, it reproduces all of the numbers
+above exactly. It is **bitwise equivalent** to the frozen run in every control-path product: gazes, decisions, points,
+oracle ids, fusion, coverage, the final map and the evaluation (`check_equivalence.py run`: 23 / 23). See the
+[Engineering-1 report](../engineering/greedy-foveal-playground-baseline-report.md).
 
 ## 18. Limitations
 
