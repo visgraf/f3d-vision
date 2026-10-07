@@ -78,7 +78,9 @@ marker); the former "North Star-1e is next" assertions are retired. Engineering-
 Playground baseline) adds the docs/engineering/ stage directory and declares its contract (required), its report, the
 docs/architecture/ playground reference and the tools/greedy_foveal/ files (allowed). The root README is the front door
 of the Active Foveal Playground (exact title and sections below); the former README is preserved verbatim, below a
-historical notice, in docs/repository/README-history.md (required).
+historical notice, in docs/repository/README-history.md (required). Engineering/Presentation-2 adds the
+docs/technical-report/ directory with the technical report source and README (required), its bibliography, PDF,
+figure script and figures (allowed).
 """
 from __future__ import annotations
 
@@ -99,7 +101,7 @@ PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "engineering", "methodology", "natural-bootstrap", "north-star", "partition-graph", "prototype",
-             "repository"}
+             "repository", "technical-report"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
               "greedy_foveal", "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
@@ -214,6 +216,15 @@ ENG1_TOOLS = {f"tools/greedy_foveal/{n}" for n in ("explorer.py", "run.py", "ren
 README_HISTORY = "docs/repository/README-history.md"
 README_HISTORY_SOURCE = "3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f"     # main before the playground README
 ENG1_REQUIRED |= {README_HISTORY}
+TECH_REPORT_REQUIRED = {f"docs/technical-report/{n}" for n in ("active-foveal-3d-vision.tex", "README.md")}
+TECH_REPORT_FIGURES = {f"docs/technical-report/figures/{n}" for n in (
+    "fig2-pair.png", "fig2-depth.png", "fig2-patch3d.png", "fig2-coverage.png", "fig3-coverage-0050.png",
+    "fig3-coverage-0200.png", "fig3-coverage-0450.png", "fig3-coverage-0542.png", "fig4-local.jpg", "fig4-global.jpg",
+    "fig5-growth.csv", "fig5-global.csv", "fig6-final-rgb.jpg", "fig6-final-depth.png", "fig6-final-instance.png",
+    "fig6-reference-rgb.jpg", "fig6-reference-depth.png", "fig6-reference-instance.png", "fig6-map3d.jpg",
+    "fig6-evaluation.png", "figure-sources.json")}
+TECH_REPORT_ALLOWED = TECH_REPORT_REQUIRED | TECH_REPORT_FIGURES | {
+    f"docs/technical-report/{n}" for n in ("references.bib", "active-foveal-3d-vision.pdf", "make_figures.py")}
 ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
                                              "docs/architecture/greedy-foveal-playground.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
@@ -221,7 +232,8 @@ ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-repo
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
                  | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED | NS1B_ALLOWED
-                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED | ENG1_ALLOWED)
+                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED | ENG1_ALLOWED
+                 | TECH_REPORT_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -487,6 +499,8 @@ def main() -> int:
     check("the NS1d contract is tracked", not missing_ns1d, str(missing_ns1d))
     missing_eng1 = sorted(ENG1_REQUIRED - set(index))
     check("the Engineering-1 contract and the README history are tracked", not missing_eng1, str(missing_eng1))
+    missing_tr = sorted(TECH_REPORT_REQUIRED - set(index))
+    check("the technical report source and README are tracked", not missing_tr, str(missing_tr))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))

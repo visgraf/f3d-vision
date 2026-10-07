@@ -1,0 +1,138 @@
+{
+ "facts": {
+  "fig2": {
+   "fixation": 179,
+   "fusion_matched": 36481,
+   "fusion_new": 24297,
+   "gaze_deg": [
+    129.98261849431736,
+    -9.344504903564603
+   ],
+   "kind": "local",
+   "map_after": 8836458,
+   "match_lines": 8,
+   "new_cells": 67,
+   "points": 60778
+  },
+  "fig3": {
+   "50": {
+    "depth_pct": 14.73,
+    "seen_pct": 14.74
+   },
+   "200": {
+    "depth_pct": 55.55,
+    "seen_pct": 56.06
+   },
+   "450": {
+    "depth_pct": 95.96,
+    "seen_pct": 96.74
+   },
+   "542": {
+    "depth_pct": 98.28,
+    "seen_pct": 99.0
+   }
+  },
+  "fig4": {
+   "end_deg": [
+    85.5,
+    -37.5
+   ],
+   "start_deg": [
+    0.0,
+    0.0
+   ]
+  },
+  "run": "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline",
+  "run_code": {
+   "branch": "engineering/greedy-playground-baseline",
+   "head": "b77b1d9cdb9760cc6030d5e9ce7be017329535fc",
+   "tracked_dirty": []
+  },
+  "run_freeze_sha256": "6bc9b190e4e15d8482865b3b98c0e8e95044912205a744b56591b48ca56e7bf9",
+  "text": {
+   "final_map_npz_bytes": 991139848,
+   "first_global": 69,
+   "fusion_seconds": {
+    "max": 2.95,
+    "max_at": 452,
+    "mean_first_100": 0.23,
+    "mean_last_92": 0.79
+   },
+   "phases": {
+    "1-200": {
+     "global": 4,
+     "local": 195
+    },
+    "201-450": {
+     "global": 123,
+     "local": 127
+    },
+    "451-542": {
+     "global": 92,
+     "local": 0
+    }
+   },
+   "points_per_fixation": {
+    "max": 65536,
+    "median": 65150.0,
+    "min": 18115
+   },
+   "reference_no_hit_cells": 3442,
+   "render_seconds_mean": 0.76,
+   "seen_pct_before_first_global": 19.6,
+   "seen_without_depth_pct": 0.724,
+   "tail_seen_gain_pct": {
+    "mean": 0.0246,
+    "min": 0.0148
+   },
+   "unseen_holes": {
+    "count": 184,
+    "max_sr": 0.00183
+   }
+  }
+ },
+ "inputs": {
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-explorer-v0-demo-cache/eyes/fix-0179.npz": "8058c309a0b57eb1e87c05ad1df04e5a1eff5103592da49a3b12497f72aedbf5",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/coverage.npz": "37d3a2ede43bfec8e3768825edceacde9dd21df42921c5b410378f1305ca5d72",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/evaluation.json": "097e262383f0c1f50b3609a0861f7c40ef5f5c38320e930226326fdd69b549ee",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/evaluation.npz": "4db9ff9a1487dc5285b8cd1728c23063d2ba2e289bb776b175b481b9d7492775",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/fixations/fix-0179/calibration.json": "733e1bf32b6d2883cc4172d5c28ebc3535a17aec0623bad366b2b5fb58e9185c",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/fixations/fix-0179/points.npz": "672edb00011661d1c6545f31892e9e3bc0af43c1644132cf96c626b63d76093e",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/policy/state-0050.npz": "2d550c9dd1aa182c0dc9ee0b8f199a64bf7b490cc5f7a85628b53a56dc57f3b6",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/policy/state-0178.npz": "2bc56d13c589f3a4937e4d66ff8ccdf2b6bdf74ec1a488bd6da0d2a3b53fdeac",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/policy/state-0179.npz": "2e1e36abfb2ae34a8bcc42301cd63cfc8f7251f150b9031311d78ce8b34d5cf5",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/policy/state-0200.npz": "a1d6e2ca8ebec8c6c5ecb41243aa15ddb0c49705adc69cb95aaf1e02211aec8f",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/policy/state-0450.npz": "a37ea0d31c612c32254aae4cd03ee84f4983e5ab53bbc7aab2b12ba2093f50b4",
+  "/home/lvelho/rd/f3d-vision/previews/greedy-foveal-official-baseline/trajectory.json": "3422ed304078f668e2f4d2491448ff54a182fd4bb6dc67a616ddf91d81e33b68",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/demo-final.png": "9afa30dbfb7e14e53a76815d82e273bd0a38e53b75ad4886a4ca9cb764186d65",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/final-depth-panorama.png": "7fdcc41899220151367caa0ff13baefc9cda671628f43ed2237ed38b3557bb3e",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/final-instance-panorama.png": "f0aa39dedeb727f3ae5b2c8e828136732948066fad1d0569c8ccf692102a6363",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/final-rgb-panorama.png": "f9376638784ea2ac39900c9f4996f8d8d10942225510f8c4b0dd741ce198cb33",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/reference-depth-panorama.png": "752c2d947a1619143de00c2d98a19b7f73f9f3fd02d59fc1ee030682ff9b0b14",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/reference-instance-panorama.png": "b2faa742be8c09ee3685c28883d0db0395be504327e1154b49c8c6be8935f8bd",
+  "/home/lvelho/rd/f3d-vision/visuals/greedy-foveal-explorer-v0-demo/reference-rgb-panorama.png": "7c2e34265888c04ddc683b09bea3687284ab249b99ebe85af16c2a5cfb8e9860"
+ },
+ "outputs": {
+  "fig2-coverage.png": "78b282b8f2a006d5d51f063d9599afa03f02384e6ee0ccbff707b11745a684c1",
+  "fig2-depth.png": "d4012621d6325b1624e1d6700ee51631b5662e484fe3289d6b37475a20bb0afc",
+  "fig2-pair.png": "dc8669441c63222c711a0f5368d888e5398ebe90dd13aadb78c76c7ab6df05da",
+  "fig2-patch3d.png": "e9095e2e09cfbec779c6a41fd9d6807d3b822c8d638a0916f0b5755b4ce77c71",
+  "fig3-coverage-0050.png": "8ac78b33b13954db599009418bf5b38788626408fc50ec585d2a83a320ac9b64",
+  "fig3-coverage-0200.png": "078f76cee6124b30e83a2a0a906153c25753951f9175c82e7373baab288485d1",
+  "fig3-coverage-0450.png": "5cf0ee3f199077e9a816c90c7d6568757c4aaa713f1c92368e518261f535531a",
+  "fig3-coverage-0542.png": "5cf13946aad7c9caa9d86fbe82eba13e7903c9bd6c3bd3934ec49187298b5006",
+  "fig4-global.jpg": "61700a4a9566203070050ee91a5937dbc7e1d881fc26634a92ac76c57360f065",
+  "fig4-local.jpg": "da1c331187296eeb09c4ebf6de61806b38263b2655f300845ab8db08ffd7081d",
+  "fig5-global.csv": "de1b90cfe39f74cf9e0878a9ba49ab4a400b3c6d3f5c28593894fdb0eb9b871b",
+  "fig5-growth.csv": "ffc1fcb39a7d4aeec1b556a1ef0c844e4422a03129543ab41ed1c3533a892170",
+  "fig6-evaluation.png": "03ed13ee2ad48ee44b132e3bf50c66cb014442acf14b2c8f52e06ae3fac1dc44",
+  "fig6-final-depth.png": "7fdcc41899220151367caa0ff13baefc9cda671628f43ed2237ed38b3557bb3e",
+  "fig6-final-instance.png": "f0aa39dedeb727f3ae5b2c8e828136732948066fad1d0569c8ccf692102a6363",
+  "fig6-final-rgb.jpg": "6c10d398e6e700f382a643333c665027c83e587a5f9339f81bb18c42fd4b5d54",
+  "fig6-map3d.jpg": "62e8d65b4961d2af303a5999237ad12b6da2049452d03d90e26c3b040313a9d9",
+  "fig6-reference-depth.png": "4731008496bdb88747a74f7a7541102afa9707abdafc79cc4325b2fe8384b12e",
+  "fig6-reference-instance.png": "38a3f5d3283b2ce8c5c9da8875568d61070725a7c5b508bcb8ecb79467122c7f",
+  "fig6-reference-rgb.jpg": "82be125e47901b337489dc861a987b00e0694c5b3707b13c4bcbb1ab8df0326a"
+ },
+ "schema": "active-foveal-report-figures"
+}

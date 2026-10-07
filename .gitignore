@@ -21,3 +21,6 @@ scenes/**/*.targets.json
 scenes/classroom/
 
 # docs/reference/ is committed on purpose: those images are the CPU baseline.
+
+# Technical report: LaTeX build products (the tracked PDF is copied out of build/).
+docs/technical-report/build/
