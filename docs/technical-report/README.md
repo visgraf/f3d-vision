@@ -1,6 +1,11 @@
 # Active Foveal 3-D Vision — technical report
 
-**Status: TECHNICAL REPORT — REVIEW DRAFT.** This is not the final version.
+**Status: ACCEPTED** by Luiz and Chat (October 2026). Tag `active-foveal-3d-vision-tech-report`.
+
+    ACTIVE_FOVEAL_3D_VISION_TECH_REPORT_ACCEPTED
+
+Accepted PDF: `active-foveal-3d-vision.pdf`, sha256 `43f165247a18b50ce3b7f46c2cebf179c5f31952a0c646791232e2d4775669b5` (20 A4 pages). The review draft was `6a59d23`; acceptance
+changed only the status lines, the PDF metadata and two cosmetic layout details. No content changed.
 
 *Active Foveal 3-D Vision: A Fixate–Reconstruct–Saccade Playground for 360-Degree Scene Reconstruction* documents the
 accepted official Greedy Foveal Playground baseline (tag `greedy-foveal-playground-baseline`). It presents the system

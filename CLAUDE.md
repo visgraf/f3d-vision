@@ -247,9 +247,15 @@ baseline is established**
   `docs/architecture/greedy-foveal-playground.md`. The root `README.md`
   is the playground's front door; the former README is preserved in
   `docs/repository/README-history.md`.
-- Next: the TECHNICAL REPORT, then the slide presentation. Later
-  playground experiments change one component at a time against the
-  official baseline, each one explicitly authorized.
+- The technical report "Active Foveal 3-D Vision"
+  (`docs/technical-report/active-foveal-3d-vision.pdf`) is ACCEPTED,
+  tag `active-foveal-3d-vision-tech-report`:
+
+      ACTIVE_FOVEAL_3D_VISION_TECH_REPORT_ACCEPTED
+
+- Next: the SLIDE PRESENTATION. Later playground experiments change
+  one component at a time against the official baseline, each one
+  explicitly authorized.
 
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).

@@ -1,4 +1,4 @@
-% Active Foveal 3-D Vision -- technical report (REVIEW DRAFT).
+% Active Foveal 3-D Vision -- technical report (ACCEPTED, October 2026).
 % Build: see README.md in this directory (pdflatex -> bibtex -> pdflatex x2; no experiment is required).
 \documentclass[11pt,a4paper]{article}
 
@@ -24,7 +24,9 @@
 \usepackage{fancyhdr}
 \usepackage[hidelinks]{hyperref}
 \hypersetup{colorlinks=true,linkcolor=black!70!blue,citecolor=black!70!blue,urlcolor=black!70!blue,
-  pdftitle={Active Foveal 3-D Vision},pdfauthor={Luiz Velho}}
+  pdftitle={Active Foveal 3-D Vision},pdfauthor={Luiz Velho},
+  pdfsubject={Technical report (accepted, October 2026)},
+  pdfkeywords={active vision, foveal vision, stereo, 3-D reconstruction, saccades}}
 
 % ---------------------------------------------------------------- Visual Language 1 colours (Okabe-Ito based)
 \definecolor{oiblue}{RGB}{0,114,178}
@@ -64,7 +66,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\sffamily Active Foveal 3-D Vision}
-\fancyhead[R]{\small\sffamily Technical report --- review draft}
+\fancyhead[R]{\small\sffamily Technical report}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.3pt}
 
@@ -82,7 +84,7 @@
   ChatGPT --- GPT-5.6 Sol, OpenAI\\
   Claude Code --- Claude Opus 5.5, Anthropic}\\[9pt]
   October 2026\\[5pt]
-  {\footnotesize\sffamily\bfseries TECHNICAL REPORT --- REVIEW DRAFT}
+  {\footnotesize\sffamily\bfseries TECHNICAL REPORT}
 \end{center}
 \vspace{4pt}
 
@@ -972,7 +974,7 @@ loop.
 \caption{Playground extension points. Each row can be replaced independently; the architecture document gives each
 component's interface.}
 \label{tab:extension}
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
 \toprule
 component & current baseline & replaceable by (examples) \\
 \midrule
@@ -1008,9 +1010,9 @@ visualization & overview figure, offline demo replay & interactive viewer; web p
 \node[comp=oiblue]   (map) at (7.8,0.95) {\textbf{map representation}\\ surfel arrays};
 \node[comp=oiblue]   (fus) at (7.8,-0.35) {\textbf{fusion}\\ 12-mm association};
 \node[comp=oiblue]   (cov) at (7.8,-1.65) {\textbf{cyclopean coverage}\\ 1\degr{} sphere};
-\node[comp=oiverm]   (loc) at (12.1,0.95) {\textbf{local gaze policy}\\ edge $\times$ unseen gain};
-\node[comp=oiverm]   (glo) at (12.1,-0.35) {\textbf{global gaze policy}\\ deepest unseen cell};
-\node[comp=oiverm]   (stp) at (12.1,-1.65) {\textbf{stopping rule}\\ SEEN $\ge \pct{99}$};
+\node[comp=oiverm]   (loc) at (12.05,0.95) {\textbf{local gaze policy}\\ edge $\times$ unseen gain};
+\node[comp=oiverm]   (glo) at (12.05,-0.35) {\textbf{global gaze policy}\\ deepest unseen cell};
+\node[comp=oiverm]   (stp) at (12.05,-1.65) {\textbf{stopping rule}\\ SEEN $\ge \pct{99}$};
 \begin{scope}[on background layer]
   \node[group, fit=(ren)(mat)] (gobs) {};
   \node[group, fit=(meas)] (gmeas) {};

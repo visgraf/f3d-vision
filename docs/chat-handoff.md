@@ -1,15 +1,37 @@
 # Chat Handoff
 
-## Read first: the official Greedy Foveal Playground baseline is ACCEPTED
+## Read first: the technical report "Active Foveal 3-D Vision" is ACCEPTED
 
-**OFFICIAL PLAYGROUND ESTABLISHED. NEXT: TECHNICAL REPORT.**
+**TECHNICAL REPORT ACCEPTED. NEXT: SLIDE PRESENTATION.**
+
+    ACTIVE_FOVEAL_3D_VISION_TECH_REPORT_ACCEPTED
+
+| item | value |
+|---|---|
+| `main` | the technical-report acceptance commit that adds this entry, fast-forwarded from branch `presentation/active-foveal-tech-report` (no merge commit). The previous `main` was `203a70c9572689ca0729c5c597198a0be974c6e8`, the Engineering-1 acceptance (tag `greedy-foveal-playground-baseline`). |
+| tag | **`active-foveal-3d-vision-tech-report`**, pointing to the accepted `main` commit |
+| report | `docs/technical-report/active-foveal-3d-vision.pdf` (20 A4 pages; sha256 `43f165247a18b50ce3b7f46c2cebf179c5f31952a0c646791232e2d4775669b5`), source `active-foveal-3d-vision.tex`, README and figure script in the same directory |
+| review draft | `6a59d23`; acceptance changed only the status lines, the PDF metadata and two cosmetic layout details |
+
+The report is *Active Foveal 3-D Vision: A Fixate–Reconstruct–Saccade Playground for 360-Degree Scene
+Reconstruction*. It documents the official Greedy Foveal Playground baseline as a controlled proof of concept and
+reproducible computational baseline: 7 figures, 7 tables, 4 references. Its MEASURED numbers come from the official
+Engineering-1 reproduction run. Its figures come from that run and from the frozen demo images; no scene was rendered.
+
+- **Next: SLIDE PRESENTATION.** The outline is in the Engineering-1 report, §11 B. No policy redesign is authorized,
+  and no new research experiment is open.
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
+
+## Official Greedy Foveal Playground baseline: ACCEPTED (Engineering-1, `203a70c`)
+
+**OFFICIAL PLAYGROUND ESTABLISHED.** The technical report followed (see above).
 
     GREEDY_FOVEAL_PLAYGROUND_BASELINE_ACCEPTED
     GREEDY_FOVEAL_PLAYGROUND_BASELINE_OFFICIAL
 
 | item | value |
 |---|---|
-| `main` | the Engineering-1 acceptance commit that adds this entry, fast-forwarded from branch `engineering/greedy-playground-baseline` (no merge commit). The previous `main` was `3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f`, the Greedy v0 closure. |
+| `main` at Engineering-1 acceptance | `203a70c9572689ca0729c5c597198a0be974c6e8`, fast-forwarded from branch `engineering/greedy-playground-baseline` (no merge commit). The `main` before it was `3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f`, the Greedy v0 closure. |
 | tag | **`greedy-foveal-playground-baseline`**, pointing to the accepted `main` commit |
 | official code | `tools/greedy_foveal/` (`explorer.py`, `run.py`, `render_server.py`, `visuals.py`, `demo.py`, plus `check_equivalence.py` and `README.md`) |
 | front door | root `README.md`; the former README is in `docs/repository/README-history.md` |
@@ -32,7 +54,8 @@ It is **bitwise equivalent** to the frozen grow600 control path: 23 / 23 equival
   removed (`check_equivalence.py source`).
 - **Architectural fact:** the gaze policy does not read the 3-D map. It uses the cyclopean coverage plus the current
   fixation's evidence. The map is persistent reconstruction memory and output.
-- **Next: TECHNICAL REPORT**, then the slide presentation. Their outlines are in the Engineering-1 report, §11. No
+- **Next: TECHNICAL REPORT** (since accepted; see above), then the slide presentation. Their outlines are in the
+  Engineering-1 report, §11. No
   policy redesign is authorized. Later playground experiments change one component at a time against the official
   baseline, each one explicitly authorized.
 - **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.** The prototype branch, which descends from NS1e, is never
@@ -94,8 +117,13 @@ optimized.
 
 ## Accepted main
 
-`main` = the Engineering-1 acceptance commit that adds the "Read first" section above (tag
-`greedy-foveal-playground-baseline`). It is a fast-forward of `engineering/greedy-playground-baseline`:
+`main` = the technical-report acceptance commit that adds the "Read first" section above (tag
+`active-foveal-3d-vision-tech-report`). It is a fast-forward of `presentation/active-foveal-tech-report`:
+
+    203a70c (Engineering-1 acceptance) -> 6a59d23 review draft -> acceptance
+
+Previous accepted main (Engineering-1, tag `greedy-foveal-playground-baseline`):
+`203a70c9572689ca0729c5c597198a0be974c6e8`. It is a fast-forward of `engineering/greedy-playground-baseline`:
 
     3f92ac3 (Greedy v0 closure) -> 202feb2 contract -> 99a3047 implementation -> b77b1d9 documentation
     -> 09685be checker label -> db14029 report -> 4baca8b README front door -> acceptance
@@ -112,6 +140,11 @@ Previous accepted main (NS1d):
 this entry follows it. NS1d is the latest accepted experiment.
 
 Accepted milestones:
+- **Technical report "Active Foveal 3-D Vision"**, accepted by Luiz and Chat (`docs/technical-report/`):
+
+      ACTIVE_FOVEAL_3D_VISION_TECH_REPORT_ACCEPTED
+
+  Tag `active-foveal-3d-vision-tech-report`.
 - **Engineering-1: official Greedy Foveal Playground baseline**, accepted by Luiz and Chat
   (`docs/engineering/greedy-foveal-playground-baseline-report.md`):
 
@@ -366,7 +399,7 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after Engineering-1): ENGINEERING / PRESENTATION
+## Current roadmap (Luiz and Chat, after the technical report): ENGINEERING / PRESENTATION
 
     GREEDY FOVEAL EXPLORER V0                        ACCEPTED BASELINE, CLOSED
         frozen implementation  greedy-foveal-explorer-v0-impl  (a437df0)
@@ -377,8 +410,10 @@ Accepted milestones:
         tools/greedy_foveal/ on main; tag greedy-foveal-playground-baseline
         bitwise equivalent to the frozen v0 control path (23 / 23)
 
-    TECHNICAL REPORT                                 NEXT
-    SLIDE PRESENTATION                               after the technical report
+    TECHNICAL REPORT                                 ACCEPTED
+        docs/technical-report/active-foveal-3d-vision.pdf; tag active-foveal-3d-vision-tech-report
+
+    SLIDE PRESENTATION                               NEXT
     PLAYGROUND EXPERIMENTS                           later; one component at a time, explicitly authorized
         no policy redesign is authorized now
 
@@ -2276,8 +2311,8 @@ review"); its branch stays at `4107be8` and its run is diagnostic evidence only.
 
 **Current next activity: ENGINEERING / PRESENTATION on the frozen Greedy Foveal Explorer v0 baseline** (see "Read
 first" and `docs/prototype/greedy-foveal-explorer-v0-closure.md`). THE PROOF OF CONCEPT IS CLOSED. Engineering-1 has
-established the official Greedy Foveal Playground baseline (tag `greedy-foveal-playground-baseline`). **The TECHNICAL
-REPORT is next**, then the slide presentation.
+established the official Greedy Foveal Playground baseline (tag `greedy-foveal-playground-baseline`). The technical
+report is ACCEPTED (tag `active-foveal-3d-vision-tech-report`). **The SLIDE PRESENTATION is next.**
 
 - The frozen Greedy v0 behavior is reproduced bitwise by the official baseline. Any later optimization must keep
   reproducing it (`tools/greedy_foveal/check_equivalence.py run` against `previews/greedy-foveal-explorer-v0-grow600/`).
@@ -2292,7 +2327,7 @@ branch nor the Greedy prototype branch, which descends from it, is merged into `
 
 0. Greedy playground (current):
    - The extraction and the behavior-preservation evidence are settled by Engineering-1 (accepted).
-   - Next deliverables: the technical report, then the slide presentation.
+   - The technical report is accepted (`docs/technical-report/`). Next deliverable: the slide presentation.
    - Still open: the map and storage cost (16.5 M surfels, 1 GB `final-map.npz`).
    - The remaining executable "PROTOTYPE" labels (trajectory label, overview subtitle, demo poster footer) are still
      there.
