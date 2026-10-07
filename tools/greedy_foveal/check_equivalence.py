@@ -438,8 +438,8 @@ def finish(L: Ledger, meta: dict | None, label: str, out: Path | None = None) ->
                                          "reported": L.reported}, indent=1, sort_keys=True) + "\n")
         print(f"{PREFIX} wrote {out}", flush=True)
     passed = sum(r["pass"] for r in L.results.values())
-    print(f"{PREFIX} {label} {'PASS' if L.all_pass else 'FAIL'} {passed}/{len(L.results)}"
-          + ("" if L.all_pass else f" failed: {L.failures()}"), flush=True)
+    print(f"{PREFIX} {label} {'PASS' if L.all_pass else 'FAIL'} ({passed}/{len(L.results)} checks passed)"
+          + ("" if L.all_pass else f"; {len(L.failures())} failed: {L.failures()}"), flush=True)
     return 0 if L.all_pass else 1
 
 
