@@ -299,7 +299,7 @@ def compare_run(run: Path, base: Path, prefix: bool, known: bool) -> Ledger:
     L.check("run products unchanged since its freeze", not stale, stale or None)
     L.check("control process opened no Breadth-1 path (run)", fz["host_open_audit"]["breadth1_opens"] == [])
     fzb = read_json(base / "freeze.json")
-    L.report("freeze_hashes_equal_to_baseline (informative; npz archives carry zip timestamps)",
+    L.report("freeze_hashes_equal_to_baseline (informative; RGB and run metadata change some file bytes)",
              {f: fz["files"].get(f) == h for f, h in fzb["files"].items()})
     L.report("host_open_audit", {"run": fz["host_open_audit"]["opens_recorded"],
                                  "baseline": fzb["host_open_audit"]["opens_recorded"]})
