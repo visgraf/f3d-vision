@@ -76,7 +76,9 @@ decision) adds docs/prototype/ with its closure record (required); the handoff a
 and closed with ENGINEERING / PRESENTATION next, and NS1e REVIEW PENDING, NOT ACCEPTED, NOT MERGED (no NS1e ACCEPTED
 marker); the former "North Star-1e is next" assertions are retired. Engineering-1 (the official Greedy Foveal
 Playground baseline) adds the docs/engineering/ stage directory and declares its contract (required), its report, the
-docs/architecture/ playground reference and the tools/greedy_foveal/ files (allowed).
+docs/architecture/ playground reference and the tools/greedy_foveal/ files (allowed). The root README is the front door
+of the Active Foveal Playground (exact title and sections below); the former README is preserved verbatim, below a
+historical notice, in docs/repository/README-history.md (required).
 """
 from __future__ import annotations
 
@@ -209,6 +211,9 @@ NS1E_ACCEPTED_RX = re.compile(r"NORTH_STAR1E_[A-Z0-9_]*ACCEPTED")    # must neve
 ENG1_REQUIRED = {"docs/engineering/greedy-foveal-playground-baseline-contract.md"}
 ENG1_TOOLS = {f"tools/greedy_foveal/{n}" for n in ("explorer.py", "run.py", "render_server.py", "visuals.py", "demo.py",
                                                    "check_equivalence.py", "README.md")}
+README_HISTORY = "docs/repository/README-history.md"
+README_HISTORY_SOURCE = "3f92ac314bbb1f0c0bfac25c9ca6bd55bb129b0f"     # main before the playground README
+ENG1_REQUIRED |= {README_HISTORY}
 ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
                                              "docs/architecture/greedy-foveal-playground.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
@@ -226,8 +231,9 @@ TAGS = {
     "consolidation2-sealed-2026-09-25": "760d2162953ae0d5754704249a3e0f7ae7b60776",
     "f3d-vision-initial-2026-09-25": "6c8a80f5c57cb5c7f697141de6f48abbdd041743",
 }
-README_TITLE = "Foveal Stereo Vision"
-README_SECTIONS = ["Migration and Refactoring", "Next Stage — Integrated Foveal Controller"]
+README_TITLE = "Foveal Stereo Vision — Active Foveal Playground"
+README_SECTIONS = ["Current baseline", "What the playground does", "Quick start", "Code map",
+                   "Architecture and playground extensions", "Demo", "Limitations", "Documentation", "Project history"]
 CLAUDE_FORBIDDEN = [
     "Engineering-first", "science-second", "Chat-authored", "Chat commit", "Chat commits",
     "authorizes a repository write", "authorized a repository write", "Chat writes to the repository",
@@ -480,7 +486,7 @@ def main() -> int:
     missing_ns1d = sorted(NS1D_REQUIRED - set(index))
     check("the NS1d contract is tracked", not missing_ns1d, str(missing_ns1d))
     missing_eng1 = sorted(ENG1_REQUIRED - set(index))
-    check("the Engineering-1 contract is tracked", not missing_eng1, str(missing_eng1))
+    check("the Engineering-1 contract and the README history are tracked", not missing_eng1, str(missing_eng1))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
@@ -524,9 +530,13 @@ def main() -> int:
     readme = disk("README.md").read_text(encoding="utf-8")
     hs = headings(readme)
     check("README has exactly one title", [t for lvl, t in hs if lvl == 1] == [README_TITLE], str(hs[:3]))
-    check("README has exactly the two intended top-level sections",
+    check("README has exactly the intended top-level sections",
           [t for lvl, t in hs if lvl == 2] == README_SECTIONS, str([t for lvl, t in hs if lvl == 2]))
     check("README has no deeper headings", not [t for lvl, t in hs if lvl > 2], str([t for lvl, t in hs if lvl > 2]))
+    history = disk(README_HISTORY).read_text(encoding="utf-8") if disk(README_HISTORY).is_file() else ""
+    former = git("show", f"{README_HISTORY_SOURCE}:README.md").decode("utf-8")
+    check("the former README is preserved verbatim below a historical notice", README_HISTORY in index
+          and history.startswith("# Historical README") and history.endswith(former) and former not in readme)
 
     # ---- CLAUDE.md
     claude = disk("CLAUDE.md").read_text(encoding="utf-8")
