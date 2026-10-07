@@ -99,7 +99,7 @@ DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle",
              "controller", "engineering", "methodology", "natural-bootstrap", "north-star", "partition-graph", "prototype",
              "repository"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
-              "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
+              "greedy_foveal", "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
 ADDED_REQUIRED = {
     "docs/repository/repository-transition-1-contract.md",
