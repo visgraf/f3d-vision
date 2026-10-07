@@ -74,7 +74,9 @@ measurement memory established) and the post-NS1d decision (North Star-1e: the f
 measurement memory, continuing from the accepted NS1d state). The Greedy Foveal Explorer v0 closure (a project-baseline
 decision) adds docs/prototype/ with its closure record (required); the handoff and CLAUDE.md record Greedy v0 accepted
 and closed with ENGINEERING / PRESENTATION next, and NS1e REVIEW PENDING, NOT ACCEPTED, NOT MERGED (no NS1e ACCEPTED
-marker); the former "North Star-1e is next" assertions are retired.
+marker); the former "North Star-1e is next" assertions are retired. Engineering-1 (the official Greedy Foveal
+Playground baseline) adds the docs/engineering/ stage directory and declares its contract (required), its report, the
+docs/architecture/ playground reference and the tools/greedy_foveal/ files (allowed).
 """
 from __future__ import annotations
 
@@ -94,7 +96,8 @@ LAYOUT = "docs/consolidation/consolidation-3-layout.json"
 PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
-             "controller", "methodology", "natural-bootstrap", "north-star", "partition-graph", "prototype", "repository"}
+             "controller", "engineering", "methodology", "natural-bootstrap", "north-star", "partition-graph", "prototype",
+             "repository"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
               "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
@@ -203,12 +206,17 @@ GREEDY_V0_MARKERS = ("GREEDY_FOVEAL_EXPLORER_V0_BASELINE_ACCEPTED", "GREEDY_FOVE
 GREEDY_V0_IMPL = "a437df048b555d5b59f6855b6572eea2665ab0da"
 GREEDY_V0_DEMO = "8066a246bf251fb1e2d66b7061899c32df236bf1"
 NS1E_ACCEPTED_RX = re.compile(r"NORTH_STAR1E_[A-Z0-9_]*ACCEPTED")    # must never appear (NS1e not accepted)
+ENG1_REQUIRED = {"docs/engineering/greedy-foveal-playground-baseline-contract.md"}
+ENG1_TOOLS = {f"tools/greedy_foveal/{n}" for n in ("explorer.py", "run.py", "render_server.py", "visuals.py", "demo.py",
+                                                   "check_equivalence.py", "README.md")}
+ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
+                                             "docs/architecture/greedy-foveal-playground.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
                  | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED | NS1B_ALLOWED
-                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED)
+                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED | ENG1_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -471,6 +479,8 @@ def main() -> int:
     check("the NS1c2 contract is tracked", not missing_ns1c2, str(missing_ns1c2))
     missing_ns1d = sorted(NS1D_REQUIRED - set(index))
     check("the NS1d contract is tracked", not missing_ns1d, str(missing_ns1d))
+    missing_eng1 = sorted(ENG1_REQUIRED - set(index))
+    check("the Engineering-1 contract is tracked", not missing_eng1, str(missing_eng1))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
