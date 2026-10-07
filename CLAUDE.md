@@ -223,13 +223,48 @@ Refactoring must not silently become a scientific change.
 
 ## Current project stage
 
+**Current stage: ENGINEERING / PRESENTATION.**
+
+Greedy Foveal Explorer v0 is the accepted proof-of-concept baseline
+(`docs/prototype/greedy-foveal-explorer-v0-closure.md`):
+
+    GREEDY_FOVEAL_EXPLORER_V0_BASELINE_ACCEPTED
+    GREEDY_FOVEAL_EXPLORER_V0_CLOSED
+
+- The concept demo is COMPLETE. The frozen implementation is tag
+  `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).
+  The frozen demo is tag `greedy-foveal-explorer-v0-demo`
+  (`8066a246bf251fb1e2d66b7061899c32df236bf1`).
+- The frozen successful run is
+  `previews/greedy-foveal-explorer-v0-grow600/`. It stops at fixation
+  542 with 99.00 % SEEN, 98.28 % DEPTH and 98.32 % of the Breadth-1
+  first-hit solid angle within 12 mm.
+- The baseline loop is deliberately simple: fixate -> reconstruct
+  everything locally (PERFECT / ORACLE correspondence, accepted
+  spherical geometry) -> update one global H0 12-mm map and the
+  cyclopean coverage -> local or global saccade -> repeat. It uses a
+  fixed head, a static synthetic Classroom, no object scheduler and no
+  Controller-01/02 state machine.
+- The active baseline is the frozen Greedy v0 behavior. Engineering
+  must reproduce it before optimizing it. No policy redesign is
+  authorized, and no new research experiment is open.
+- The prototype branch `prototype/greedy-foveal-explorer-v0` descends
+  from the unaccepted NS1e branch. It is never merged or fast-forwarded
+  into `main`; engineering extracts the small explorer onto a clean
+  branch instead.
+- The controller research line below (Controller-01 / Controller-02 /
+  North Star) is preserved historical work. It is not deleted, and it
+  is not on the immediate demonstration critical path. NS1e is REVIEW
+  PENDING, NOT ACCEPTED and NOT MERGED. Accepting Greedy v0 does not
+  accept NS1e.
+
 The Conceptual Core migration/refactoring through Core 14 is accepted
 and paused.
 
 Do not start another migration or cleanup Core automatically.
 
-The project is in the Integrated Foveal Controller stage, built on the
-`fov3d/` substrate and governed by Foveal Controller Stage Charter 1
+The controller research line was the Integrated Foveal Controller
+stage, built on the `fov3d/` substrate and governed by Foveal Controller Stage Charter 1
 (`docs/methodology/foveal-controller-stage-charter-1.md`) and by the later
 roadmap decision recorded in `docs/chat-handoff.md`:
 
@@ -461,8 +496,9 @@ roadmap decision recorded in `docs/chat-handoff.md`:
       Controller-02 NORMAL / RESIDUE semantics. Accepted (below).
     - North Star-1d: controller-phase cross-target measurement memory.
       Accepted (below).
-    - North Star-1e (next): the full coherent ten-entity Controller-02
-      loop with full M2 measurement memory (below).
+    - North Star-1e: the full coherent ten-entity Controller-02 loop
+      with full M2 measurement memory (below). It was executed on its
+      branch and is REVIEW PENDING, NOT ACCEPTED, NOT MERGED.
     - Later: the full Classroom active scene loop and the final
       omnidirectional outputs.
   - Controller-01, Controller-02, NB1c and Visual Language 1 stay frozen
@@ -613,8 +649,10 @@ roadmap decision recorded in `docs/chat-handoff.md`:
   - Cross-target causal measurement memory: ESTABLISHED. Correct NORMAL
     scene switching: ESTABLISHED. Policy-chart global transport:
     ESTABLISHED.
-  - NS1e (next): Full Coherent Multi-Entity Loop with Cross-Target
-    Measurement Memory. The coherent ten-entity Controller-02 scene
+  - NS1e: Full Coherent Multi-Entity Loop with Cross-Target
+    Measurement Memory. It was executed on branch
+    `north-star/ns1e-coherent-full-loop-m2-memory`; NS1e is REVIEW
+    PENDING, NOT ACCEPTED and NOT MERGED. The coherent ten-entity Controller-02 scene
     machine is released to run to its honest terminal state (scene
     closure over the coherent subset, or the mathematically derived
     hard action cap), with full M2 measurement memory as the live
@@ -624,7 +662,8 @@ roadmap decision recorded in `docs/chat-handoff.md`:
     post-NS1c2 / NS1d state (current target 202), not from bootstrap. A
     strictly post-control evaluation against the accepted Breadth-1
     0.5° reference follows the controller freeze.
-- Classroom validation, Tabletop transfer and Natural Bootstrap-2 follow.
+- Classroom validation, Tabletop transfer and Natural Bootstrap-2 were the
+  controller line's later steps; they are not scheduled now.
   - Tabletop transfer uses the same controller and bootstrap policy, with no
     scene-specific retuning unless execution is impossible.
   - Natural Bootstrap-2 (identity persistence) is a separate later problem.

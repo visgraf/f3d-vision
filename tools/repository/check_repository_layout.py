@@ -71,7 +71,10 @@ established) and the post-NS1c2 decision (North Star-1d: controller-phase cross-
 no-new-render causal replay; persistent maps stay target-only). North Star-1d declares its contract (required), report
 and seven tools/north_star/ ns1d tools (allowed). The handoff records NS1d accepted (Outcome 2; cross-target causal
 measurement memory established) and the post-NS1d decision (North Star-1e: the full coherent multi-entity loop with M2
-measurement memory, continuing from the accepted NS1d state).
+measurement memory, continuing from the accepted NS1d state). The Greedy Foveal Explorer v0 closure (a project-baseline
+decision) adds docs/prototype/ with its closure record (required); the handoff and CLAUDE.md record Greedy v0 accepted
+and closed with ENGINEERING / PRESENTATION next, and NS1e REVIEW PENDING, NOT ACCEPTED, NOT MERGED (no NS1e ACCEPTED
+marker); the former "North Star-1e is next" assertions are retired.
 """
 from __future__ import annotations
 
@@ -91,7 +94,7 @@ LAYOUT = "docs/consolidation/consolidation-3-layout.json"
 PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
-             "controller", "methodology", "natural-bootstrap", "north-star", "partition-graph", "repository"}
+             "controller", "methodology", "natural-bootstrap", "north-star", "partition-graph", "prototype", "repository"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
               "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
@@ -194,12 +197,18 @@ NS1D_TOOLS = {f"tools/north_star/{n}" for n in ("ns1d_spec.py", "ns1d_core.py", 
                                                 "ns1d_visuals.py", "check_ns1d.py", "check_ns1d_corruptions.py")}
 NS1D_ALLOWED = NS1D_REQUIRED | NS1D_TOOLS | {"docs/north-star/ns1d-cross-target-measurement-memory-report.md"}
 NS1C_ACCEPTED_MARKER = "NORTH_STAR1C_COHERENT_FIRST_SCENE_SWITCH_ACCEPTED"   # must never appear (NS1c not accepted)
+GREEDY_V0_CLOSURE = "docs/prototype/greedy-foveal-explorer-v0-closure.md"
+GREEDY_V0_REQUIRED = {GREEDY_V0_CLOSURE}
+GREEDY_V0_MARKERS = ("GREEDY_FOVEAL_EXPLORER_V0_BASELINE_ACCEPTED", "GREEDY_FOVEAL_EXPLORER_V0_CLOSED")
+GREEDY_V0_IMPL = "a437df048b555d5b59f6855b6572eea2665ab0da"
+GREEDY_V0_DEMO = "8066a246bf251fb1e2d66b7061899c32df236bf1"
+NS1E_ACCEPTED_RX = re.compile(r"NORTH_STAR1E_[A-Z0-9_]*ACCEPTED")    # must never appear (NS1e not accepted)
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
                  | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED | NS1B_ALLOWED
-                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED)
+                 | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -563,7 +572,7 @@ def main() -> int:
           and "NS1c2 is ACCEPTED as Outcome 1" in squash(claude))
     ns1d_report = disk("docs/north-star/ns1d-cross-target-measurement-memory-report.md")
     ns1d_report = ns1d_report.read_text(encoding="utf-8") if ns1d_report.is_file() else ""
-    check("NS1d is recorded accepted (Outcome 2) and North Star-1e (full coherent loop with M2 memory) next",
+    check("NS1d is recorded accepted (Outcome 2)",
           "NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED" in handoff
           and "NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_COMPLETE" in handoff
           and "NORTH_STAR1D_CROSS_TARGET_MEASUREMENT_MEMORY_ACCEPTED" in ns1d_report
@@ -571,10 +580,24 @@ def main() -> int:
           and "NS1d is complete. Cross-target causal measurement memory, correct NORMAL scene switching and policy-chart "
               "global transport are ESTABLISHED; North Star-1e, the Full Coherent Multi-Entity Loop with Cross-Target "
               "Measurement Memory, is next." in squash(handoff)
-          and "Current next activity: North Star-1e — Full Coherent Multi-Entity Loop with Cross-Target Measurement "
-              "Memory" in squash(handoff)
-          and "NS1d is ACCEPTED as Outcome 2" in squash(claude)
-          and "North Star-1e (next)" in squash(claude))
+          and "NS1d is ACCEPTED as Outcome 2" in squash(claude))
+    closure = disk(GREEDY_V0_CLOSURE).read_text(encoding="utf-8") if disk(GREEDY_V0_CLOSURE).is_file() else ""
+    check("Greedy Foveal Explorer v0 is recorded accepted and closed; ENGINEERING / PRESENTATION next; NS1e not accepted",
+          GREEDY_V0_CLOSURE in index
+          and all(m in t for m in GREEDY_V0_MARKERS for t in (closure, handoff, claude))
+          and all(sha in t for sha in (GREEDY_V0_IMPL, GREEDY_V0_DEMO) for t in (closure, handoff, claude))
+          and "**Status: CLOSED. Accepted by Luiz and Chat as the frozen, controlled proof-of-concept baseline.**" in closure
+          and "THE PROOF OF CONCEPT IS CLOSED. NEXT: ENGINEERING / PRESENTATION." in squash(handoff)
+          and "Current next activity: ENGINEERING / PRESENTATION on the frozen Greedy Foveal Explorer v0 baseline"
+          in squash(handoff)
+          and "Greedy Foveal Explorer v0 is the accepted proof-of-concept baseline" in squash(claude)
+          and "The concept demo is COMPLETE." in squash(claude)
+          and "**Current stage: ENGINEERING / PRESENTATION.**" in claude
+          and all("NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED." in squash(t) for t in (handoff, claude))
+          and "NS1e stays REVIEW PENDING, NOT ACCEPTED, NOT MERGED." in squash(closure)
+          and "North Star-1e (next)" not in squash(claude) and "NS1e (next)" not in squash(claude)
+          and "Current next activity: North Star-1e" not in squash(handoff)
+          and not any(NS1E_ACCEPTED_RX.search(t) for t in (closure, handoff, claude)))
     check("chat handoff records accepted main at NS1d, with NS1c2, NS1b, NS1a, AB1d3, AB1d2, AB1d, AB1c, AB1b, AB1a, NB1c, "
           "NB1b, NB1a, Breadth-1, Visual Language 1, Controller-02, Stage Charter 1, Controller-01C, Controller-01B, the "
           "Controller-01 visual package, Policy 1, Controller-01A, Controller-01, RT1 and Core 14 recorded",

@@ -1,6 +1,65 @@
 # Chat Handoff
 
+## Read first: Greedy Foveal Explorer v0 is CLOSED
+
+**THE PROOF OF CONCEPT IS CLOSED. NEXT: ENGINEERING / PRESENTATION.**
+
+    GREEDY_FOVEAL_EXPLORER_V0_BASELINE_ACCEPTED
+    GREEDY_FOVEAL_EXPLORER_V0_CLOSED
+
+| item | value |
+|---|---|
+| canonical repository | `visgraf/f3d-vision` (https://github.com/visgraf/f3d-vision) |
+| `main` | the closure commit that adds this entry, on branch `project/greedy-v0-closure`. It is a docs / project-state commit whose parent is the post-NS1d roadmap `5aa223109ec829d41945f19b4c5223928fd0dde9`. |
+| frozen implementation | tag `greedy-foveal-explorer-v0-impl` -> `a437df048b555d5b59f6855b6572eea2665ab0da` (`tools/greedy_foveal/{explorer.py, run.py, render_server.py}`) |
+| frozen demo | tag `greedy-foveal-explorer-v0-demo` -> `8066a246bf251fb1e2d66b7061899c32df236bf1`, the head of `prototype/greedy-foveal-explorer-v0` |
+| successful run | `previews/greedy-foveal-explorer-v0-grow600/`; `freeze.json` sha256 `a4283ab7436f03d8a5babd1086da760d0bfb614fdcefd73928f3a25c1ff72f55`; `final-map.npz` sha256 `90730b43f150c271cc27de1d4e7d7649b302e00bf7ca49f4fddaefd3cd362aed` |
+| demo | `visuals/greedy-foveal-explorer-v0-demo/demo.mp4`, sha256 `655c4757cbc7076a7c717815f1f832f6a78f319d2e31868bcb207655cec0572c` (1920 × 1080, H.264, 30 fps, 62.4 s); also `demo-poster.png` and `demo-final.png` |
+| closure record | `docs/prototype/greedy-foveal-explorer-v0-closure.md` (all hashes, limitations, what is not claimed) |
+
+Headline result (MEASURED):
+
+- the explorer stopped itself at **fixation 542** (SEEN ≥ 99 % of 4π);
+- **99.00 %** SEEN and **98.28 %** DEPTH;
+- **98.32 %** of the Breadth-1 first-hit solid angle reconstructed within 12 mm (98.52 % of cells);
+- authored objects only: 98.25 % of solid angle;
+- 322 local and 219 global saccades;
+- 16,517,811 surfels;
+- 729 s wall time.
+
+**Methodological reset.** The complex Controller-01 / Controller-02 machinery (object scheduler, NORMAL / DEFERRED /
+RESIDUE, per-object charts and maps, measurement memory, the final-look gate) is historical research evidence. It is
+not deleted, and it is not on the demonstration critical path. The successful demonstration baseline is intentionally
+simple:
+
+    FIXATE
+    -> RECONSTRUCT EVERYTHING LOCALLY
+    -> UPDATE GLOBAL H0 MAP + CYCLOPEAN COVERAGE
+    -> LOCAL OR GLOBAL SACCADE
+    -> REPEAT
+
+The setting is a fixed head, a static synthetic Classroom, PERFECT / ORACLE correspondence, 64 spp and first-hit
+evaluation. Natural stereo, natural segmentation and a moving head are deferred; efficiency and storage are not
+optimized.
+
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.** Accepting Greedy v0 does not accept NS1e.
+- **The prototype branch descends from NS1e** and is never merged or fast-forwarded into `main`.
+- **Next: ENGINEERING / PRESENTATION**, preserving the frozen Greedy v0 behavior before optimizing it. Candidate work:
+  - extract the small explorer onto a clean branch;
+  - simplify the code;
+  - reduce the map / storage cost;
+  - interactive visualization;
+  - presentation figures, a webpage and video variants;
+  - export of the demo products.
+
+  No policy redesign is authorized.
+
 ## Accepted main
+
+`main` = the Greedy Foveal Explorer v0 closure commit that adds the section above. Its parent is
+`5aa223109ec829d41945f19b4c5223928fd0dde9`, the post-NS1d roadmap.
+
+Previous accepted main (NS1d):
 
     main @ 25bb929b4d39e1e73cabf0df582bc3c5d3e45e06
 
@@ -9,6 +68,14 @@
 this entry follows it. NS1d is the latest accepted experiment.
 
 Accepted milestones:
+- **Greedy Foveal Explorer v0: controlled proof-of-concept baseline**, accepted and closed by Luiz and Chat (a project
+  baseline decision, not a new experiment; `docs/prototype/greedy-foveal-explorer-v0-closure.md`):
+
+      GREEDY_FOVEAL_EXPLORER_V0_BASELINE_ACCEPTED
+      GREEDY_FOVEAL_EXPLORER_V0_CLOSED
+
+  Frozen implementation tag `greedy-foveal-explorer-v0-impl` (`a437df0`); frozen demo tag
+  `greedy-foveal-explorer-v0-demo` (`8066a24`). NS1e is NOT accepted by this decision.
 - **North Star-1d: Controller-Phase Cross-Target Measurement Memory**, accepted by Luiz and Chat as **Outcome 2** (the
   machine result, the scientific conclusion, the historical known answer, the architectural distinction, the retained
   limitations and the visual review of `overview.png`, `memory-causal-timeline.png` and
@@ -131,7 +198,7 @@ Accepted milestones:
 
   The accepted completion marker is `NATURAL_BOOTSTRAP1C_RGB_CANDIDATE_GAZE_COMPLETE`. **NB1c is complete.**
 - **Scientific pivot after NB1b** (a decision by Luiz and Chat, not an experiment): **initial bootstrap should
-  not require depth.** See "Current roadmap" for the durable record.
+  not require depth.** See "Historical roadmap" for the durable record.
 - **Natural Bootstrap-1b: Foveal Serviceability**, accepted by Luiz and Chat as-is (the machine result, the
   measured classification and queues, the qualitative and scientific interpretation and the figures):
 
@@ -247,7 +314,25 @@ Accepted milestones:
   concept at a time. The migration pauses after Core 14; no Core 15 is started
   automatically.
 
-## Current roadmap (Luiz and Chat, after NS1d): THE NORTH STAR
+## Current roadmap (Luiz and Chat, after Greedy v0): ENGINEERING / PRESENTATION
+
+    GREEDY FOVEAL EXPLORER V0                        ACCEPTED BASELINE, CLOSED
+        frozen implementation  greedy-foveal-explorer-v0-impl  (a437df0)
+        frozen demo            greedy-foveal-explorer-v0-demo  (8066a24)
+        542 fixations, 99.00 % SEEN, 98.32 % first-hit solid angle within 12 mm
+
+    ENGINEERING / PRESENTATION                       NEXT
+        preserve the frozen Greedy v0 behavior first; no policy redesign
+        packaging, clean extraction, simplification, storage, visualization, presentation
+
+    CONTROLLER RESEARCH LINE (below)                 PRESERVED HISTORICAL WORK
+        not deleted; not on the demonstration critical path
+        NS1e: REVIEW PENDING, NOT ACCEPTED, NOT MERGED
+
+## Historical roadmap (Luiz and Chat, after NS1d): THE NORTH STAR controller line
+
+This was the roadmap before the Greedy v0 closure. Its "next" items are no longer scheduled.
+
 
     NATURAL BOOTSTRAP
         coarse 360 RGB
@@ -293,8 +378,8 @@ Accepted milestones:
             cross-target causal measurement memory: ESTABLISHED
             correct NORMAL scene switching: ESTABLISHED
             policy-chart global transport: ESTABLISHED
-        next:
-            North Star-1e                            NEXT
+        then:
+            North Star-1e                            REVIEW PENDING, NOT ACCEPTED, NOT MERGED
             full coherent multi-entity loop with M2 measurement memory
             continue from the accepted post-NS1c2 / NS1d state (target 202)
             run Controller-02 to its honest terminal or the derived hard cap
@@ -355,7 +440,7 @@ The full stage roadmap (updated after the NS1c review):
                 measurement memory                        North-Star data; cross-target evidence changes revisions,
                                                           effective geometry and non-selected proposals; no action
                                                           divergence through NS1c2 step 7; no reactivation)
-           NS1e full coherent multi-entity loop     NEXT (coherent ten-entity Controller-02 loop with full M2
+           NS1e full coherent multi-entity loop     REVIEW PENDING, NOT ACCEPTED, NOT MERGED (coherent ten-entity Controller-02 loop with full M2
                 with M2 measurement memory                memory, from the accepted NS1d state, to honest terminal
                                                           or the derived hard cap; post-control evaluation)
            full Classroom active scene loop, final omnidirectional outputs
@@ -2132,22 +2217,29 @@ Language 1 are frozen unless explicitly reopened.
 NS1c (coherent multi-entity control, first scene switch) was reviewed and is **NOT accepted and NOT merged** (see "NS1c
 review"); its branch stays at `4107be8` and its run is diagnostic evidence only.
 
-**Current next activity: North Star-1e — Full Coherent Multi-Entity Loop with Cross-Target Measurement Memory** (see
-"North Star after NS1d"), on branch `north-star/ns1e-coherent-full-loop-m2-memory` from this `main`, with its contract at
-`docs/north-star/ns1e-coherent-full-loop-m2-memory-contract.md`. The question: starting from the accepted NS1d
-M2-enriched post-NS1c2 state, can the accepted Controller-02 scene machine autonomously service the entire coherent
-ten-entity North-Star scheduler universe to its honest terminal state (fixed physical head, fixed recentered policy
-charts, FSG6f -> Cyclopean, PERFECT local correspondence, spherical H0 geometry, target-only persistent fusion,
-instance-keyed cross-target measurement memory, revision-driven natural reactivation, NORMAL / DEFERRED / RESIDUE
-semantics) without controller retuning? It continues from current target 202 and the frozen NS1d memory (events 0–8),
-runs until Controller-02 closure, the derived hard action cap or an invariant failure, and is followed by a strictly
-post-control 12-mm evaluation against the accepted Breadth-1 0.5° reference. FSG6f, Cyclopean, Controller-02, the
-scheduler, the 24-look budget, the final gate, the fixed head and the rank-1 planar support stay unchanged; 10 / 110 /
-178 stay out of scheduling; bootstrap cross-target memory is not part of NS1e.
+**Current next activity: ENGINEERING / PRESENTATION on the frozen Greedy Foveal Explorer v0 baseline** (see "Read
+first" and `docs/prototype/greedy-foveal-explorer-v0-closure.md`). THE PROOF OF CONCEPT IS CLOSED.
+
+- Engineering must first reproduce the frozen Greedy v0 behavior: tags `greedy-foveal-explorer-v0-impl` /
+  `greedy-foveal-explorer-v0-demo`, run `previews/greedy-foveal-explorer-v0-grow600/`. Only then may it optimize.
+- No policy redesign is authorized. No new research experiment is open.
+- Each engineering step is still specified by Luiz and Chat before it is executed.
+
+**NS1e** (the full coherent Controller-02 loop with M2 memory) was executed on branch
+`north-star/ns1e-coherent-full-loop-m2-memory`. **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.** Neither its
+branch nor the Greedy prototype branch, which descends from it, is merged into `main`.
 
 ## Decision-critical open items
 
-1. Controller design is led by Luiz with Chat, under Stage Charter 1. Controller-02 settled the
+0. Greedy v0 engineering (current):
+   - how to extract the small explorer onto a clean engineering branch, given that the prototype branch descends from
+     the unaccepted NS1e;
+   - what behavior-preservation evidence engineering must show against the frozen run (exact trajectory, coverage,
+     map);
+   - the map and storage cost (16.5 M surfels, 1 GB `final-map.npz`).
+
+   Any policy change would be a new, explicitly authorized step.
+1. (Controller research line: preserved historical work, not on the demonstration critical path.) Controller design is led by Luiz with Chat, under Stage Charter 1. Controller-02 settled the
    deferred/residual semantics and honest scene closure with a strict final-look gate v1 (not claimed
    optimal; residual objects are not claimed complete). Controller-01 (frozen) keeps the accepted local
    policy unchanged. Open questions from its report:
