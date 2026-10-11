@@ -282,6 +282,18 @@ baseline is established**
 
       ACTIVE_FOVEAL_3D_VISION_TECH_REPORT_ACCEPTED
 
+- **Playground-1 (gaze lattice) is ACCEPTED as a playground result**
+  (`docs/playground/gaze-lattice-report.md`):
+
+      PLAYGROUND1_GAZE_LATTICE_ACCEPTED
+
+  Gaze candidates restricted to a fixed covering lattice removed the
+  UNSEEN holes and the global-jump tail: 496 fixations, 0 UNSEEN
+  cells, 35 global saccades with an 8-fixation tail, and 98.82 % of
+  the Breadth-1 solid angle within 12 mm (MEASURED; the baseline gives
+  542, 640, 219 / 180 and 98.32 %). The lattice code is NOT on `main`;
+  it is at tag `playground-1-gaze-lattice`. Promoting it to the
+  official baseline would be a separate, unauthorized Engineering step.
 - Next: the SLIDE PRESENTATION. Later playground experiments change
   one component at a time against the official baseline, each one
   explicitly authorized.
@@ -303,8 +315,8 @@ baseline is established**
 - The active baseline is the frozen Greedy v0 behavior, now reproduced
   bitwise by the official playground baseline. Any later optimization
   must keep reproducing it (`tools/greedy_foveal/check_equivalence.py`).
-  No policy redesign is authorized, and no new research experiment is
-  open.
+  Playground-1 is closed; no further policy redesign is authorized, and
+  no new research experiment is open.
 - The prototype branch `prototype/greedy-foveal-explorer-v0` descends
   from the unaccepted NS1e branch. It is never merged or fast-forwarded
   into `main`; Engineering-1 extracted the small explorer onto a clean

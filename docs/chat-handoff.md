@@ -1,6 +1,36 @@
 # Chat Handoff
 
-## Read first: the technical report "Active Foveal 3-D Vision" is ACCEPTED
+## Read first: Playground-1 (gaze lattice) is ACCEPTED; ClaudeChat is the Chat surface
+
+**PLAYGROUND-1 ACCEPTED AS A PLAYGROUND RESULT. NEXT: SLIDE PRESENTATION.**
+
+    PLAYGROUND1_GAZE_LATTICE_ACCEPTED
+
+| item | value |
+|---|---|
+| `main` | the docs-only Playground-1 acceptance commit that adds this entry, fast-forwarded from branch `project/playground-1-acceptance` (no merge commit). Its parent is `55ba7ba`, the working-agreement acceptance, itself a fast-forward from `9fdf043` (technical report). |
+| working agreement | `55ba7ba`: **ClaudeChat (claude.ai) replaces ChatGPT as the Chat surface.** It may push contracts, docs and host-side code to the work branch Luiz names, never to `main` or tags; Claude Code keeps workstation execution and measurement; "one writer at a time" per branch (`CLAUDE.md`). |
+| Playground-1 code | tag **`playground-1-gaze-lattice`** -> `3c64c1f`, the head of `playground/gaze-lattice`. **Not merged:** `main` keeps the official `tools/greedy_foveal/` baseline. |
+| contract / report | `docs/playground/gaze-lattice-contract.md` / `-report.md` (copies on `main`; the originals are on the tag) |
+| run | `previews/playground-gaze-lattice/` (code `85fb962`; `freeze.json` sha256 `e1422fb4…6b3c`) |
+
+Gaze candidates are restricted to a fixed covering lattice: 496 gazes on 10° pitch rings. Local moves fill any lattice
+neighbour with unseen gain > 0; global moves go to the max-gain unvisited lattice gaze; the run stops when no lattice
+gaze adds area. MEASURED against the official baseline:
+
+- **496** fixations (baseline 542), stop `no valid unseen fixation`;
+- **0 UNSEEN cells** (baseline 640 cells in 184 holes); SEEN 100.00 %, DEPTH 99.31 %;
+- **460 local / 35 global**, with an **8-fixation** all-global tail (baseline 322 / 219, tail 180);
+- Breadth-1 within 12 mm: **98.94 %** of cells, **98.82 %** of solid angle (baseline 98.52 % / 98.32 %);
+- 665 s (baseline 733 s); `run.py checks` 8 / 8.
+
+- Every lattice gaze was fixated exactly once, so the fixation count is the lattice size. A sparser covering lattice
+  (about 290 gazes in principle) is an open idea, not authorized. The remaining 1.18 % of 12-mm solid angle is not
+  attributed.
+- **Next: SLIDE PRESENTATION.** No further policy redesign is authorized, and no new research experiment is open.
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
+
+## Technical report "Active Foveal 3-D Vision": ACCEPTED
 
 **TECHNICAL REPORT ACCEPTED. NEXT: SLIDE PRESENTATION.**
 
@@ -117,8 +147,16 @@ optimized.
 
 ## Accepted main
 
-`main` = the technical-report acceptance commit that adds the "Read first" section above (tag
-`active-foveal-3d-vision-tech-report`). It is a fast-forward of `presentation/active-foveal-tech-report`:
+`main` = the docs-only Playground-1 acceptance commit that adds the "Read first" section above. It is a fast-forward
+of `project/playground-1-acceptance`:
+
+    9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> Playground-1 acceptance
+
+The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
+(`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance).
+
+Previous accepted main (technical report, tag `active-foveal-3d-vision-tech-report`):
+`9fdf043`. It is a fast-forward of `presentation/active-foveal-tech-report`:
 
     203a70c (Engineering-1 acceptance) -> 6a59d23 review draft -> acceptance
 
