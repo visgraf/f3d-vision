@@ -1,6 +1,6 @@
 # Playground-1 — gaze lattice: contract
 
-**Status: CONTRACT (PROPOSED).** Authorized by Luiz on 2026-10-11 as the first playground experiment against the
+**Status: EXECUTED and ACCEPTED** (2026-10-11; see [the report](gaze-lattice-report.md), section 11). Authorized by Luiz on 2026-10-11 as the first playground experiment against the
 official Greedy Foveal Playground baseline (tag `greedy-foveal-playground-baseline`). Written and pushed by ClaudeChat
 under the working agreement of `55ba7ba`; workstation execution is Claude Code's.
 

@@ -1,7 +1,9 @@
 # Playground-1 — gaze lattice: report
 
-**Status: EXECUTED — REVIEW PENDING.** Executed on the workstation by Claude Code under the contract below. Whether
-the result is accepted is Luiz's decision.
+**Status: ACCEPTED** by Luiz on 2026-10-11, as a playground result (section 11). Executed on the workstation by
+Claude Code under the contract below; reviewed by ClaudeChat.
+
+    PLAYGROUND1_GAZE_LATTICE_ACCEPTED
 
 **Acceptance gate (contract §6): all of A1–A5 PASS.**
 
@@ -265,3 +267,35 @@ assumes full edge support everywhere.
   and neither was tried.
 - Breadth-1 12-mm solid angle is 98.82 %, against the sandbox's "about 99.3 %". The remaining 1.18 % is not
   attributed in this report.
+
+## 11. Acceptance
+
+**Decision (Luiz, 2026-10-11): ACCEPTED as a playground result.** The official baseline stays the official baseline.
+
+- **The lattice code is not merged into `main`.** It lives at the annotated tag **`playground-1-gaze-lattice`**,
+  which points to the commit that adds this section on `playground/gaze-lattice`. `main` keeps the official
+  `tools/greedy_foveal/` code, which `check_equivalence.py`, the README and the technical report describe. Copies of
+  this report and its contract are on `main` in `docs/playground/`, added by a docs-only acceptance commit.
+- **Promoting the lattice** to the official baseline would be a separate Engineering step. It is not authorized.
+
+### ClaudeChat review notes
+
+- **Verified from GitHub.** `847be8a` adds only this report, on top of `85fb962`. The runs recorded `85fb962` with a
+  clean tree. The layout checker gives 650 checked, 0 failed with the report in place (Chat-sandbox). The counts are
+  consistent: 460 + 35 + 1 = 496; 322 + 219 + 1 = 542; 253,043 / 255,758 = 98.94 %.
+- **Correction to the contract.** The baseline's all-global tail is 180 (section 4), not the "≥ 92" of contract
+  §1 and §6. The gate's margin is therefore larger than the contract stated.
+- **Missed prediction.** The contract predicted about 99.3 % for the 12-mm solid angle; 98.82 % was measured
+  (+0.50 points, not about +1.0). A likely reason, PROPOSED and untested: the baseline's UNSEEN holes were partly
+  reconstructed already, because a fixation reconstructs its whole raw core while SEEN marks only the cells whose
+  centres fall inside the nominal footprint. The remaining 1.18 % is probably depth-edge occlusion slivers, which a
+  fixed head cannot fill. It stays unattributed (section 10).
+- **D1 came from the prompt.** The relative `--vis` path in the prompt was Chat's error. Claude Code's
+  absolute path was the right fix.
+
+### Open, not authorized
+
+- Attributing the remaining 1.18 % of the Breadth-1 solid angle.
+- A sparser covering lattice. The fixation count here is the lattice size (496), and 12° square footprints allow
+  about 290 in principle.
+- The overview title (D2), if the lattice is ever promoted.
