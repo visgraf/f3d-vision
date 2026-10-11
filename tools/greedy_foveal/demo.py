@@ -783,8 +783,10 @@ def freeze_overlay(frame: Image.Image, hl: dict) -> Image.Image:
     d.rounded_rectangle([x0, y0, x0 + bw, y0 + bh], radius=14, fill=S.WHITE, outline=S.INK, width=3)
     S.text(d, (W / 2, y0 + 26), f"EXPLORATION COMPLETE  ·  FIXATION {hl['fixations']}", size=32, bold=True,
            outline=None, anchor="ma")
-    S.text(d, (W / 2, y0 + 82), f"{hl['seen']} SEEN   ·   {hl['depth']} DEPTH", size=56, bold=True, fill=C_DEPTH,
-           outline=None, anchor="ma")
+    line, size = f"{hl['seen']} SEEN   ·   {hl['depth']} DEPTH", 56
+    while d.textlength(line, font=S.font(size, True)) > bw - 40:   # keep >= 20 px inside the card (v0 fits at 56)
+        size -= 2
+    S.text(d, (W / 2, y0 + 82), line, size=size, bold=True, fill=C_DEPTH, outline=None, anchor="ma")
     S.text(d, (W / 2, y0 + 168), PROFILE["stop_rule"], size=21, fill=S.INK2,
            outline=None, anchor="ma")
     return im
