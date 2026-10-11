@@ -29,10 +29,14 @@ The deliverables go in `visuals/playground-gaze-lattice-demo/`, in the shared ch
    string and known answer is the current one, so the frozen v0 demo is unchanged by construction. Section 4,
    check V1, proves it. The profile only changes how the replay is drawn and labelled.
 2. **The `lattice` profile's wording:**
-   - local saccade: "step to a neighbouring lattice gaze";
-   - global saccade: "jump to the unvisited lattice gaze with the most unseen area";
+   - local saccade: "step to a nearby lattice gaze";
+   - global saccade: "jump to the best lattice gaze" (the strip reads "NEXT: GLOBAL SACCADE → best lattice gaze");
    - stop: "100 % SEEN · STOP", with the stop rule "no lattice gaze adds unseen area";
    - the fixation count and the run name come from the run's records.
+
+   *Revision before any workstation run.* The first draft's longer labels overran the strip's SEEN counter and the
+   intro legend in Chat-sandbox renders, so they were shortened to fit v0's layout. The lattice legend for panel C
+   sits in the panel, as a plated caption like panel D's, because the panel's title bar is full.
 3. **The lattice gazes are drawn on replay panel C** (the observer's 360° state). Unvisited gazes are small
    rings, and visited ones are filled dots. They come from `explorer.lattice()`, which is the code that ran (`85fb962`).
 4. **Stop-frame fix.** The lattice run ends with `next = {"kind": "none"}` rather than `null`. Both forms now give
