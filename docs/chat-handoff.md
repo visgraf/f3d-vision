@@ -8,7 +8,7 @@
 
 | item | value |
 |---|---|
-| `main` | the docs-only Playground-1 acceptance commit that adds this entry, fast-forwarded from branch `project/playground-1-acceptance` (no merge commit). Its parent is `55ba7ba`, the working-agreement acceptance, itself a fast-forward from `9fdf043` (technical report). |
+| `main` | the docs-only acceptance of the Playground-1 visualization package, fast-forwarded from `project/playground-1-visuals-acceptance` (no merge commit). Its parent is `4eb2a54`, the docs-only Playground-1 acceptance that added this entry; before that, `55ba7ba` (working agreement) and `9fdf043` (technical report). |
 | working agreement | `55ba7ba`: **ClaudeChat (claude.ai) replaces ChatGPT as the Chat surface.** It may push contracts, docs and host-side code to the work branch Luiz names, never to `main` or tags; Claude Code keeps workstation execution and measurement; "one writer at a time" per branch (`CLAUDE.md`). |
 | Playground-1 code | tag **`playground-1-gaze-lattice`** -> `3c64c1f`, the head of `playground/gaze-lattice`. **Not merged:** `main` keeps the official `tools/greedy_foveal/` baseline. |
 | contract / report | `docs/playground/gaze-lattice-contract.md` / `-report.md` (copies on `main`; the originals are on the tag) |
@@ -24,10 +24,26 @@ gaze adds area. MEASURED against the official baseline:
 - Breadth-1 within 12 mm: **98.94 %** of cells, **98.82 %** of solid angle (baseline 98.52 % / 98.32 %);
 - 665 s (baseline 733 s); `run.py checks` 8 / 8.
 
+**Visualization package: ACCEPTED** (Luiz's viewing decision; `docs/playground/gaze-lattice-visuals-report.md`):
+
+    PLAYGROUND1_VISUALS_ACCEPTED
+
+- **Location:** `visuals/playground-gaze-lattice-demo/`.
+- **Contents:**
+  - `demo.mp4`: 53.2 s, 1,597 frames, sha256 `326bddfb…994f`;
+  - `demo-poster.png`, from fixation #293, the view nearest v0's poster;
+  - `demo-final.png`;
+  - the overview with a Playground-1 title.
+- **How it is built:** by `demo.py --profile lattice` on `playground/gaze-lattice` (`46a2649`), replaying the frozen
+  run; nothing is rendered beyond display RGB.
+- **The v0 profile is unchanged:** its rebuild is byte-identical to the frozen v0 demo.
+
 - Every lattice gaze was fixated exactly once, so the fixation count is the lattice size. A sparser covering lattice
   (about 290 gazes in principle) is an open idea, not authorized. The remaining 1.18 % of 12-mm solid angle is not
   attributed.
-- **Next: SLIDE PRESENTATION.** No further policy redesign is authorized, and no new research experiment is open.
+- **Next: SLIDE PRESENTATION**, then Playground-2 (a sparser covering lattice), which Luiz has named as the following
+  step; it is to be contracted. No further policy redesign is authorized yet, and no new research experiment is
+  open.
 - **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
 
 ## Technical report "Active Foveal 3-D Vision": ACCEPTED
@@ -150,10 +166,13 @@ optimized.
 `main` = the docs-only Playground-1 acceptance commit that adds the "Read first" section above. It is a fast-forward
 of `project/playground-1-acceptance`:
 
-    9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> Playground-1 acceptance
+    9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> 4eb2a54 Playground-1 acceptance
+    -> Playground-1 visualization acceptance
 
 The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
-(`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance).
+(`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance), followed by
+the visualization package (`bcfc822` contract -> `c7fe476` demo profiles -> `a243f20` presentation fix -> `ae28fce`
+report -> `46a2649` acceptance).
 
 Previous accepted main (technical report, tag `active-foveal-3d-vision-tech-report`):
 `9fdf043`. It is a fast-forward of `presentation/active-foveal-tech-report`:

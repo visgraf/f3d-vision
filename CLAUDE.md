@@ -294,8 +294,14 @@ baseline is established**
   542, 640, 219 / 180 and 98.32 %). The lattice code is NOT on `main`;
   it is at tag `playground-1-gaze-lattice`. Promoting it to the
   official baseline would be a separate, unauthorized Engineering step.
-- Next: the SLIDE PRESENTATION. Later playground experiments change
-  one component at a time against the official baseline, each one
+  Its visualization package (video, poster, final board, overview;
+  `visuals/playground-gaze-lattice-demo/`) is ACCEPTED
+  (`docs/playground/gaze-lattice-visuals-report.md`):
+
+      PLAYGROUND1_VISUALS_ACCEPTED
+- Next: the SLIDE PRESENTATION, then Playground-2 (a sparser covering
+  lattice), to be contracted. Later playground experiments change one
+  component at a time against the official baseline, each one
   explicitly authorized.
 
 - The concept demo is COMPLETE. The frozen implementation is tag
