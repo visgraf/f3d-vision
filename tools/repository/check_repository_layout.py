@@ -80,7 +80,9 @@ docs/architecture/ playground reference and the tools/greedy_foveal/ files (allo
 of the Active Foveal Playground (exact title and sections below); the former README is preserved verbatim, below a
 historical notice, in docs/repository/README-history.md (required). Engineering/Presentation-2 adds the
 docs/technical-report/ directory with the technical report source and README (required), its bibliography, PDF,
-figure script and figures (allowed).
+figure script and figures (allowed). The ClaudeChat working agreement (2026-10-11) replaces ChatGPT with
+ClaudeChat as the Chat surface: CLAUDE.md states ClaudeChat's work-branch push authority and its limits, and no
+longer states the obsolete read-only ChatGPT role.
 """
 from __future__ import annotations
 
@@ -251,11 +253,18 @@ CLAUDE_FORBIDDEN = [
     "authorizes a repository write", "authorized a repository write", "Chat writes to the repository",
     "cannot writes", "commits the proposed", "tells Claude Code to pull", "docs/<phase>.md",
     "docs/<phase>-report.md", "migration/refactoring period", "Current migration principle",
+    "ChatGPT's GitHub connection is", "Luiz + ChatGPT", "ChatGPT is the design",
 ]
 CLAUDE_REQUIRED = [
     "Science-led, engineering-disciplined project.",
-    "ChatGPT's GitHub connection is **read-only**.",
-    "Chat does **not** push commits, branches, updates, or pull requests.",
+    "ClaudeChat may push to **authorized work branches only**.",
+    "Chat does **not** push to `main`, create or move tags, rewrite published history, or run anything that "
+    "needs Blender, the GPU or the scene assets.",
+    "### One writer at a time",
+    "a writer that finds the remote head differs from the named one stops and reports instead of merging or "
+    "overwriting.",
+    "for that quantity it stays PROPOSED.",
+    "`main` is fast-forwarded, and a tag is created, only on Luiz's explicit acceptance;",
     "An executed scientific/behavioral step must produce:",
     "- its run evidence under `./previews`;",
     "- at least one human-inspectable scientific visual under `./visuals`;",

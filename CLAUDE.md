@@ -5,33 +5,39 @@ Science-led, engineering-disciplined project.
 The project is developed through two human-supervised AI surfaces connected by a
 shared GitHub repository:
 
-- Mac Studio / macOS: Luiz + ChatGPT
+- claude.ai, used from the Mac Studio / macOS: Luiz + ClaudeChat
 - PC workstation / Ubuntu 24.04 / RTX 4090: Luiz + Claude Code in VS Code
 - Shared persistent state: https://github.com/visgraf/f3d-vision
 
 Luiz is the project lead and decision authority.
 
-ChatGPT is the design, review and specification surface. Its GitHub connection is
-read-only.
+ClaudeChat is the design, review and specification surface. It may also push
+contracts, documentation and host-side code to authorized work branches. It has no
+Blender, no GPU and no scene assets.
 
 Claude Code is the workstation implementation, repository-mutation, execution,
 diagnosis, and measurement surface.
 
 GitHub is the durable source of truth and the normal handoff medium between the two.
 
+In this document, **Chat** means ClaudeChat. Until 2026-10-11 the Chat surface was
+ChatGPT, with a read-only GitHub connection. Historical documents that record
+"Luiz and Chat" decisions before that date refer to ChatGPT; they are not rewritten.
+
 ## The loop
 
     Luiz sets direction
         ↓
     Chat reads the live repository, reasons about the next step,
-    develops the architecture / specification / contract / code drafts,
-    checks what it can, and prepares a self-contained Claude Code prompt
+    develops the architecture / specification / contract / code,
+    checks what it can in its sandbox, pushes the contract and any
+    host-side code to the authorized branch, and prepares a
+    self-contained Claude Code prompt
         ↓
     Luiz gives the prompt to Claude Code
         ↓
-    Claude Code creates/uses the authorized branch and isolated worktree,
-    commits the durable contract before substantial execution,
-    implements, diagnoses, measures, commits, and pushes
+    Claude Code pulls the exact branch head in an isolated worktree,
+    implements what remains, diagnoses, measures, commits, and pushes
         ↓
     Chat reads and reviews the resulting GitHub commits, reports, and diffs
         ↓
@@ -56,26 +62,41 @@ Luiz:
 
 Neither AI surface makes an undelegated project decision.
 
-### ChatGPT
+### ClaudeChat
 
-ChatGPT's GitHub connection is **read-only**.
+ClaudeChat may push to **authorized work branches only**.
 
-Chat may inspect, search and review authorized repository content. Chat does **not**
-push commits, branches, updates, or pull requests.
+Chat works in its own cloud clone of the repository, which is isolated from the
+workstation checkout by construction. It may create the branch Luiz names and push
+contracts, documentation, host-side code and host-side checks to it. Chat does **not**
+push to `main`, create or move tags, rewrite published history, or run anything that
+needs Blender, the GPU or the scene assets.
 
 Chat:
 
 - reads the current GitHub repository before proposing changes;
 - reasons about architecture, experiments, checks, and acceptance criteria;
-- drafts architecture, specifications, contracts, code, and documentation;
-- prepares the self-contained Claude Code prompt for each substantial handoff;
-- runs checks available in its environment;
+- writes architecture, specifications, contracts, code, and documentation;
+- commits the durable step contract before handing execution to Claude Code;
+- runs the checks its sandbox can run (host-side Python, no Blender) and records
+  their commands;
 - clearly states what it could not run;
+- prepares the self-contained Claude Code prompt for each substantial handoff;
 - reviews Claude Code's committed reports and changes directly from GitHub;
 - distinguishes proposed behavior from measured behavior.
 
-In the normal workflow, repository mutation is performed by Claude Code under Luiz's
-authority. Luiz remains free to intervene explicitly.
+Workstation execution, measurement and run reports remain Claude Code's. Luiz remains
+free to intervene explicitly.
+
+### One writer at a time
+
+Both surfaces can push, so a branch has one active writer at a time:
+
+- the writer pulls the exact branch head before starting and pushes before handing
+  over;
+- the handoff names the branch and the head commit the next writer must start from;
+- a writer that finds the remote head differs from the named one stops and reports
+  instead of merging or overwriting.
 
 ### Claude Code
 
@@ -89,7 +110,8 @@ It:
 - works in a dedicated isolated git worktree, and does not switch or mutate the shared
   checkout;
 - reads this working agreement and the step contract;
-- commits the durable step contract before substantial implementation or execution;
+- commits the durable step contract before substantial implementation or execution,
+  unless Chat has already committed it on the branch;
 - runs commands in the prescribed order;
 - reads actual console output rather than trusting exit status alone;
 - diagnoses a failing check before modifying code;
@@ -106,12 +128,13 @@ GPU, Blender, scene-asset, performance, and full workstation claims become
 
 GitHub is the default transport. The normal handoff is:
 
-1. Chat prepares the design/specification and a self-contained Claude Code prompt.
-2. Luiz gives the prompt to Claude Code.
-3. Claude Code creates/uses the authorized branch and isolated worktree.
-4. For substantial work, Claude Code commits the durable contract **before**
-   implementation/execution.
-5. Claude Code implements, executes, and measures.
+1. Chat prepares the design/specification. For substantial work, Chat pushes the
+   durable contract to the authorized branch **before** implementation/execution,
+   together with any host-side code it has written and checked.
+2. Chat prepares a self-contained Claude Code prompt naming the branch and its head.
+3. Luiz gives the prompt to Claude Code.
+4. Claude Code pulls that head into an isolated worktree.
+5. Claude Code implements what remains, executes, and measures.
 6. Claude Code commits and pushes the implementation/report.
 7. Chat reviews the committed result directly from GitHub.
 8. Luiz decides whether it is accepted.
@@ -164,6 +187,12 @@ Never blur these categories.
 A Chat proposal or contract draft may contain expected outputs.
 
 Only workstation execution converts them into measured outputs.
+
+A command Chat runs in its sandbox (host-side Python, no Blender) is MEASURED only
+for what that command itself computes, labelled as a Chat-sandbox result with its
+command and commit. A sandbox model of a workstation run, such as a coverage-only
+simulation of the explorer, does not measure the workstation quantity it predicts;
+for that quantity it stays PROPOSED.
 
 ## Two hard rules
 
@@ -740,6 +769,11 @@ Unless a step contract explicitly says otherwise:
 
 - Claude Code has standing permission to commit and push step results and delegated
   fixes to the active branch. Work outside that scope requires Luiz.
+- Chat has standing permission to push contracts, documentation, host-side code and
+  host-side checks to the active branch Luiz has named. Work outside that scope
+  requires Luiz.
+- `main` is fast-forwarded, and a tag is created, only on Luiz's explicit acceptance;
+  either surface may then do it as Luiz instructs.
 - If the contract does not state a scope of permitted fixes, the default is **no
   fixes**: diagnose, report, and stop.
 - Contracts and reports follow the convention `docs/<stage>/<phase>-contract.md` and
@@ -918,8 +952,8 @@ The working process should optimize for:
 
 GitHub carries state.
 
-Claude Code mutates the repository and measures on the workstation.
+Claude Code executes and measures on the workstation.
 
-Chat designs and reviews.
+Chat designs, specifies and reviews, and pushes what it writes to work branches.
 
 Luiz decides.
