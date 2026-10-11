@@ -1,6 +1,6 @@
 # Playground-1 visualization package: contract
 
-**Status: CONTRACT (PROPOSED).** This step was requested by Luiz on 2026-10-11 and is presentation only. It
+**Status: EXECUTED and ACCEPTED** (2026-10-11; see [the report](gaze-lattice-visuals-report.md), section 10). This step was requested by Luiz on 2026-10-11 and is presentation only. It
 replays the accepted Playground-1 run in the format of the frozen Greedy v0 demo. ClaudeChat wrote this contract
 and the code changes; Claude Code renders, builds and checks on the workstation.
 

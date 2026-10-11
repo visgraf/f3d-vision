@@ -1,7 +1,9 @@
 # Playground-1 visualization package: report
 
-**Status: EXECUTED — REVIEW PENDING.** This is presentation only. Claude Code built and checked the package on the
-workstation, under the contract below. Acceptance is Luiz's viewing decision (contract §6).
+**Status: ACCEPTED** by Luiz on 2026-10-11, after viewing the deliverables (contract §6; section 10). This is
+presentation only. Claude Code built and checked the package on the workstation, under the contract below.
+
+    PLAYGROUND1_VISUALS_ACCEPTED
 
 **Machine checks (contract §6):**
 
@@ -217,3 +219,16 @@ used.
 
 Machine checks complete. The viewing decision (contract §6) is open. The deliverables to view are `demo.mp4`,
 `demo-poster.png`, `demo-final.png` and `overview.png` in `visuals/playground-gaze-lattice-demo/`.
+
+## 10. Acceptance
+
+**Decision (Luiz, 2026-10-11): ACCEPTED.** Luiz viewed `demo.mp4`, `demo-poster.png`, `demo-final.png` and
+`overview.png`, the qualitative half of contract §6. The machine half is L1 PASS, V1 equal, N1 FAIL and C1 at
+0 failures.
+
+- **ClaudeChat review.** F1 (`a243f20`) is the only code change after `c7fe476`, and it touches only the freeze-card
+  headline size. In the Chat-sandbox, the v0 profile still renders the intro card, freeze card, static chrome and
+  local / global / stop strips pixel-identically to the pre-change `demo.py`, which agrees with Claude Code's
+  byte-identical v0 rebuild. The layout checker gives 651 checked, 0 failed at `ae28fce`.
+- **Code location.** As with Playground-1, the presentation code (`demo.py --profile`, `visuals.py --title`)
+  stays on `playground/gaze-lattice`, and `main` receives docs-only copies of this contract and report.
