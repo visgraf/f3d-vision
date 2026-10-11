@@ -44,8 +44,13 @@ They change together because the lattice defines all three. Nothing else changes
    wins; ties go to the lower lattice index.
 3. **Global move:** jump to the unvisited lattice gaze with the largest `UNSEEN_GAIN`; ties go to the lower index.
    This replaces the UNSEEN-component BFS and the "deepest cell" rule.
-4. **Stop:** `SEEN_STOP = 1.0`, and `decide` returns `none` when no unvisited lattice gaze has `UNSEEN_GAIN > 0`.
-   The run then stops with `no valid unseen fixation`. Under the lattice, that means every cell is SEEN.
+4. **Stop:** `decide` returns `none` when no unvisited lattice gaze has `UNSEEN_GAIN > 0`. The run then stops with
+   `no valid unseen fixation`. Under the lattice, that means every cell is SEEN. `SEEN_STOP = 2.0` is unreachable on
+   purpose, so `run.py`'s SEEN branch never fires.
+
+   *Revision before any workstation run.* This contract first said `SEEN_STOP = 1.0`. The Chat-sandbox check K4 then
+   showed that `run.py`'s SEEN branch fires first, at exactly 100 %, and records its fixed text "seen >= 99 % of
+   4 pi". The coverage outcome is the same; only the recorded stop reason was wrong.
 
 A lattice gaze counts as visited when a fixation direction lies within 0.5° of it. So `decide(state, core_valid, yaw,
 pitch, visited)` keeps its signature and its inputs, and `run.py` and its saved decision states are untouched.

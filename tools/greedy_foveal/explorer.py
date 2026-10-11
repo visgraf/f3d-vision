@@ -9,8 +9,11 @@ behavior is frozen to tag greedy-foveal-explorer-v0-impl (docs/engineering/greed
   accepted AB1b spherical epipolar geometry (``ab1b_geometry.compute_epipolar``) in canonical fixed-head H0;
 - one global H0 surfel map with the accepted FSG3 12-mm association / fusion rule (``fsg3_surface_map.fuse``)
   re-implemented with a vectorized spatial hash, WITHOUT the instance filter and without the 63-patch provenance cap;
-- the greedy policy: 8 local tangent-frame neighbours scored EDGE_SUPPORT * UNSEEN_GAIN, else a global saccade to the
-  deepest cell of the largest UNSEEN component.
+- the greedy policy, restricted to a fixed gaze lattice (Playground-1, docs/playground/gaze-lattice-contract.md): pitch
+  rings every 10 deg whose 12-deg footprints cover every 1-deg cell.  Local: the unvisited lattice neighbours within
+  16 deg, scored EDGE_SUPPORT * UNSEEN_GAIN, eligible at any UNSEEN_GAIN > 0; else a global saccade to the unvisited
+  lattice gaze with the largest UNSEEN_GAIN; else stop (every cell SEEN).  The official baseline's 8 tangent-frame
+  neighbours and deepest-cell jump are at tag greedy-foveal-playground-baseline.
 
 No object identity enters gaze, fusion, switching or stopping.  The oracle Object Index is carried on the map for an
 ORACLE / VISUALIZATION-ONLY segmentation PLY.
@@ -38,12 +41,16 @@ from exr_lite import read_uncompressed_exr  # noqa: E402
 # ------------------------------------------------------------------ parameters (chosen once, before any run)
 CORE_FOV_DEG = FG.CORE_FOV_DEG                 # 12 deg nominal square core (accepted sensor)
 CORE_SIZE, CORE_ORIGIN = O.SP.CORE_SIZE, O.SP.CORE_ORIGIN
-LOCAL_STEP_DEG = 0.6 * CORE_FOV_DEG            # 7.2 deg: neighbour centre offset in the local tangent plane
+LOCAL_STEP_DEG = 0.6 * CORE_FOV_DEG            # 7.2 deg: the baseline's neighbour offset (recorded, unused here)
 EDGE_BAND_PX = CORE_SIZE // 4                  # the outer quarter of the core in a candidate's direction
 EDGE_MIN = 0.25                                # "nontrivial" valid-geometry fraction of that band
-GAIN_MIN = 0.25                                # "nontrivial" UNSEEN solid-angle fraction of the candidate footprint
+GAIN_MIN = 0.0                                 # local eligibility: UNSEEN gain strictly above this (baseline 0.25)
 VISIT_TOL_DEG = 2.0                            # an "effectively identical" fixation
-SEEN_STOP = 0.99                               # stop when SEEN >= 99 % of 4 pi
+SEEN_STOP = 2.0                                # unreachable on purpose: the lattice run stops when decide() is
+                                               # "none" (every cell SEEN), so run.py records that reason
+LATTICE_RING_DEG = 10.0                        # pitch-ring spacing of the gaze lattice
+LATTICE_NEIGHBOUR_DEG = 16.0                   # local candidates: unvisited lattice gazes this close to the gaze
+LATTICE_VISIT_DEG = 0.5                        # a lattice gaze is visited when a fixation lies this close to it
 ASSOC_RADIUS_M = 0.012                         # the accepted 12-mm association radius ...
 ASSOC_CELL_M = 0.012                           # ... and hash cell (FSG3 / NS1a persistence)
 ZERO_TOL_ABS_M, ZERO_TOL_REL = 0.005, 0.01     # instance-0 extension: right pixel sees the same surface point
@@ -412,19 +419,94 @@ def visited_near(d: np.ndarray, visited: np.ndarray) -> bool:
     return bool(len(visited)) and float(angle_deg(d[None], visited).min()) < VISIT_TOL_DEG
 
 
+# ------------------------------------------------------------------ the gaze lattice (Playground-1)
+_LATTICE: dict | None = None
+
+
+def ring_yaws(n: int) -> np.ndarray:
+    """n equally spaced yaws, shifted half a step when n mod 4 == 2 so that yaw +-90 deg (degenerate at pitch 0) is
+    never on the ring."""
+    return -180.0 + (np.arange(n) + 0.5) * 360.0 / n + (180.0 / n if n % 4 == 2 else 0.0)
+
+
+def build_lattice(ring_deg: float = LATTICE_RING_DEG) -> dict:
+    """Pitch rings every ring_deg from -90 to +90 deg (one gaze at each pole); on each other ring the fewest
+    (>= 4) equally spaced yaws whose nominal footprints contain the centre of every cell whose centre pitch lies within
+    half a ring spacing of the ring.  Returns yaw / pitch / dir arrays and each gaze's footprint (flat cell indices)."""
+    k = int(math.ceil(90.0 / ring_deg))
+    half = 90.0 / k / 2.0
+    pitch_c = CELL_PITCH.reshape(-1)
+    yaws: list[float] = []
+    pitches: list[float] = []
+    fps: list[np.ndarray] = []
+    for p in np.linspace(-90.0, 90.0, 2 * k + 1):
+        p = float(p)
+        if abs(p) >= 90.0:
+            yaws.append(0.0), pitches.append(p), fps.append(footprint(0.0, p))
+            continue
+        band = np.flatnonzero((pitch_c >= p - half) & (pitch_c <= p + half))
+        for n in range(4, 1000):
+            ring = [(float(y), footprint(float(y), p)) for y in ring_yaws(n)]
+            cov = np.zeros(H * W, bool)
+            for _, f in ring:
+                cov[f] = True
+            if cov[band].all():
+                break
+        else:
+            raise RuntimeError(f"no ring of <= 999 gazes covers the band at pitch {p}")
+        for y, f in ring:
+            yaws.append(y), pitches.append(p), fps.append(f)
+    yaw, pitch = np.array(yaws), np.array(pitches)
+    return {"yaw_deg": yaw, "pitch_deg": pitch, "dir": direction(yaw, pitch), "footprints": fps,
+            "ring_deg": float(ring_deg)}
+
+
+def lattice() -> dict:
+    """The gaze lattice, built once per process (deterministic)."""
+    global _LATTICE
+    if _LATTICE is None:
+        _LATTICE = build_lattice()
+    return _LATTICE
+
+
+def lattice_gains(state: np.ndarray) -> np.ndarray:
+    """UNSEEN solid-angle fraction of every lattice gaze's footprint (``unseen_gain``, vectorized over the lattice)."""
+    w, un = CELL_W.reshape(-1), (state.reshape(-1) == UNSEEN)
+    return np.array([float(w[f][un[f]].sum() / w[f].sum()) for f in lattice()["footprints"]])
+
+
+def lattice_visited(visited: np.ndarray) -> np.ndarray:
+    """Lattice gazes within LATTICE_VISIT_DEG of any fixation direction."""
+    L = lattice()
+    if not len(visited):
+        return np.zeros(len(L["dir"]), bool)
+    return angle_deg(L["dir"], np.asarray(visited)).min(axis=1) < LATTICE_VISIT_DEG
+
+
+_OCTANTS = (("E", 1, 0), ("SE", 1, 1), ("S", 0, 1), ("SW", -1, 1),       # angle atan2(v, u) in 45-deg steps;
+            ("W", -1, 0), ("NW", -1, -1), ("N", 0, -1), ("NE", 1, -1))  # image +x = right, +y = down
+
+
+def octant(r: np.ndarray, d: np.ndarray) -> tuple[str, int, int]:
+    """The neighbour direction (name, a, b) of the octant that holds d's offset in the tangent frame r."""
+    u, v = float(d @ r[:, 0]), float(d @ r[:, 1])
+    return _OCTANTS[int(round(math.degrees(math.atan2(v, u)) / 45.0)) % 8]
+
+
 def local_candidates(state, core_valid, yaw, pitch, visited) -> list[dict]:
+    """The lattice gazes within LATTICE_NEIGHBOUR_DEG of the gaze (the gaze itself excluded), in lattice order."""
+    L = lattice()
     r = frame(yaw, pitch)
-    t = math.tan(math.radians(LOCAL_STEP_DEG))
+    a_deg = angle_deg(direction(yaw, pitch)[None], L["dir"])[0]
+    near = np.flatnonzero((a_deg < LATTICE_NEIGHBOUR_DEG) & (a_deg >= LATTICE_VISIT_DEG))
+    gains, seen_before = lattice_gains(state), lattice_visited(visited)
     out = []
-    for name, a, b in NEIGHBOURS:
-        d = r[:, 2] + t * (a * r[:, 0] + b * r[:, 1])
-        d = d / np.linalg.norm(d)
-        y2, p2 = (float(v) for v in yaw_pitch(d))
-        e = edge_support(core_valid, a, b)
-        g = unseen_gain(state, y2, p2)
-        out.append({"dir": name, "yaw_deg": y2, "pitch_deg": p2, "edge_support": e, "unseen_gain": g,
-                    "score": e * g, "visited": visited_near(d, visited),
-                    "eligible": bool(e >= EDGE_MIN and g >= GAIN_MIN and not visited_near(d, visited))})
+    for i in near:
+        name, a, b = octant(r, L["dir"][i])
+        e, g, vis = edge_support(core_valid, a, b), float(gains[i]), bool(seen_before[i])
+        out.append({"dir": name, "lattice_index": int(i), "yaw_deg": float(L["yaw_deg"][i]),
+                    "pitch_deg": float(L["pitch_deg"][i]), "edge_support": e, "unseen_gain": g, "score": e * g,
+                    "visited": vis, "eligible": bool(e >= EDGE_MIN and g > GAIN_MIN and not vis)})
     return out
 
 
@@ -459,42 +541,27 @@ def unseen_components(state: np.ndarray) -> tuple[np.ndarray, list[float]]:
     return lab, sizes
 
 
-def global_target(state: np.ndarray, visited: np.ndarray, max_pts: int = 4000) -> dict | None:
-    """The deepest cell (largest angular distance from any non-UNSEEN cell) of the largest UNSEEN component;
-    falls back to the next-deepest cell / next component when a cell is a visited fixation."""
-    lab, sizes = unseen_components(state)
-    if not sizes:
+def global_target(state: np.ndarray, visited: np.ndarray) -> dict | None:
+    """The unvisited lattice gaze with the largest UNSEEN gain (lowest index on ties); None when none adds area."""
+    L = lattice()
+    gains = lattice_gains(state)
+    gains[lattice_visited(visited)] = 0.0
+    i = int(np.argmax(gains))
+    if gains[i] <= 0.0:
         return None
-    un = state == UNSEEN
-    near_un = (np.roll(un, 1, 1) | np.roll(un, -1, 1) | np.vstack([un[1:], un[-1:]]) | np.vstack([un[:1], un[:-1]]))
-    seen_flat = np.flatnonzero((~un & near_un).reshape(-1))     # seen cells bordering unseen territory
-    for k in np.argsort(-np.asarray(sizes), kind="stable"):
-        cells = np.flatnonzero(lab.reshape(-1) == k)
-        cand = cells[:: max(1, len(cells) // max_pts)]
-        if seen_flat.size:
-            src = seen_flat[:: max(1, len(seen_flat) // (2 * max_pts))]
-            depth = np.degrees(np.arccos(np.clip((CELL_DIR[cand] @ CELL_DIR[src].T).max(axis=1), -1, 1)))
-        else:
-            depth = np.full(len(cand), 180.0)
-        for j in np.argsort(-depth, kind="stable"):
-            d = CELL_DIR[cand[j]]
-            if visited_near(d, visited):
-                continue
-            y, p = (float(v) for v in yaw_pitch(d))
-            return {"yaw_deg": y, "pitch_deg": p, "component_sr": float(sizes[k]), "components": len(sizes),
-                    "depth_deg": float(depth[j]), "unseen_gain": unseen_gain(state, y, p)}
-    return None
+    return {"yaw_deg": float(L["yaw_deg"][i]), "pitch_deg": float(L["pitch_deg"][i]), "lattice_index": i,
+            "unseen_gain": float(gains[i]), "lattice_open": int((gains > 0).sum())}
 
 
 def decide(state: np.ndarray, core_valid: np.ndarray, yaw: float, pitch: float, visited: np.ndarray) -> dict:
-    """LOCAL if some neighbour has nontrivial edge support and unseen gain (highest score, first on ties);
-    else GLOBAL; else NONE."""
+    """LOCAL if some lattice neighbour has nontrivial edge support and any unseen gain (highest score, first in lattice
+    order on ties); else GLOBAL (the max-gain unvisited lattice gaze); else NONE (no lattice gaze adds area)."""
     cands = local_candidates(state, core_valid, yaw, pitch, visited)
     elig = [c for c in cands if c["eligible"]]
     if elig:
         best = max(elig, key=lambda c: c["score"])          # max() keeps the first of equal scores
         return {"kind": "local", "yaw_deg": best["yaw_deg"], "pitch_deg": best["pitch_deg"], "dir": best["dir"],
-                "candidates": cands}
+                "lattice_index": best["lattice_index"], "candidates": cands}
     g = global_target(state, visited)
     if g is None:
         return {"kind": "none", "candidates": cands}
