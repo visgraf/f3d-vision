@@ -87,7 +87,8 @@ directory and declares its contract (required), its report and tools/greedy_fove
 visualization package declares its contract (required) and report (allowed). The accepted slide presentation adds
 the docs/presentation/ stage directory with its README and PDF (required). Playground-2 (sparse lattice) declares
 its contract (required) and report (allowed). Engineering-2 (promoting the sparse covering lattice to the official
-baseline) declares its contract (required) and report (allowed).
+baseline) declares its contract (required) and report (allowed). Playground-3 (the 2-degree cap lattice) declares
+its contract (required) and report (allowed).
 """
 from __future__ import annotations
 
@@ -240,6 +241,8 @@ PLAYGROUND1V_REQUIRED = {"docs/playground/gaze-lattice-visuals-contract.md"}
 PLAYGROUND1_ALLOWED |= PLAYGROUND1V_REQUIRED | {"docs/playground/gaze-lattice-visuals-report.md"}
 PLAYGROUND2_REQUIRED = {"docs/playground/sparse-lattice-contract.md"}
 ENG2_REQUIRED = {"docs/engineering/sparse-lattice-baseline-contract.md"}
+PLAYGROUND3_REQUIRED = {"docs/playground/cap-2deg-contract.md"}
+PLAYGROUND1_ALLOWED |= PLAYGROUND3_REQUIRED | {"docs/playground/cap-2deg-report.md"}
 PLAYGROUND1_ALLOWED |= ENG2_REQUIRED | {"docs/engineering/sparse-lattice-baseline-report.md"}
 PLAYGROUND1_ALLOWED |= PLAYGROUND2_REQUIRED | {"docs/playground/sparse-lattice-report.md"}
 ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
@@ -535,6 +538,8 @@ def main() -> int:
     check("the Playground-2 sparse-lattice contract is tracked", not missing_pg2, str(missing_pg2))
     missing_eng2 = sorted(ENG2_REQUIRED - set(index))
     check("the Engineering-2 sparse-lattice baseline contract is tracked", not missing_eng2, str(missing_eng2))
+    missing_pg3 = sorted(PLAYGROUND3_REQUIRED - set(index))
+    check("the Playground-3 2-degree cap contract is tracked", not missing_pg3, str(missing_pg3))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))

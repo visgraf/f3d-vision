@@ -327,9 +327,17 @@ baseline is established**
   to the frozen Playground-2 run (23 / 23): 356 fixations, 0 UNSEEN
   cells, 98.82 % within 12 mm, 413 s. The previous official baseline
   (v0 behavior) stays at tag `greedy-foveal-playground-baseline`.
-- Next: Playground-3, the 2° cap lattice (Luiz, 2026-10-12), against
-  the new official baseline. Each later step is explicitly authorized
-  and changes one component at a time.
+- **Playground-3 (the 2° cap lattice) is ACCEPTED as a playground
+  result and NOT promoted** (`docs/playground/cap-2deg-report.md`):
+
+      PLAYGROUND3_CAP_2DEG_ACCEPTED
+
+  346 fixations (−10), 0 UNSEEN cells, 98.83 % within 12 mm, the
+  near-axis coverage identical cell for cell (MEASURED). The gain is
+  too small to promote; the official baseline stays the 6° lattice.
+  The code is at tag `playground-3-cap-2deg`.
+- Next: the full demo of the official baseline (the Playground-2 run),
+  to complete this phase (Luiz, 2026-10-12).
 
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).
@@ -348,8 +356,8 @@ baseline is established**
 - The active baseline is the sparse covering lattice (Engineering-2),
   reproduced bitwise by the official reproduction. Any later
   optimization must keep reproducing it
-  (`tools/greedy_foveal/check_equivalence.py`). Playground-1 and -2 are
-  closed; Playground-3 is the only experiment authorized next.
+  (`tools/greedy_foveal/check_equivalence.py`). Playground-1, -2 and -3
+  are closed; no new research experiment is open.
 - The prototype branch `prototype/greedy-foveal-explorer-v0` descends
   from the unaccepted NS1e branch. It is never merged or fast-forwarded
   into `main`; Engineering-1 extracted the small explorer onto a clean

@@ -1,8 +1,39 @@
 # Chat Handoff
 
-## Read first: Engineering-2 is ACCEPTED — the sparse covering lattice is the official baseline
+## Read first: Playground-3 (2° cap) is ACCEPTED, not promoted; next is the official baseline's demo
 
-**OFFICIAL BASELINE PROMOTED. NEXT: PLAYGROUND-3, THE 2° CAP LATTICE.**
+**PLAYGROUND-3 ACCEPTED AS A PLAYGROUND RESULT, NOT PROMOTED. NEXT: THE FULL DEMO OF THE OFFICIAL BASELINE (THE
+PLAYGROUND-2 RUN), TO COMPLETE THIS PHASE.**
+
+    PLAYGROUND3_CAP_2DEG_ACCEPTED
+
+| item | value |
+|---|---|
+| `main` | the docs-only Playground-3 acceptance commit, fast-forwarded from `project/playground-3-acceptance`; its parent is `9bf936d` (Engineering-2) |
+| code | tag **`playground-3-cap-2deg`** -> `c217b00`, head of `playground/cap-2deg` (`9bf936d` -> `97528ef` contract -> `1fe6bd2` implementation -> `e53851d` report -> `c217b00` acceptance). Not merged. |
+| contract / report | `docs/playground/cap-2deg-contract.md` / `-report.md` (copies on `main`) |
+| run | `previews/playground-cap-2deg/` (code `1fe6bd2`) |
+
+The change moved the cap ring from 6° to 2° from the baseline axis, giving 346 gazes. MEASURED against the official
+baseline:
+
+- 346 fixations against 356, and 399 s against 413 s;
+- 0 UNSEEN cells;
+- 98.83 % against 98.82 % within 12 mm;
+- DEPTH 99.20 % against 99.26 %;
+- the near-axis coverage identical cell for cell.
+
+The +X cap-ring views have 20–40× the median error even with oracle correspondence. The 46 near-axis
+SEEN-without-depth cells are mostly the windows (Luiz, visual check).
+
+**Decision: the gain is too small to promote.** The official baseline stays the 6° lattice
+(`greedy-foveal-playground-baseline-2`).
+
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
+
+## Engineering-2 is ACCEPTED — the sparse covering lattice is the official baseline
+
+**OFFICIAL BASELINE PROMOTED.**
 
     SPARSE_LATTICE_BASELINE_ACCEPTED
     SPARSE_LATTICE_BASELINE_OFFICIAL
@@ -231,12 +262,13 @@ optimized.
 
 ## Accepted main
 
-`main` = the Engineering-2 acceptance commit that adds the "Read first" section above (tag
-`greedy-foveal-playground-baseline-2`). The chain of fast-forwards since the technical report:
+`main` = the docs-only Playground-3 acceptance commit that adds the "Read first" section above. The official baseline
+is tag `greedy-foveal-playground-baseline-2` (`9bf936d`). The chain of fast-forwards since the technical report:
 
     9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> 4eb2a54 Playground-1 acceptance
     -> 03b6969 Playground-1 visualization acceptance -> 65eca40 slides acceptance -> 41c7193 Playground-2 acceptance
-    -> Engineering-2 (cb1217b contract -> a5f1aae promotion -> f108e5e report -> acceptance)
+    -> Engineering-2 (cb1217b contract -> a5f1aae promotion -> f108e5e report -> 9bf936d acceptance)
+    -> Playground-3 acceptance (docs only)
 
 The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
 (`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance), followed by
