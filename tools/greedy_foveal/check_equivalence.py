@@ -39,7 +39,7 @@ PREFIX = "[gfe-equiv]"
 
 IMPL_TAG, IMPL_SHA = "greedy-foveal-explorer-v0-impl", "a437df048b555d5b59f6855b6572eea2665ab0da"  # selftest only
 PG2_TAG, PG2_SHA = "playground-2-sparse-lattice", "1f50bd6a3f3cf77ccf260375b2cf2fee60c4738f"
-DEMO_COMMIT = "076efe0a1ec9f5acdbdad8f60c446c7829a5e9a4"   # demo.py: the official baseline's demo (profile sparse)
+DEMO_COMMIT = "bead2b0a84a76b5f6ccf6f76365161f82f18d78c"   # demo.py: the official baseline's demo (profile sparse; poster fix)
 SOURCES = {name: PG2_TAG for name in ("explorer.py", "run.py", "render_server.py", "visuals.py", "check_lattice.py")}
 SOURCES["demo.py"] = DEMO_COMMIT
 TAG_SHA = {PG2_TAG: PG2_SHA, IMPL_TAG: IMPL_SHA}
