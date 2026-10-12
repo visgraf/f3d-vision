@@ -1,6 +1,6 @@
 # Playground-2 — sparse covering lattice: contract
 
-**Status: CONTRACT (PROPOSED).** Luiz named this step on 2026-10-11 as the experiment after the slide presentation, and
+**Status: EXECUTED and ACCEPTED** (2026-10-12; see [the report](sparse-lattice-report.md), section 11; its F1 corrects §2's 6° premise for v0). Luiz named this step on 2026-10-11 as the experiment after the slide presentation, and
 authorized it on 2026-10-12. ClaudeChat wrote and pushed it; workstation execution is Claude Code's.
 
 | item | value |

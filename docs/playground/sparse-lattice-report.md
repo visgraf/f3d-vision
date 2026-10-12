@@ -1,7 +1,9 @@
 # Playground-2 — sparse covering lattice: report
 
-**Status: EXECUTED — REVIEW PENDING.** Claude Code executed this step on the workstation under the contract below.
-Whether the result is accepted is Luiz's decision.
+**Status: ACCEPTED** by Luiz on 2026-10-12, as a playground result (section 11). Claude Code executed this step on
+the workstation under the contract below; ClaudeChat reviewed it.
+
+    PLAYGROUND2_SPARSE_LATTICE_ACCEPTED
 
 **Acceptance gate (contract §6): all of A1–A5 PASS.** A2 passes exactly at its bound: 356 fixations against
 ≤ 356.
@@ -293,3 +295,27 @@ fewer than the replay.
   would need a smaller lattice: for example the 2° cap (346 gazes; C1 N2 on the workstation) or a different
   ring spacing. Either is a new decision, and the 2° cap also brings in near-axis stereo.
 - F1: the 6° envelope's stated motivation does not hold for v0. Whether this changes the envelope decision is open.
+
+## 11. Acceptance
+
+**Decision (Luiz, 2026-10-12): ACCEPTED as a playground result.**
+
+- **The lattice code is not merged into `main`.** It lives at the annotated tag **`playground-2-sparse-lattice`**,
+  which points to the commit that adds this section on `playground/sparse-lattice`. `main` keeps the official
+  `tools/greedy_foveal/` code. Copies of this report and its contract are on `main` in `docs/playground/`, added by
+  a docs-only acceptance commit.
+- **Promotion.** Playground-2 now beats the official baseline on every measure in section 4. Promoting it to the
+  official baseline would be a separate Engineering step.
+
+### ClaudeChat review notes
+
+- **Verified from GitHub.** `b345bcf` adds only this report, on top of `70d992e`, the code `explore` recorded with a
+  clean tree. The layout checker gives 652 checked, 0 failed with the report in place (Chat-sandbox). The counts are
+  consistent: 315 + 40 + 1 = 356; 253,023 / 255,758 = 98.93 %.
+- **Prediction against measurement.** Within one fixation and one saccade of the coverage-only replay (section 7).
+  The trade the contract left open, 3-D coverage against Playground-1, did not appear: −0.0002 points.
+- **F1 is a correction to the contract, accepted.** Contract §2 says no v0 fixation came closer than 6° to the
+  baseline axis. Chat checked only the Playground-1 lattice; v0's #416 (0.71°) and #386 (2.55°) did. v0 ran
+  through them with all checks passing, so near-axis viewing is not untested. The 6° cap stays a deliberate choice
+  of this step, but its stated reason is withdrawn. The 2° cap (346 gazes) is a candidate for a later step.
+- **D1.** C8 without `--title` was the contract's omission. The overview's default title is cosmetic.
