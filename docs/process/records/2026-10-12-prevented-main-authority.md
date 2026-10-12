@@ -12,6 +12,6 @@ create the tag, as Luiz instructs. A session could follow either one. Found whil
 splitting `CLAUDE.md` for Governance-1; no lint existed to catch it.
 
 Outcome: write access is now stated once, in the shell's Surfaces and Commits
-tables, which keep the more specific rule (either surface, only on Luiz's explicit
-acceptance) pending Luiz's confirmation. `tools/process/lint.py` fails if write
+tables, with the more specific rule: either surface, only on Luiz's explicit
+acceptance. Luiz confirmed it on 2026-10-12. `tools/process/lint.py` fails if write
 access is restated in the kernel, the handoff or `AGENTS.md`.

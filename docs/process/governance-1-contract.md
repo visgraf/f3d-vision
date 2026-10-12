@@ -86,9 +86,8 @@ change of what the checker protects, declared here, not a repair.
 - **D1. Who may fast-forward `main`.** The former agreement said both "ClaudeChat
   does not push to `main`" and "either surface may" fast-forward it on acceptance
   (`docs/process/records/2026-10-12-prevented-main-authority.md`). The shell keeps the
-  second, more specific rule: either surface, only on Luiz's explicit acceptance. The
-  alternative is Claude Code only: one cell in the shell's Surfaces table and one in
-  its Commits table.
+  second, more specific rule: either surface, only on Luiz's explicit acceptance.
+  **Decided by Luiz, 2026-10-12, before execution: either surface.**
 - **D2. §5**, the retargeting of the layout checker's accepted-state predicates.
 - **D3. Size caps.** Kernel, shell and handoff at most 150 lines each (the Claude Code
   documentation advises under 200 per `CLAUDE.md`, and imported files load at launch
@@ -111,7 +110,7 @@ are expected and recorded, not repaired.
 ## 8. Acceptance
 
 Governance-1 is accepted when C1–C5 pass on the workstation, C6 fails there, and Luiz
-accepts D1–D3 or changes them. Measured on the workstation, C1–C6 become MEASURED;
+accepts D2–D3 or changes them (D1 is decided). Measured on the workstation, C1–C6 become MEASURED;
 ClaudeChat's sandbox runs are recorded in the report as "ClaudeChat sandbox".
 
 ## 9. Stop conditions and fix scope

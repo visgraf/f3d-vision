@@ -89,6 +89,5 @@ Earlier stages, all accepted; details in each report and in the history file:
    items 1–5 of "Decision-critical open items" in the history file.
 3. Breadth-1 evaluation universe: how geometry rendered outside the 234-object
    catalog enters future evaluation. Intentionally open.
-4. Governance-1: who may fast-forward `main` (shell, "Commits"). The working
-   agreement at `4fda984` contradicted itself on this point
-   (`docs/process/records/2026-10-12-prevented-main-authority.md`). Luiz confirms.
+4. Governance-1: decisions D2 (the layout checker's retargeted predicates) and D3
+   (size caps) in its contract.
