@@ -1,9 +1,30 @@
 # Chat Handoff
 
-## Read first: Playground-2 (sparse covering lattice) is ACCEPTED
+## Read first: Engineering-2 is ACCEPTED — the sparse covering lattice is the official baseline
 
-**PLAYGROUND-2 ACCEPTED AS A PLAYGROUND RESULT. NEXT: BEING CONFIRMED (PROMOTION TO THE OFFICIAL BASELINE, OR THE
-2° CAP LATTICE).**
+**OFFICIAL BASELINE PROMOTED. NEXT: PLAYGROUND-3, THE 2° CAP LATTICE.**
+
+    SPARSE_LATTICE_BASELINE_ACCEPTED
+    SPARSE_LATTICE_BASELINE_OFFICIAL
+
+| item | value |
+|---|---|
+| `main` | the Engineering-2 acceptance commit, fast-forwarded from `engineering/sparse-lattice-baseline` (`41c7193` -> `cb1217b` contract -> `a5f1aae` promotion -> `f108e5e` report -> acceptance) |
+| tag | **`greedy-foveal-playground-baseline-2`** at the acceptance commit; the v0 official baseline stays at `greedy-foveal-playground-baseline` |
+| official code | `tools/greedy_foveal/` = the Playground-2 behavior (tag `playground-2-sparse-lattice`), docstring-only changes |
+| official run | `previews/greedy-foveal-official-baseline-2/` (`freeze.json` sha256 `e090d629408ee1106ad35cb129d32720533f068a3d48bbbaf3c82dc20b800559`) |
+| contract / report | `docs/engineering/sparse-lattice-baseline-contract.md` / `-report.md` |
+
+The official reproduction is bitwise equivalent to the frozen Playground-2 run (23 / 23). MEASURED: 356 fixations,
+`no valid unseen fixation`, 100.00 % SEEN / 99.26 % DEPTH, 315 local / 40 global, 98.93 % of cells (253,023 /
+255,758) and 98.82 % of solid angle within 12 mm, 413 s. Both negative controls fail as required.
+
+- **Next: Playground-3**, the 2° cap lattice (346 gazes), against the new official baseline.
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
+
+## Playground-2 (sparse covering lattice) is ACCEPTED
+
+**PLAYGROUND-2 ACCEPTED AS A PLAYGROUND RESULT; PROMOTED BY ENGINEERING-2 (ABOVE).**
 
     PLAYGROUND2_SPARSE_LATTICE_ACCEPTED
 
@@ -210,11 +231,12 @@ optimized.
 
 ## Accepted main
 
-`main` = the docs-only Playground-2 acceptance commit that adds the "Read first" section above. The chain of
-fast-forwards since the technical report:
+`main` = the Engineering-2 acceptance commit that adds the "Read first" section above (tag
+`greedy-foveal-playground-baseline-2`). The chain of fast-forwards since the technical report:
 
     9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> 4eb2a54 Playground-1 acceptance
-    -> 03b6969 Playground-1 visualization acceptance -> 65eca40 slides acceptance -> Playground-2 acceptance
+    -> 03b6969 Playground-1 visualization acceptance -> 65eca40 slides acceptance -> 41c7193 Playground-2 acceptance
+    -> Engineering-2 (cb1217b contract -> a5f1aae promotion -> f108e5e report -> acceptance)
 
 The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
 (`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance), followed by

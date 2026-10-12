@@ -315,10 +315,21 @@ baseline is established**
   (MEASURED; Playground-1 496 fixations / 665 s; the official baseline
   542 / 640 UNSEEN / 98.32 % / 733 s). The code is NOT on `main`; it
   is at tag `playground-2-sparse-lattice`.
-- Next: Luiz approved "the next step" after Playground-2 (2026-10-12);
-  which one (promoting Playground-2 to the official baseline, or the
-  2° cap lattice) is being confirmed. Each later step is explicitly
-  authorized and changes one component at a time.
+- **Engineering-2 is ACCEPTED: the sparse covering lattice is the
+  official baseline** (`docs/engineering/sparse-lattice-baseline-report.md`):
+
+      SPARSE_LATTICE_BASELINE_ACCEPTED
+      SPARSE_LATTICE_BASELINE_OFFICIAL
+
+  `tools/greedy_foveal/` on `main` is the Playground-2 behavior, tag
+  `greedy-foveal-playground-baseline-2`. Its official reproduction
+  (`previews/greedy-foveal-official-baseline-2/`) is bitwise equivalent
+  to the frozen Playground-2 run (23 / 23): 356 fixations, 0 UNSEEN
+  cells, 98.82 % within 12 mm, 413 s. The previous official baseline
+  (v0 behavior) stays at tag `greedy-foveal-playground-baseline`.
+- Next: Playground-3, the 2° cap lattice (Luiz, 2026-10-12), against
+  the new official baseline. Each later step is explicitly authorized
+  and changes one component at a time.
 
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).
@@ -334,11 +345,11 @@ baseline is established**
   cyclopean coverage -> local or global saccade -> repeat. It uses a
   fixed head, a static synthetic Classroom, no object scheduler and no
   Controller-01/02 state machine.
-- The active baseline is the frozen Greedy v0 behavior, now reproduced
-  bitwise by the official playground baseline. Any later optimization
-  must keep reproducing it (`tools/greedy_foveal/check_equivalence.py`).
-  Playground-1 is closed; no further policy redesign is authorized, and
-  no new research experiment is open.
+- The active baseline is the sparse covering lattice (Engineering-2),
+  reproduced bitwise by the official reproduction. Any later
+  optimization must keep reproducing it
+  (`tools/greedy_foveal/check_equivalence.py`). Playground-1 and -2 are
+  closed; Playground-3 is the only experiment authorized next.
 - The prototype branch `prototype/greedy-foveal-explorer-v0` descends
   from the unaccepted NS1e branch. It is never merged or fast-forwarded
   into `main`; Engineering-1 extracted the small explorer onto a clean

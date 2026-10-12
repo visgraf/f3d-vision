@@ -494,8 +494,9 @@ RGB differed from the frozen run by up to 0.118 (linear), and 3,127 of 49.6 M di
 frozen grow600 run in every control-path product: gazes, decisions, points, oracle ids, fusion, coverage, the final
 map and the evaluation (`check_equivalence.py run`: 23 / 23;
 [Engineering-1 report](../engineering/greedy-foveal-playground-baseline-report.md)). Engineering-2's reproduction of
-the sparse lattice must be bitwise equivalent to `previews/playground-sparse-lattice/` in the same sense
-([Engineering-2 contract](../engineering/sparse-lattice-baseline-contract.md)).
+the sparse lattice (code `a5f1aae`, `previews/greedy-foveal-official-baseline-2/`, 413 s) is bitwise equivalent to
+`previews/playground-sparse-lattice/` in the same sense (23 / 23;
+[Engineering-2 report](../engineering/sparse-lattice-baseline-report.md)). Tag: `greedy-foveal-playground-baseline-2`.
 
 ## 18. Limitations
 

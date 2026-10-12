@@ -20,9 +20,9 @@ future experiments, not a finished vision system.
 
 This is a controlled synthetic proof of concept and engineering baseline. The official baseline is the **sparse
 covering lattice** explorer (Engineering-2, [contract](docs/engineering/sparse-lattice-baseline-contract.md)): the
-accepted Playground-2 behavior, tag `playground-2-sparse-lattice`. In the Blender Classroom scene, with a fixed head
-and oracle stereo correspondence, its frozen run gave the following (MEASURED,
-[Playground-2 report](docs/playground/sparse-lattice-report.md)):
+accepted Playground-2 behavior, tag `greedy-foveal-playground-baseline-2`. In the Blender Classroom scene, with a
+fixed head and oracle stereo correspondence, the official reproduction gave the following (MEASURED,
+[Engineering-2 report](docs/engineering/sparse-lattice-baseline-report.md)):
 
 | | |
 |---|---|
@@ -31,10 +31,10 @@ and oracle stereo correspondence, its frozen run gave the following (MEASURED,
 | with reconstructed DEPTH | **99.26 %** |
 | first-hit solid angle reconstructed within 12 mm (post hoc) | **98.82 %** |
 | saccades | **315 local / 40 global**, no all-global tail |
-| persistent map | **16,943,073 surfels**, in 416 s |
+| persistent map | **16,943,073 surfels**, in 413 s |
 
-The official reproduction must be **bitwise equivalent** to that frozen run's control path
-(`tools/greedy_foveal/check_equivalence.py`). The previous official baseline, Greedy Foveal Explorer v0 (542
+The official reproduction is **bitwise equivalent** to the frozen Playground-2 run's control path: **23 / 23**
+equivalence checks pass (`tools/greedy_foveal/check_equivalence.py`). The previous official baseline, Greedy Foveal Explorer v0 (542
 fixations, 99.00 % SEEN, 98.32 % within 12 mm; [Engineering-1 report](docs/engineering/greedy-foveal-playground-baseline-report.md)),
 stays reproducible from tag `greedy-foveal-playground-baseline`.
 

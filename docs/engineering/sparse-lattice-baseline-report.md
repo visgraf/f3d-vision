@@ -1,8 +1,10 @@
 # Engineering-2: promote the sparse covering lattice to the official baseline — report
 
-**Status: EXECUTED — ENGINEERING REVIEW PENDING.** Claude Code executed this step on the workstation under the
-contract below. Acceptance, the fast-forward of `main` and the tag `greedy-foveal-playground-baseline-2` are Luiz's
-decisions (contract §8).
+**Status: ACCEPTED** by Luiz on 2026-10-12 (section 9). The sparse covering lattice is the official baseline on
+`main`. Claude Code executed this step on the workstation under the contract below; ClaudeChat reviewed it.
+
+    SPARSE_LATTICE_BASELINE_ACCEPTED
+    SPARSE_LATTICE_BASELINE_OFFICIAL
 
 **Acceptance gate (contract §5): all of A1–A6 PASS.** The official reproduction from this branch is **bitwise
 equivalent to the accepted Playground-2 run in every control-path product (23 / 23)**, and it meets the known answer
@@ -285,3 +287,20 @@ These are Luiz's decisions:
 - fast-forward `main` to this branch;
 - tag the new official baseline `greedy-foveal-playground-baseline-2`;
 - update the README, `CLAUDE.md` and `docs/chat-handoff.md` to cite this report.
+
+## 9. Acceptance
+
+**Decision (Luiz, 2026-10-12): ACCEPTED.** `main` is fast-forwarded to this branch. The new official baseline gets
+the annotated tag **`greedy-foveal-playground-baseline-2`** at the acceptance commit. The previous official baseline
+(v0 behavior) stays at `greedy-foveal-playground-baseline`.
+
+### ClaudeChat review notes
+
+- **Verified from GitHub.** `f108e5e` adds only this report, on top of `a5f1aae`, the code the official run recorded
+  with a clean tree. The Chat-sandbox source check, selftest and lattice checks reproduce C3, C4 and C5.
+- **The gate holds as declared.** The reproduction is bitwise equal to the Playground-2 run (23 / 23) and meets the
+  known answer exactly. Both negative controls fail.
+- **D3 is the contract's omission.** C9 had no `--out`, so its FAIL record sits in the smoke run directory. The smoke
+  run's verdict is `equivalence-prefix.json`.
+- **D4.** The default overview title still says v0. It is an executable string, kept by contract §3; a later
+  presentation step may change it.
