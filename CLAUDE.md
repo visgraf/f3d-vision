@@ -299,10 +299,14 @@ baseline is established**
   (`docs/playground/gaze-lattice-visuals-report.md`):
 
       PLAYGROUND1_VISUALS_ACCEPTED
-- Next: the SLIDE PRESENTATION, then Playground-2 (a sparser covering
-  lattice), to be contracted. Later playground experiments change one
-  component at a time against the official baseline, each one
-  explicitly authorized.
+- **The slide presentation is ACCEPTED**
+  (`docs/presentation/active-foveal-3d-vision-slides.pdf`, 18 pages):
+
+      ACTIVE_FOVEAL_3D_VISION_SLIDES_ACCEPTED
+
+- Next: Playground-2 (a sparser covering lattice), to be contracted.
+  Later playground experiments change one component at a time against
+  the official baseline, each one explicitly authorized.
 
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).

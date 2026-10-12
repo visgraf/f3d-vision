@@ -84,7 +84,8 @@ figure script and figures (allowed). The ClaudeChat working agreement (2026-10-1
 ClaudeChat as the Chat surface: CLAUDE.md states ClaudeChat's work-branch push authority and its limits, and no
 longer states the obsolete read-only ChatGPT role. Playground-1 (gaze lattice) adds the docs/playground/ stage
 directory and declares its contract (required), its report and tools/greedy_foveal/check_lattice.py (allowed). Its
-visualization package declares its contract (required) and report (allowed).
+visualization package declares its contract (required) and report (allowed). The accepted slide presentation adds
+the docs/presentation/ stage directory with its README and PDF (required).
 """
 from __future__ import annotations
 
@@ -105,7 +106,7 @@ PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "engineering", "methodology", "natural-bootstrap", "north-star", "partition-graph", "playground",
-             "prototype", "repository", "technical-report"}
+             "presentation", "prototype", "repository", "technical-report"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
               "greedy_foveal", "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
@@ -230,6 +231,7 @@ TECH_REPORT_FIGURES = {f"docs/technical-report/figures/{n}" for n in (
 TECH_REPORT_ALLOWED = TECH_REPORT_REQUIRED | TECH_REPORT_FIGURES | {
     f"docs/technical-report/{n}" for n in ("references.bib", "active-foveal-3d-vision.pdf", "make_figures.py")}
 PLAYGROUND1_REQUIRED = {"docs/playground/gaze-lattice-contract.md"}
+SLIDES_REQUIRED = {"docs/presentation/README.md", "docs/presentation/active-foveal-3d-vision-slides.pdf"}
 PLAYGROUND1_ALLOWED = PLAYGROUND1_REQUIRED | {"docs/playground/gaze-lattice-report.md",
                                               "tools/greedy_foveal/check_lattice.py"}
 PLAYGROUND1V_REQUIRED = {"docs/playground/gaze-lattice-visuals-contract.md"}
@@ -242,7 +244,7 @@ ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-repo
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
                  | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED | NS1B_ALLOWED
                  | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED | ENG1_ALLOWED
-                 | TECH_REPORT_ALLOWED | PLAYGROUND1_ALLOWED)
+                 | TECH_REPORT_ALLOWED | PLAYGROUND1_ALLOWED | SLIDES_REQUIRED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
@@ -517,6 +519,8 @@ def main() -> int:
     check("the Engineering-1 contract and the README history are tracked", not missing_eng1, str(missing_eng1))
     missing_tr = sorted(TECH_REPORT_REQUIRED - set(index))
     check("the technical report source and README are tracked", not missing_tr, str(missing_tr))
+    missing_slides = sorted(SLIDES_REQUIRED - set(index))
+    check("the accepted slide presentation is tracked", not missing_slides, str(missing_slides))
     missing_pg1 = sorted(PLAYGROUND1_REQUIRED - set(index))
     check("the Playground-1 gaze-lattice contract is tracked", not missing_pg1, str(missing_pg1))
     missing_pg1v = sorted(PLAYGROUND1V_REQUIRED - set(index))

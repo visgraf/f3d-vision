@@ -1,8 +1,22 @@
 # Chat Handoff
 
-## Read first: Playground-1 (gaze lattice) is ACCEPTED; ClaudeChat is the Chat surface
+## Read first: the slide presentation is ACCEPTED; next is Playground-2
 
-**PLAYGROUND-1 ACCEPTED AS A PLAYGROUND RESULT. NEXT: SLIDE PRESENTATION.**
+**SLIDES ACCEPTED. NEXT: PLAYGROUND-2 (A SPARSER COVERING LATTICE), TO BE CONTRACTED.**
+
+    ACTIVE_FOVEAL_3D_VISION_SLIDES_ACCEPTED
+
+- **Deck:** `docs/presentation/active-foveal-3d-vision-slides.pdf` (18 pages, sha256 `5c106a60…dc8c`).
+- **How it was made:** drafted by ClaudeChat as a Claude Slides deck; revised and exported from Keynote by Luiz on
+  2026-10-12.
+- **Contents:** the Engineering-1 outline (report §11 B) plus a Playground-1 section; every number comes from the
+  technical report or the Playground-1 reports. Provenance is in `docs/presentation/README.md`.
+- **`main`:** the docs-only slides acceptance commit, fast-forwarded from `presentation/slides`; its parent is
+  `03b6969`.
+
+## Playground-1 (gaze lattice) is ACCEPTED; ClaudeChat is the Chat surface
+
+**PLAYGROUND-1 ACCEPTED AS A PLAYGROUND RESULT.**
 
     PLAYGROUND1_GAZE_LATTICE_ACCEPTED
 
@@ -163,11 +177,11 @@ optimized.
 
 ## Accepted main
 
-`main` = the docs-only Playground-1 acceptance commit that adds the "Read first" section above. It is a fast-forward
-of `project/playground-1-acceptance`:
+`main` = the docs-only slides acceptance commit that adds the "Read first" section above. The chain of fast-forwards
+since the technical report:
 
     9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> 4eb2a54 Playground-1 acceptance
-    -> Playground-1 visualization acceptance
+    -> 03b6969 Playground-1 visualization acceptance -> slides acceptance
 
 The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
 (`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance), followed by
