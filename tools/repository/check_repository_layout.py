@@ -84,7 +84,8 @@ figure script and figures (allowed). The ClaudeChat working agreement (2026-10-1
 ClaudeChat as the Chat surface: CLAUDE.md states ClaudeChat's work-branch push authority and its limits, and no
 longer states the obsolete read-only ChatGPT role. Playground-1 (gaze lattice) adds the docs/playground/ stage
 directory and declares its contract (required), its report and tools/greedy_foveal/check_lattice.py (allowed). Its
-visualization package declares its contract (required) and report (allowed).
+visualization package declares its contract (required) and report (allowed). Playground-2 (sparse lattice)
+declares its contract (required) and report (allowed).
 """
 from __future__ import annotations
 
@@ -234,6 +235,8 @@ PLAYGROUND1_ALLOWED = PLAYGROUND1_REQUIRED | {"docs/playground/gaze-lattice-repo
                                               "tools/greedy_foveal/check_lattice.py"}
 PLAYGROUND1V_REQUIRED = {"docs/playground/gaze-lattice-visuals-contract.md"}
 PLAYGROUND1_ALLOWED |= PLAYGROUND1V_REQUIRED | {"docs/playground/gaze-lattice-visuals-report.md"}
+PLAYGROUND2_REQUIRED = {"docs/playground/sparse-lattice-contract.md"}
+PLAYGROUND1_ALLOWED |= PLAYGROUND2_REQUIRED | {"docs/playground/sparse-lattice-report.md"}
 ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
                                              "docs/architecture/greedy-foveal-playground.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
@@ -521,6 +524,8 @@ def main() -> int:
     check("the Playground-1 gaze-lattice contract is tracked", not missing_pg1, str(missing_pg1))
     missing_pg1v = sorted(PLAYGROUND1V_REQUIRED - set(index))
     check("the Playground-1 visualization contract is tracked", not missing_pg1v, str(missing_pg1v))
+    missing_pg2 = sorted(PLAYGROUND2_REQUIRED - set(index))
+    check("the Playground-2 sparse-lattice contract is tracked", not missing_pg2, str(missing_pg2))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
