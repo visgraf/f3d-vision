@@ -60,7 +60,7 @@ PROFILES = {
         "global_legend": "global saccade: jump to the largest unseen region",
         "intro_foot": "PERFECT / ORACLE correspondence  ·  fixed-head synthetic proof of concept (Blender Classroom)",
         "stop_rule": "stop rule: SEEN ≥ 99 % of the sphere (controller-time)",
-        "poster_label": "prototype/greedy-foveal-explorer-v0", "lattice_kind": None,
+        "poster_label": "prototype/greedy-foveal-explorer-v0", "lattice_kind": None, "poster_snapshots": (50, 200, 450),
         "known": {"fixations": "542", "seen": "99.00 %", "depth": "98.28 %", "coverage_sr": "98.32 %",
                   "coverage_cells": "98.52 %", "surfels": "16,517,811"}},
     "lattice": {
@@ -75,6 +75,7 @@ PROFILES = {
                       "·  Blender Classroom",
         "stop_rule": "stop rule: no lattice gaze adds unseen area (controller-time)",
         "poster_label": "Playground-1 gaze lattice · tag playground-1-gaze-lattice", "lattice_kind": "pitch",
+        "poster_snapshots": (50, 200, 450),
         "known": {"fixations": "496", "seen": "100.00 %", "depth": "99.31 %", "coverage_sr": "98.82 %",
                   "coverage_cells": "98.94 %", "surfels": "16,702,245"}},
     "sparse": {
@@ -89,7 +90,7 @@ PROFILES = {
                       "·  Blender Classroom",
         "stop_rule": "stop rule: no lattice gaze adds unseen area (controller-time)",
         "poster_label": "official baseline: sparse covering lattice · tag greedy-foveal-playground-baseline-2",
-        "lattice_kind": "baseline",
+        "lattice_kind": "baseline", "poster_snapshots": (50, 200, 300),   # 356 fixations: no #450
         "known": {"fixations": "356", "seen": "100.00 %", "depth": "99.26 %", "coverage_sr": "98.82 %",
                   "coverage_cells": "98.93 %", "surfels": "16,943,073"}},
 }
@@ -986,7 +987,7 @@ def poster(D: dict, T: list[dict], hl: dict, fix_k: int) -> Image.Image:
     S.text(d, (cx0 + 220, y1 + 6), "the observer's 360° state", size=24, fill=S.INK2, outline=None)
     tag(img, cx0 + cw, y1 + 4, "CONTROLLER-TIME", "controller", size=14, right=True)
     sw, sh = 400, 200
-    for i, k in enumerate((50, 200, 450, int(hl["fixations"]))):
+    for i, k in enumerate((*PROFILE["poster_snapshots"], int(hl["fixations"]))):   # three snapshots, then the end
         st_p = RUN / "policy" / f"state-{k:04d}.npz"
         state = np.load(st_p)["state"] if st_p.exists() else np.load(RUN / "coverage.npz")["state"]
         x, y = cx0 + (i % 2) * (sw + 20), y1 + 56 + (i // 2) * (sh + 56)
