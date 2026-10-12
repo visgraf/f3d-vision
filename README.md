@@ -109,7 +109,7 @@ The intended development style is to **change one component at a time and compar
 
 ## Demo
 
-The accepted, frozen demo (tag `greedy-foveal-explorer-v0-demo`) is an offline replay of the baseline run. Its
+The accepted, frozen demo (tag `greedy-foveal-explorer-v0-demo`) is an offline replay of the v0 baseline run. Its
 products are:
 
 - `demo.mp4` (1920 × 1080, 62.4 s);
@@ -120,6 +120,10 @@ They are generated, workstation-local files (gitignored `visuals/greedy-foveal-e
 not host them. Their sha256 hashes are in the
 [closure record](docs/prototype/greedy-foveal-explorer-v0-closure.md). `tools/greedy_foveal/demo.py` regenerates
 them from the frozen run.
+
+`demo.py --profile sparse` replays the official baseline's known-answer run (the frozen Playground-2 run) in the same
+format, into `visuals/playground-sparse-lattice-demo/`
+([contract](docs/presentation/official-baseline-demo-contract.md)); `--profile lattice` replays the Playground-1 run.
 
 ## Limitations
 

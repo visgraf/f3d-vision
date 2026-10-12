@@ -35,7 +35,7 @@ These numbers are MEASURED; see the [Playground-2 report](../../docs/playground/
 | [`run.py`](run.py) | host | the driver: `explore` (control loop, freeze), `evaluate` (post-hoc), `checks`, `visualize` |
 | [`render_server.py`](render_server.py) | Blender | a persistent render server: Classroom loaded once, only the eye cameras move |
 | [`visuals.py`](visuals.py) | host | the one-page overview figure, plus the display colours used for the PLY exports |
-| [`demo.py`](demo.py) | host | the presentation video: an offline replay of a frozen run (`--profile v0`, the default, or `lattice`, the Playground-1 run) |
+| [`demo.py`](demo.py) | host | the presentation video: an offline replay of a frozen run (`--profile v0`, the default; `sparse`, the official baseline's run; or `lattice`, the Playground-1 run) |
 | [`check_lattice.py`](check_lattice.py) | host | fail-capable checks of the gaze lattice and a coverage-only replay of the policy |
 
 [`check_equivalence.py`](check_equivalence.py) proves that the code and a run reproduce the frozen baseline.
@@ -84,8 +84,11 @@ the Breadth-1 reference.
     .venv/bin/python tools/greedy_foveal/demo.py build      # video + stills (about 1.5 min)
     .venv/bin/python tools/greedy_foveal/demo.py check
 
-By default the demo replays the frozen v0 grow600 run into `visuals/greedy-foveal-explorer-v0-demo/`; `--profile
-lattice` replays the Playground-1 run. There is no profile for the new official run yet.
+By default the demo replays the frozen v0 grow600 run into `visuals/greedy-foveal-explorer-v0-demo/`. `--profile
+sparse` replays the official baseline's known-answer run (the frozen Playground-2 run) into
+`visuals/playground-sparse-lattice-demo/`, and `--profile lattice` the Playground-1 run. Each profile draws the gaze
+lattice its own run used. `check_equivalence.py source` pins `demo.py` to its own commit, since presentation code may
+change without changing the baseline.
 
 ## Architecture
 

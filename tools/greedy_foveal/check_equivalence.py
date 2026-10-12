@@ -2,7 +2,9 @@
 
 Contracts: docs/engineering/greedy-foveal-playground-baseline-contract.md, section 7 (the comparison rules), and
 docs/engineering/sparse-lattice-baseline-contract.md (the target: the sparse covering lattice, tag
-playground-2-sparse-lattice, and its frozen run previews/playground-sparse-lattice/).
+playground-2-sparse-lattice, and its frozen run previews/playground-sparse-lattice/).  demo.py is presentation only and
+is pinned to its own commit (DEMO_COMMIT; docs/presentation/official-baseline-demo-contract.md), as Engineering-1 pinned
+it to its own demo tag.
 
     .venv/bin/python tools/greedy_foveal/check_equivalence.py source
     .venv/bin/python tools/greedy_foveal/check_equivalence.py run --run RUN --baseline BASE [--prefix] [--known-answer]
@@ -37,8 +39,9 @@ PREFIX = "[gfe-equiv]"
 
 IMPL_TAG, IMPL_SHA = "greedy-foveal-explorer-v0-impl", "a437df048b555d5b59f6855b6572eea2665ab0da"  # selftest only
 PG2_TAG, PG2_SHA = "playground-2-sparse-lattice", "1f50bd6a3f3cf77ccf260375b2cf2fee60c4738f"
-SOURCES = {name: PG2_TAG for name in ("explorer.py", "run.py", "render_server.py", "visuals.py", "demo.py",
-                                      "check_lattice.py")}
+DEMO_COMMIT = "076efe0a1ec9f5acdbdad8f60c446c7829a5e9a4"   # demo.py: the official baseline's demo (profile sparse)
+SOURCES = {name: PG2_TAG for name in ("explorer.py", "run.py", "render_server.py", "visuals.py", "check_lattice.py")}
+SOURCES["demo.py"] = DEMO_COMMIT
 TAG_SHA = {PG2_TAG: PG2_SHA, IMPL_TAG: IMPL_SHA}
 
 # trajectory.json: run-level fields compared exactly (everything else is metadata: code, timings)
@@ -185,13 +188,20 @@ def source(a) -> int:
     for tag, sha in TAG_SHA.items():
         got = git("rev-parse", f"{tag}^{{commit}}").strip()
         L.check(f"tag {tag} -> {sha[:12]}", got == sha, got)
+    pin = subprocess.run(["git", "merge-base", "--is-ancestor", DEMO_COMMIT, "HEAD"], cwd=REPO, capture_output=True)
+    L.check(f"demo.py pin {DEMO_COMMIT[:12]} is an ancestor of HEAD", pin.returncode == 0, f"exit {pin.returncode}")
     for name, tag in SOURCES.items():
         rel = f"tools/greedy_foveal/{name}"
-        frozen = git("show", f"{TAG_SHA[tag]}:{rel}")
+        label = tag if tag in TAG_SHA else f"commit {tag[:12]}"
+        try:
+            frozen = git("show", f"{TAG_SHA.get(tag, tag)}:{rel}")
+        except subprocess.CalledProcessError:
+            L.check(f"{rel} executable-equal to {label}", False, "pinned blob not found")
+            continue
         current = (REPO / rel).read_text(encoding="utf-8")
         same_exec = executable_dump(current) == executable_dump(frozen)
         kind = "byte-identical" if current == frozen else "docstrings / comments only" if same_exec else "EXECUTABLE"
-        L.check(f"{rel} executable-equal to {tag}", same_exec, kind)
+        L.check(f"{rel} executable-equal to {label}", same_exec, kind)
     imp = host_import_closure()
     L.check("host import closure loads", imp["ok"], imp.get("error"))
     if imp["ok"]:
