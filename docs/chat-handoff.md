@@ -8,22 +8,26 @@ the version before Governance-1 is kept in `docs/repository/chat-handoff-history
 
 | Field             | Value |
 |-------------------|-------|
-| Accepted main     | `4fda984`: the official baseline's demo accepted; the ENGINEERING / PRESENTATION phase is complete |
+| Accepted main     | the Governance-1 acceptance commit, tag `governance-1`, child of `a9f9f50` |
 | Active branch     | `main` |
 | Stage             | ENGINEERING / PRESENTATION, complete (Luiz, 2026-10-12). Luiz decides the next phase |
 | Official baseline | `tools/greedy_foveal/` = the Playground-2 sparse covering lattice, tag `greedy-foveal-playground-baseline-2`; any change must keep `tools/greedy_foveal/check_equivalence.py` passing |
-| In progress       | Governance-1 on `process/governance-1` (`docs/process/governance-1-contract.md`): REVIEW PENDING |
 
 ## Active next step
 
-None authorized. Later playground experiments change one component at a time against
-the official baseline, each explicitly authorized. No policy redesign and no new
-research experiment is open.
+None authorized in this repository. Later playground experiments change one component
+at a time against the official baseline, each explicitly authorized. No policy redesign
+and no new research experiment is open. Outside it, ClaudeChat updates the N-Surface
+technical note with Governance-1.
 
 ## Accepted results, newest first
 
 The report holds the numbers; the line names the claim and where it lives.
 
+- **Governance-1.** The working agreement is three layers: kernel `CLAUDE.md`, shell
+  `docs/process/shell.md`, state in this file; `tools/process/lint.py` keeps them
+  coherent; process records in `docs/process/records/`. Tag `governance-1`;
+  `docs/process/governance-1-report.md`.
 - **Official baseline's demo.** `demo.py --profile sparse` replays the frozen
   Playground-2 run. `docs/presentation/official-baseline-demo-report.md`.
 - **Playground-3, the 2° cap lattice.** Accepted as a playground result, NOT promoted
@@ -89,5 +93,6 @@ Earlier stages, all accepted; details in each report and in the history file:
    items 1–5 of "Decision-critical open items" in the history file.
 3. Breadth-1 evaluation universe: how geometry rendered outside the 234-object
    catalog enters future evaluation. Intentionally open.
-4. Governance-1: decisions D2 (the layout checker's retargeted predicates) and D3
-   (size caps) in its contract.
+4. The workstation's shared checkout must be fast-forwarded to `main` once
+   (shell, "Worktree"); until then a session started there loads the agreement of
+   2026-09-27.

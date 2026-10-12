@@ -162,3 +162,44 @@ With this file staged, from the worktree root:
 |---|---|
 | C1 | `[governance-lint] SUMMARY checked=30 failed=0`, `LINT OK`; exit 0 |
 | C4 | `[repository-layout] moves=115 pure=79 repaired=33 active=3 root_tools=16 markdown_links=82 active_links=24 broken_links=0` (one more link: this report's link to the contract), `[repository-layout] SUMMARY checked=666 failed=0`; exit 0 |
+
+## 7. Acceptance
+
+**Decision (Luiz, 2026-10-12): ACCEPTED.** `main` is fast-forwarded to the commit that
+adds this section, tagged **`governance-1`**.
+
+- **D1**, decided before execution: either surface may fast-forward `main`, only on
+  Luiz's explicit acceptance.
+- **D2** accepted: the layout checker's accepted-state predicates read the verbatim
+  history files, unchanged.
+- **D3** accepted: at most 150 lines each for the kernel, the shell and the handoff.
+- **D4**, new at acceptance: the shared checkout stays on `main` and Claude Code
+  fast-forwards it after each acceptance (shell, "Worktree").
+- **D5**, new at acceptance: assistant memories are caches, never project status
+  (shell, "Assistant memory").
+
+### ClaudeChat review notes
+
+- **Verified from GitHub.** `a9f9f50` adds only this report, on top of `9a169e9`. Every
+  workstation count matches the ClaudeChat sandbox: C1 30 / 0, C2 22 negatives caught,
+  C3 identical, C4 666 / 0, C6 16 of 27 failing. The history bodies' sizes (1,023 lines /
+  49,618 bytes; 2,557 / 168,511) were rechecked from `4fda984` (ClaudeChat sandbox).
+- **C5's note is right.** Contract §3 does not list the contract itself. A wording
+  defect in the contract, not in the step.
+- **O1 is the step's most useful result.** The imports work, and a fresh session
+  answered from the right layer without opening a file. It also showed what the lint
+  cannot see. The shared checkout's `main` at `e681392` is 216 commits behind
+  `origin/main` (ClaudeChat sandbox: `git rev-list --count e681392..origin/main`), and
+  its `CLAUDE.md` is the first f3d-vision agreement. Recorded in
+  `docs/process/records/2026-10-12-prevented-stale-session-start.md`; D4 and D5 answer it.
+- **Claude Code's edit to its auto-memory** was outside the contract's scope but
+  disclosed, and it fixed a stale status line. D5 now covers such memory.
+- **First fast-forward of the shared checkout.** Not done by this commit; it is
+  Claude Code's next action (D4), and the handoff lists it until then.
+- **Repair at acceptance, `tools/process/lint.py` self-test only.** Rewriting the
+  handoff's "Accepted main" field (the commit id is no longer first in the cell) made
+  one negative a silent no-op: `--self-test` reported `undetected=1`. The negative now
+  replaces the first commit id anywhere in that row, and the self-test fails any
+  mutation that leaves the files unchanged. The lint's checks are unchanged. After the
+  repair (ClaudeChat sandbox): lint `LINT OK` 31 / 0, `--self-test` `undetected=0`,
+  layout checker `failed=0`.

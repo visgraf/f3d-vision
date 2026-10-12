@@ -235,7 +235,8 @@ def self_test() -> int:
         ("the branches the handoff names exist", "a branch that does not exist",
          sub(HANDOFF, "| Active branch     | `main` |", "| Active branch     | `no-such-branch-0` |")),
         ("the accepted main commit exists", "a commit that does not exist",
-         lambda fs, rs: fs.__setitem__(HANDOFF, re.sub(r"(\| Accepted main +\| `)[0-9a-f]+", r"\g<1>deadbe7", fs[HANDOFF]))),
+         lambda fs, rs: fs.__setitem__(HANDOFF, re.sub(r"^\| Accepted main .*$", lambda m: HEX_RX.sub(
+             "deadbe7", m.group(0), count=1), fs[HANDOFF], count=1, flags=re.M))),
         ("record well formed", "a record whose kind contradicts its name",
          lambda fs, rs: rs.__setitem__("2026-01-01-review-x.md", "# X\n\n- kind: prevented\n- date: 2026-01-01\n"
                                        "- by: Luiz\n\nOutcome: none.\n")),
@@ -244,6 +245,10 @@ def self_test() -> int:
     for target, what, mutate in mutations:
         fs, rs = dict(files), dict(records)
         mutate(fs, rs)
+        if (fs, rs) == (files, records):
+            print(f"{PREFIX} FAIL negative: {what} -> the mutation did not apply to the current files")
+            failures += 1
+            continue
         hit = [n for n, ok, _ in lint(fs, rs, git) if not ok and n.startswith(target)]
         print(f"{PREFIX} {'PASS' if hit else 'FAIL'} negative: {what} -> {target}")
         failures += not hit
