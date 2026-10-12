@@ -8,9 +8,12 @@ changes the run, the explorer or any measured product; the run's freeze is verif
     .venv/bin/python tools/greedy_foveal/demo.py build      # derived assets -> reference assets -> video -> stills
     .venv/bin/python tools/greedy_foveal/demo.py check
 
-``--profile`` picks the replayed run: ``v0`` (default, the frozen grow600 demo, unchanged) or ``lattice`` (the
-accepted Playground-1 run, docs/playground/gaze-lattice-visuals-contract.md).  ``--out DIR`` redirects the outputs;
-``--poster-fix N`` overrides the profile's poster fixation.
+``--profile`` picks the replayed run: ``v0`` (default, the frozen grow600 demo, unchanged), ``lattice`` (the
+accepted Playground-1 run, docs/playground/gaze-lattice-visuals-contract.md) or ``sparse`` (the frozen Playground-2
+run, the official baseline's known answer, docs/presentation/official-baseline-demo-contract.md).  Each profile names
+the gaze lattice its run used (``lattice_kind``); the demo builds that lattice itself rather than taking the one
+explorer.lattice() selects today.  ``--out DIR`` redirects the outputs; ``--poster-fix N`` overrides the profile's
+poster fixation.
 
 ``rerender`` drives the unchanged render server (``run.Server`` / ``render_server.py``) at each fixation's saved gaze;
 the calibration it writes must be byte-identical to the saved one, and the re-rendered left Position must reproduce
@@ -57,7 +60,7 @@ PROFILES = {
         "global_legend": "global saccade: jump to the largest unseen region",
         "intro_foot": "PERFECT / ORACLE correspondence  ·  fixed-head synthetic proof of concept (Blender Classroom)",
         "stop_rule": "stop rule: SEEN ≥ 99 % of the sphere (controller-time)",
-        "poster_label": "prototype/greedy-foveal-explorer-v0", "lattice_dots": False,
+        "poster_label": "prototype/greedy-foveal-explorer-v0", "lattice_kind": None,
         "known": {"fixations": "542", "seen": "99.00 %", "depth": "98.28 %", "coverage_sr": "98.32 %",
                   "coverage_cells": "98.52 %", "surfels": "16,517,811"}},
     "lattice": {
@@ -71,10 +74,26 @@ PROFILES = {
         "intro_foot": "PERFECT / ORACLE correspondence  ·  Playground-1: gaze on a fixed covering lattice of 496 views  "
                       "·  Blender Classroom",
         "stop_rule": "stop rule: no lattice gaze adds unseen area (controller-time)",
-        "poster_label": "Playground-1 gaze lattice · tag playground-1-gaze-lattice", "lattice_dots": True,
+        "poster_label": "Playground-1 gaze lattice · tag playground-1-gaze-lattice", "lattice_kind": "pitch",
         "known": {"fixations": "496", "seen": "100.00 %", "depth": "99.31 %", "coverage_sr": "98.82 %",
                   "coverage_cells": "98.94 %", "surfels": "16,702,245"}},
+    "sparse": {
+        "run": SHARED / "previews/playground-sparse-lattice",
+        "cache": SHARED / "previews/playground-sparse-lattice-demo-cache",
+        "out": SHARED / "visuals/playground-sparse-lattice-demo", "run_name": "playground-sparse-lattice",
+        "schema": "GFE-official-baseline-2-demo-manifest", "stop_tag": "100 % SEEN · STOP",
+        "global_tag": "NEXT: GLOBAL SACCADE → best lattice gaze",
+        "local_legend": "local saccade: step to a nearby lattice gaze",
+        "global_legend": "global saccade: jump to the best lattice gaze",
+        "intro_foot": "PERFECT / ORACLE correspondence  ·  official baseline: a sparse covering lattice of 356 views  "
+                      "·  Blender Classroom",
+        "stop_rule": "stop rule: no lattice gaze adds unseen area (controller-time)",
+        "poster_label": "official baseline: sparse covering lattice · tag greedy-foveal-playground-baseline-2",
+        "lattice_kind": "baseline",
+        "known": {"fixations": "356", "seen": "100.00 %", "depth": "99.26 %", "coverage_sr": "98.82 %",
+                  "coverage_cells": "98.93 %", "surfels": "16,943,073"}},
 }
+LATTICES = {"pitch": X.build_lattice, "baseline": X.build_baseline_lattice}   # each built with its accepted defaults
 PROFILE = PROFILES["v0"]
 RUN, CACHE, OUT = PROFILE["run"], PROFILE["cache"], PROFILE["out"]
 POSTER_OVERRIDE: int | None = None
@@ -519,8 +538,8 @@ class Replay:
         self.d_img[:] = BG3D
         self.d_z = np.full((EQ_H, EQ_W), np.inf)
         self.lat_xy = self.fix_lat = None
-        if PROFILE["lattice_dots"]:                  # Playground-1: the gaze lattice the run was restricted to
-            L = X.lattice()
+        if PROFILE["lattice_kind"]:                  # the gaze lattice this run was restricted to
+            L = LATTICES[PROFILE["lattice_kind"]]()
             self.lat_xy = np.stack(eq_xy(L["yaw_deg"], L["pitch_deg"], EQ_W, EQ_H), axis=1)
             ang = X.angle_deg(self.dirs, L["dir"])
             self.fix_lat = np.where(ang.min(axis=1) < X.LATTICE_VISIT_DEG, ang.argmin(axis=1), -1)
