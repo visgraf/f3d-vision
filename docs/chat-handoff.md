@@ -8,7 +8,7 @@ the version before Governance-1 is kept in `docs/repository/chat-handoff-history
 
 | Field             | Value |
 |-------------------|-------|
-| Accepted main     | the Governance-1 acceptance commit, tag `governance-1`, child of `a9f9f50` |
+| Accepted main     | `11bfbf6`, tag `governance-1`: Governance-1 accepted; then a docs-only follow-up record |
 | Active branch     | `main` |
 | Stage             | ENGINEERING / PRESENTATION, complete (Luiz, 2026-10-12). Luiz decides the next phase |
 | Official baseline | `tools/greedy_foveal/` = the Playground-2 sparse covering lattice, tag `greedy-foveal-playground-baseline-2`; any change must keep `tools/greedy_foveal/check_equivalence.py` passing |
@@ -93,6 +93,3 @@ Earlier stages, all accepted; details in each report and in the history file:
    items 1–5 of "Decision-critical open items" in the history file.
 3. Breadth-1 evaluation universe: how geometry rendered outside the 234-object
    catalog enters future evaluation. Intentionally open.
-4. The workstation's shared checkout must be fast-forwarded to `main` once
-   (shell, "Worktree"); until then a session started there loads the agreement of
-   2026-09-27.

@@ -65,7 +65,7 @@ untouched; only its location in the governance files changes.
 
 ## 5. A check whose target changes (needs Luiz's acceptance)
 
-`check_repository_layout.py` required the live `CLAUDE.md` to contain 24 sentences,
+`check_repository_layout.py` required the live `CLAUDE.md` to contain 23 sentences (first written here as 24),
 including the stage ("## Current project stage", "NS1d is ACCEPTED as Outcome 2"),
 and the live handoff to contain dozens of accepted-state sentences. Each accepted
 phase added more. The check could fail, but what it protected was the accretion

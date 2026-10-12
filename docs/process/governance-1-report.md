@@ -203,3 +203,33 @@ adds this section, tagged **`governance-1`**.
   mutation that leaves the files unchanged. The lint's checks are unchanged. After the
   repair (ClaudeChat sandbox): lint `LINT OK` 31 / 0, `--self-test` `undetected=0`,
   layout checker `failed=0`.
+
+## 8. Follow-up after acceptance
+
+Claude Code ran the follow-up prompt on the workstation. ClaudeChat's prompt told it not
+to write a file, which left the outcome only in its session, against kernel rule 3.
+This section records it from Code's session summary, which Luiz relayed. Only the tag
+was rechecked from GitHub.
+
+- **Tag.** The annotated tag `governance-1` (object `d8c782b`) points to `11bfbf6`.
+  ClaudeChat confirmed this from GitHub with `git ls-remote`.
+- **Shared checkout (D4).** It was on `main` at `e681392` with a clean tracked tree; the
+  only untracked entry was `visuals/`. Before pulling, Claude Code confirmed that none of
+  the 347 incoming paths existed on disk. `git pull --ff-only` succeeded: `HEAD` is now
+  `11bfbf6`, `CLAUDE.md` starts with `# Kernel`, and `git status --short` is empty.
+- **The two distances agree.** Code measured 220 commits behind; §7 says 216. ClaudeChat
+  sandbox: `e681392..4fda984` is 216 commits (`origin/main` when §7 was written), and
+  `e681392..11bfbf6` is 220. The 347 incoming paths are the 258 added and 89 renamed paths
+  of `e681392..11bfbf6`.
+- **Assistant memory (D5).** Claude Code deleted a 35 KB memory file that was almost all
+  project status. It held about 60 phase-status lines, commit ids, branch chronologies,
+  next-step lines and per-phase results. It also held a note that the shared checkout was
+  stale at `e681392`. So that fact had been known before Governance-1, but only in
+  assistant memory and not in the repository. Code also removed one result line from
+  another memory file, and rewrote the index as six status-free files: workstation
+  pointers that defer to the kernel, shell and handoff, the OLD-PREVIEWS location, and
+  lessons in four topic files. A pre-cleanup copy stays in its scratchpad.
+- **Lint at `11bfbf6`** on the workstation: `checked=31 failed=0`, `LINT OK`;
+  `--self-test` `negatives=22 undetected=0`.
+- **Contract §5** said the layout checker pinned 24 sentences in `CLAUDE.md`. The code
+  lists 23. The contract is corrected in place, and the correction is visible there.
