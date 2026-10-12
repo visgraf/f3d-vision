@@ -88,7 +88,8 @@ visualization package declares its contract (required) and report (allowed). The
 the docs/presentation/ stage directory with its README and PDF (required). Playground-2 (sparse lattice) declares
 its contract (required) and report (allowed). Engineering-2 (promoting the sparse covering lattice to the official
 baseline) declares its contract (required) and report (allowed). Playground-3 (the 2-degree cap lattice) declares
-its contract (required) and report (allowed).
+its contract (required) and report (allowed). The official baseline's demo declares its contract (required) and
+report (allowed) in docs/presentation/.
 """
 from __future__ import annotations
 
@@ -245,6 +246,8 @@ PLAYGROUND3_REQUIRED = {"docs/playground/cap-2deg-contract.md"}
 PLAYGROUND1_ALLOWED |= PLAYGROUND3_REQUIRED | {"docs/playground/cap-2deg-report.md"}
 PLAYGROUND1_ALLOWED |= ENG2_REQUIRED | {"docs/engineering/sparse-lattice-baseline-report.md"}
 PLAYGROUND1_ALLOWED |= PLAYGROUND2_REQUIRED | {"docs/playground/sparse-lattice-report.md"}
+DEMO2_REQUIRED = {"docs/presentation/official-baseline-demo-contract.md"}
+PLAYGROUND1_ALLOWED |= DEMO2_REQUIRED | {"docs/presentation/official-baseline-demo-report.md"}
 ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
                                              "docs/architecture/greedy-foveal-playground.md"}
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
@@ -538,6 +541,8 @@ def main() -> int:
     check("the Playground-2 sparse-lattice contract is tracked", not missing_pg2, str(missing_pg2))
     missing_eng2 = sorted(ENG2_REQUIRED - set(index))
     check("the Engineering-2 sparse-lattice baseline contract is tracked", not missing_eng2, str(missing_eng2))
+    missing_demo2 = sorted(DEMO2_REQUIRED - set(index))
+    check("the official baseline demo contract is tracked", not missing_demo2, str(missing_demo2))
     missing_pg3 = sorted(PLAYGROUND3_REQUIRED - set(index))
     check("the Playground-3 2-degree cap contract is tracked", not missing_pg3, str(missing_pg3))
     for d in ("docs", "tools", "scripts"):
