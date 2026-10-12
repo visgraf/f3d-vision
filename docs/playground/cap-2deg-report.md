@@ -1,7 +1,9 @@
 # Playground-3 — the 2° cap lattice: report
 
-**Status: EXECUTED — REVIEW PENDING.** Claude Code executed this step on the workstation under the contract below.
-Whether the result is accepted is Luiz's decision.
+**Status: ACCEPTED** by Luiz on 2026-10-12, as a playground result; **not promoted** (section 11). Claude Code
+executed this step on the workstation under the contract below; ClaudeChat reviewed it.
+
+    PLAYGROUND3_CAP_2DEG_ACCEPTED
 
 **Acceptance gate (contract §6): all of A1–A6 PASS.** A2 passes exactly at its bound: 346 fixations against ≤ 346.
 
@@ -311,3 +313,22 @@ Judged on C5–C7 only.
   matter, the cause (near-epipole geometry, scene content or the map) is a separate question.
 - `run.py visualize` lacks `--title` (D1). A future contract either uses `visuals.py` or adds the option in an
   authorized step.
+
+## 11. Acceptance
+
+**Decision (Luiz, 2026-10-12): ACCEPTED as a playground result, and NOT promoted.** The gain, 10 fixations (2.8 %)
+and 14 s, is too small for an Engineering step. The official baseline stays the 6° lattice (tag
+`greedy-foveal-playground-baseline-2`). The 2° cap code is preserved at the annotated tag **`playground-3-cap-2deg`**,
+which points to the commit that adds this section.
+
+- **The near-axis SEEN-without-depth cells** (46 within 5° of the axis, identical in both runs) were checked visually
+  by Luiz: they are mostly the windows, which have no first-hit geometry. They are not diagnosed further.
+- **ClaudeChat review.** `e53851d` adds only this report, on top of `1fe6bd2`, the code `explore` recorded with a
+  clean tree. The layout checker gives 656 checked, 0 failed (Chat-sandbox). The counts are consistent:
+  309 + 36 + 1 = 346; 253,031 / 255,758 = 98.93 %.
+- **F1 confirms the contract's own geometry.** The cap changes which gazes cover the near-axis region, not how well
+  its points triangulate. The near-axis coverage state is identical cell for cell.
+- **The cap-ring views are poor even with oracle correspondence.** The +X ring kept 32–53 % of the points, at 1.1–1.8
+  mm median error (section 5), consistent with the 1/sin γ conditioning: 28.7× at 2°, 9.6× at 6°.
+- **D1 was the contract's error.** `run.py visualize` has no `--title`; Claude Code's use of `visuals.py` was the
+  right route.

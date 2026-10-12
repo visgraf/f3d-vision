@@ -1,6 +1,6 @@
 # Playground-3 — the 2° cap lattice: contract
 
-**Status: CONTRACT (PROPOSED).** Authorized by Luiz on 2026-10-12 ("promotion first, then the 2° cap"). ClaudeChat
+**Status: EXECUTED and ACCEPTED** as a playground result, not promoted (2026-10-12; see [the report](cap-2deg-report.md), section 11; its D1 corrects §5's C8). Authorized by Luiz on 2026-10-12 ("promotion first, then the 2° cap"). ClaudeChat
 wrote and pushed it; workstation execution is Claude Code's.
 
 | item | value |
