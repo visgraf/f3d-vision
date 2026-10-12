@@ -90,6 +90,15 @@ its contract (required) and report (allowed). Engineering-2 (promoting the spars
 baseline) declares its contract (required) and report (allowed). Playground-3 (the 2-degree cap lattice) declares
 its contract (required) and report (allowed). The official baseline's demo declares its contract (required) and
 report (allowed) in docs/presentation/.
+
+Governance-1 (docs/process/governance-1-contract.md) splits the working agreement into the kernel (CLAUDE.md), the
+shell (docs/process/shell.md) and the state (docs/chat-handoff.md). It adds the docs/process/ and tools/process/
+directories, declares its contract, the shell, tools/process/lint.py and the two verbatim history files (required)
+and its report (allowed), and allows process records by name pattern under docs/process/records/. The former
+CLAUDE.md and handoff are preserved byte-identical below a historical notice. The content predicates that pinned
+accepted-state sentences into the live CLAUDE.md and handoff now read those verbatim history files, unchanged; the
+live governance files are checked by tools/process/lint.py, by the forbidden-wording list (kernel and shell) and by
+the no-false-acceptance markers (kernel, shell and handoff).
 """
 from __future__ import annotations
 
@@ -110,9 +119,10 @@ PREFIX = "[repository-layout]"
 
 DOCS_DIRS = {"active-bootstrap", "architecture", "baseline", "classroom-oracle", "consolidation", "conceptual-core",
              "controller", "engineering", "methodology", "natural-bootstrap", "north-star", "partition-graph", "playground",
-             "presentation", "prototype", "repository", "technical-report"}
+             "presentation", "process", "prototype", "repository", "technical-report"}
 TOOLS_DIRS = {"active_bootstrap", "baseline", "classroom_oracle", "conceptual_core", "consolidation", "controller",
-              "greedy_foveal", "natural_bootstrap", "north_star", "partition_graph", "repository", "visual_language"}
+              "greedy_foveal", "natural_bootstrap", "north_star", "partition_graph", "process", "repository",
+              "visual_language"}
 DOCS_ROOT_FILES = {"chat-handoff.md"}
 ADDED_REQUIRED = {
     "docs/repository/repository-transition-1-contract.md",
@@ -250,17 +260,26 @@ DEMO2_REQUIRED = {"docs/presentation/official-baseline-demo-contract.md"}
 PLAYGROUND1_ALLOWED |= DEMO2_REQUIRED | {"docs/presentation/official-baseline-demo-report.md"}
 ENG1_ALLOWED = ENG1_REQUIRED | ENG1_TOOLS | {"docs/engineering/greedy-foveal-playground-baseline-report.md",
                                              "docs/architecture/greedy-foveal-playground.md"}
+GOV1_SOURCE = "4fda984ddb3bcb3974341a495749be1f8cc1e46a"   # main before Governance-1
+CLAUDE_HISTORY = "docs/repository/CLAUDE-history.md"
+HANDOFF_HISTORY = "docs/repository/chat-handoff-history.md"
+HISTORY_CUT = "\n---8<---\n"
+SHELL = "docs/process/shell.md"
+GOV1_REQUIRED = {"docs/process/governance-1-contract.md", SHELL, "tools/process/lint.py", CLAUDE_HISTORY,
+                 HANDOFF_HISTORY}
+GOV1_ALLOWED = GOV1_REQUIRED | {"docs/process/governance-1-report.md"}
+RECORD_RX = re.compile(r"docs/process/records/\d{4}-\d\d-\d\d-(?:review|rejected|prevented)-[a-z0-9-]+\.md")
 ADDED_ALLOWED = (ADDED_REQUIRED | {"docs/repository/repository-transition-1-report.md"} | CONTROLLER01_ALLOWED
                  | CONTROLLER01A_ALLOWED | POLICY1_REQUIRED | C01_VISUALS_ALLOWED | CONTROLLER01B_ALLOWED
                  | CONTROLLER01C_ALLOWED | CHARTER1_REQUIRED | CONTROLLER02_ALLOWED | VL1_ALLOWED | BREADTH1_ALLOWED
                  | NB1A_ALLOWED | NB1B_ALLOWED | NB1C_ALLOWED | AB1A_ALLOWED | AB1B_ALLOWED
                  | AB1C_ALLOWED | AB1D_ALLOWED | AB1D2_ALLOWED | AB1D3_ALLOWED | NS1A_ALLOWED | NS1B_ALLOWED
                  | NS1C_REVIEW_REQUIRED | NS1C2_ALLOWED | NS1D_ALLOWED | GREEDY_V0_REQUIRED | ENG1_ALLOWED
-                 | TECH_REPORT_ALLOWED | PLAYGROUND1_ALLOWED | SLIDES_REQUIRED)
+                 | TECH_REPORT_ALLOWED | PLAYGROUND1_ALLOWED | SLIDES_REQUIRED | GOV1_ALLOWED)
 HANDOFF_REMOVAL_SENTENCE = "`tools/dev/` is gone."
 ACTIVE_MOVED = {"docs/architecture/current-architecture-map.md", "docs/architecture/fov3d-api.md",
                 "docs/conceptual-core/conceptual-core-map.md"}
-ACTIVE_DOCS = {"README.md", "CLAUDE.md", "AGENTS.md", "docs/chat-handoff.md"} | ACTIVE_MOVED
+ACTIVE_DOCS = {"README.md", "CLAUDE.md", "AGENTS.md", "docs/chat-handoff.md", SHELL} | ACTIVE_MOVED
 TAGS = {
     "baseline-classroom-oracle1-2026-09-25": "a980e59dfc453c590190f842c47c4588bc99989d",
     "consolidation2-sealed-2026-09-25": "760d2162953ae0d5754704249a3e0f7ae7b60776",
@@ -475,7 +494,7 @@ def main() -> int:
     check("every base docs/ and tools/ file is moved or deliberately retained", not unaccounted, str(unaccounted))
     check("every move source existed at the base", olds <= set(base_files), str(sorted(olds - set(base_files))))
     staged = {f for f in index if (f.startswith("docs/") or f.startswith("tools/")) and f.count("/") >= 2}
-    extra = sorted(staged - news - ADDED_ALLOWED)
+    extra = sorted(f for f in staged - news - ADDED_ALLOWED if not RECORD_RX.fullmatch(f))
     check("every file in the new hierarchy is a move target or a declared addition", not extra, str(extra))
     missing_added = sorted(ADDED_REQUIRED - set(index))
     check("the transition's own files are tracked", not missing_added, str(missing_added))
@@ -545,6 +564,8 @@ def main() -> int:
     check("the official baseline demo contract is tracked", not missing_demo2, str(missing_demo2))
     missing_pg3 = sorted(PLAYGROUND3_REQUIRED - set(index))
     check("the Playground-3 2-degree cap contract is tracked", not missing_pg3, str(missing_pg3))
+    missing_gov1 = sorted(GOV1_REQUIRED - set(index))
+    check("the Governance-1 contract, shell, lint and history files are tracked", not missing_gov1, str(missing_gov1))
     for d in ("docs", "tools", "scripts"):
         stray = [p for p in untracked(d) if "__pycache__" not in p]
         check(f"no untracked files under {d}/", not stray, str(stray[:5]))
@@ -596,13 +617,34 @@ def main() -> int:
     check("the former README is preserved verbatim below a historical notice", README_HISTORY in index
           and history.startswith("# Historical README") and history.endswith(former) and former not in readme)
 
-    # ---- CLAUDE.md
-    claude = disk("CLAUDE.md").read_text(encoding="utf-8")
-    low, flat = claude.lower(), squash(claude)
+    # ---- CLAUDE.md and the handoff: the live kernel and shell, and the Governance-1 history files
+    histories = {}
+    for rel, source, title in ((CLAUDE_HISTORY, "CLAUDE.md", "# Historical CLAUDE.md"),
+                               (HANDOFF_HISTORY, "docs/chat-handoff.md", "# Historical Chat Handoff")):
+        text = disk(rel).read_text(encoding="utf-8") if disk(rel).is_file() else ""
+        former = git("show", f"{GOV1_SOURCE}:{source}").decode("utf-8")
+        body = text.split(HISTORY_CUT, 1)[1] if HISTORY_CUT in text else ""
+        check(f"the former {source} is preserved verbatim below a historical notice ({rel})",
+              text.startswith(title) and body == former)
+        histories[source] = body
+    live = {f: disk(f).read_text(encoding="utf-8") if disk(f).is_file() else ""
+            for f in ("CLAUDE.md", SHELL, "docs/chat-handoff.md")}
+    low = (live["CLAUDE.md"] + live[SHELL]).lower()
     bad = [p for p in CLAUDE_FORBIDDEN if p.lower() in low]
-    check("CLAUDE.md has no obsolete Chat-write / stage / convention wording", not bad, str(bad))
+    check("CLAUDE.md and the shell have no obsolete Chat-write / stage / convention wording", not bad, str(bad))
+    false_claims = [m for t in live.values() for m in (NS1C_ACCEPTED_MARKER, "CONTROLLER01_GLOBAL_QUIESCENCE_REACHED",
+                                                       "CONTROLLER02_GLOBAL_QUIESCENCE", "CONTROLLER02_CLASSROOM_NOT_CLOSED")
+                    if m in t] + [m.group(0) for t in live.values() for m in NS1E_ACCEPTED_RX.finditer(t)]
+    check("the live kernel, shell and handoff claim no unaccepted result", not false_claims, str(false_claims))
+    check("the live handoff keeps NS1e and NS1c unaccepted",
+          "NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED." in squash(live["docs/chat-handoff.md"])
+          and "NS1c is REVIEWED, NOT ACCEPTED and NOT MERGED" in squash(live["docs/chat-handoff.md"]))
+    # The accepted-state predicates below read the verbatim history files (Governance-1); their strings are unchanged.
+    claude = histories["CLAUDE.md"]
+    flat = squash(claude)
     missing = [p for p in CLAUDE_REQUIRED if squash(p) not in flat]
-    check("CLAUDE.md states the agreed stage, workflow and rules", not missing, str([m[:60] for m in missing]))
+    check("the historical CLAUDE.md states the stage, workflow and rules agreed before Governance-1", not missing,
+          str([m[:60] for m in missing]))
 
     # ---- Markdown links
     active_links = broken_active = all_links = broken_all = 0
@@ -629,7 +671,7 @@ def main() -> int:
         check(f"{f} states Core 14 accepted, migration paused, controller next",
               "accepted through Conceptual Core 14" in text and "paused" in text
               and "Integrated Foveal Controller" in text)
-    handoff = disk("docs/chat-handoff.md").read_text(encoding="utf-8")
+    handoff = histories["docs/chat-handoff.md"]
     review = squash(disk("docs/north-star/ns1c-review-decision.md").read_text(encoding="utf-8")) \
         if disk("docs/north-star/ns1c-review-decision.md").is_file() else ""
     check("the NS1c review is recorded: NOT accepted, NOT merged, no NS1c ACCEPTED marker; North Star-1c2 next",

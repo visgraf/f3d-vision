@@ -148,7 +148,8 @@ run (the frozen Playground-2 run) in the same format: `demo.mp4` (1920 × 1080, 
 | [`docs/repository/README-history.md`](docs/repository/README-history.md) | the historical, pre-playground README |
 | [`docs/chat-handoff.md`](docs/chat-handoff.md) | the project's working state and AI-collaboration handoff (not user documentation) |
 
-The working agreement for contributors and coding assistants is [`CLAUDE.md`](CLAUDE.md).
+The working agreement for contributors and coding assistants is [`CLAUDE.md`](CLAUDE.md), the kernel, with its
+current settings in [`docs/process/shell.md`](docs/process/shell.md).
 
 ## Project history
 
