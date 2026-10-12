@@ -1,8 +1,41 @@
 # Chat Handoff
 
-## Read first: the slide presentation is ACCEPTED; next is Playground-2
+## Read first: Playground-2 (sparse covering lattice) is ACCEPTED
 
-**SLIDES ACCEPTED. NEXT: PLAYGROUND-2 (A SPARSER COVERING LATTICE), TO BE CONTRACTED.**
+**PLAYGROUND-2 ACCEPTED AS A PLAYGROUND RESULT. NEXT: BEING CONFIRMED (PROMOTION TO THE OFFICIAL BASELINE, OR THE
+2° CAP LATTICE).**
+
+    PLAYGROUND2_SPARSE_LATTICE_ACCEPTED
+
+| item | value |
+|---|---|
+| `main` | the docs-only Playground-2 acceptance commit that adds this entry, fast-forwarded from `project/playground-2-acceptance`; its parent is `65eca40` (slides acceptance) |
+| code | tag **`playground-2-sparse-lattice`** -> `1f50bd6`, head of `playground/sparse-lattice` (`46a2649` -> `5981d5b` contract -> `70d992e` implementation -> `b345bcf` report -> `1f50bd6` acceptance). **Not merged:** `main` keeps the official baseline. |
+| contract / report | `docs/playground/sparse-lattice-contract.md` / `-report.md` (copies on `main`) |
+| run | `previews/playground-sparse-lattice/` (code `70d992e`; `freeze.json` sha256 `3f8bf4bd…4a7d`) |
+
+The change: the lattice becomes 17 rings about the eye baseline (+X), θ = 6°, 16.5°, …, 174°, where every footprint
+sits square-on to its ring. That gives 356 gazes, every gaze ≥ 6° from the baseline axis, and the start gaze on the
+lattice. MEASURED:
+
+| | official baseline | Playground-1 | Playground-2 |
+|---|---|---|---|
+| fixations | 542 | 496 | **356** |
+| UNSEEN cells at the stop | 640 | 0 | **0** |
+| global saccades / all-global tail | 219 / 180 | 35 / 8 | **40 / 0** |
+| Breadth-1 12-mm solid angle | 98.32 % | 98.82 % | **98.82 %** |
+| wall time | 733 s | 665 s | **416 s** |
+
+- **Every lattice gaze was fixated once**, so the fixation count is the lattice size.
+- **F1 (accepted correction).** v0 did fixate 0.71° and 2.55° from the baseline axis. The 6° envelope's stated reason
+  is withdrawn; a 2° cap gives 346 gazes.
+- **Next.** Luiz approved "the next step" (2026-10-12). Which one is being confirmed: promoting Playground-2 to the
+  official baseline, or the 2° cap lattice.
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
+
+## The slide presentation is ACCEPTED
+
+**SLIDES ACCEPTED.**
 
     ACTIVE_FOVEAL_3D_VISION_SLIDES_ACCEPTED
 
@@ -177,11 +210,11 @@ optimized.
 
 ## Accepted main
 
-`main` = the docs-only slides acceptance commit that adds the "Read first" section above. The chain of fast-forwards
-since the technical report:
+`main` = the docs-only Playground-2 acceptance commit that adds the "Read first" section above. The chain of
+fast-forwards since the technical report:
 
     9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> 4eb2a54 Playground-1 acceptance
-    -> 03b6969 Playground-1 visualization acceptance -> slides acceptance
+    -> 03b6969 Playground-1 visualization acceptance -> 65eca40 slides acceptance -> Playground-2 acceptance
 
 The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
 (`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance), followed by

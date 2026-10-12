@@ -304,9 +304,21 @@ baseline is established**
 
       ACTIVE_FOVEAL_3D_VISION_SLIDES_ACCEPTED
 
-- Next: Playground-2 (a sparser covering lattice), to be contracted.
-  Later playground experiments change one component at a time against
-  the official baseline, each one explicitly authorized.
+- **Playground-2 (sparse covering lattice) is ACCEPTED as a playground
+  result** (`docs/playground/sparse-lattice-report.md`):
+
+      PLAYGROUND2_SPARSE_LATTICE_ACCEPTED
+
+  Gaze candidates on 17 rings about the eye baseline, 356 gazes: 356
+  fixations, 0 UNSEEN cells, 40 global saccades with no all-global
+  tail, 98.82 % of the Breadth-1 solid angle within 12 mm, 416 s
+  (MEASURED; Playground-1 496 fixations / 665 s; the official baseline
+  542 / 640 UNSEEN / 98.32 % / 733 s). The code is NOT on `main`; it
+  is at tag `playground-2-sparse-lattice`.
+- Next: Luiz approved "the next step" after Playground-2 (2026-10-12);
+  which one (promoting Playground-2 to the official baseline, or the
+  2° cap lattice) is being confirmed. Each later step is explicitly
+  authorized and changes one component at a time.
 
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).
