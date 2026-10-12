@@ -1,17 +1,21 @@
-"""Greedy Foveal Explorer, official baseline: the equivalence checker (Engineering-1).
+"""Greedy Foveal Explorer, official baseline: the equivalence checker (Engineering-1, retargeted by Engineering-2).
 
-Contract: docs/engineering/greedy-foveal-playground-baseline-contract.md, section 7.
+Contracts: docs/engineering/greedy-foveal-playground-baseline-contract.md, section 7 (the comparison rules), and
+docs/engineering/sparse-lattice-baseline-contract.md (the target: the sparse covering lattice, tag
+playground-2-sparse-lattice, and its frozen run previews/playground-sparse-lattice/).
 
     .venv/bin/python tools/greedy_foveal/check_equivalence.py source
     .venv/bin/python tools/greedy_foveal/check_equivalence.py run --run RUN --baseline BASE [--prefix] [--known-answer]
     .venv/bin/python tools/greedy_foveal/check_equivalence.py selftest
 
-``source``: each promoted file is executable-equal to its frozen tag blob (ASTs compared with docstrings removed), and
+``source``: each official file is executable-equal to its frozen tag blob (ASTs compared with docstrings removed), and
 the host-side import closure of the official code loads only tracked modules, none of the NS1e lineage.
 ``run``: the scientific payload of RUN equals BASE.  Control-path products are compared bitwise; RGB (not reproducible
 run to run under Cycles OPTIX, and never a control input) is reported, not compared; branch / commit / time metadata is
 ignored.  ``--prefix`` compares a shorter run with the first N fixations of BASE; ``--known-answer`` also asserts the
-literal frozen grow600 numbers.  ``selftest``: in-memory controls showing that every comparator can fail.
+literal numbers of the frozen Playground-2 run.  ``selftest``: in-memory controls showing that every comparator can fail
+(it perturbs the v0 explorer.py at greedy-foveal-explorer-v0-impl; the comparators do not depend on the target).
+The v0 baseline's own checker is at tag greedy-foveal-playground-baseline.
 
 Exit status 0 on PASS, 1 on FAIL.  ``run`` writes its record next to RUN's products (``--out`` overrides).
 """
@@ -31,11 +35,11 @@ HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 PREFIX = "[gfe-equiv]"
 
-IMPL_TAG, IMPL_SHA = "greedy-foveal-explorer-v0-impl", "a437df048b555d5b59f6855b6572eea2665ab0da"
-DEMO_TAG, DEMO_SHA = "greedy-foveal-explorer-v0-demo", "8066a246bf251fb1e2d66b7061899c32df236bf1"
-SOURCES = {"explorer.py": IMPL_TAG, "run.py": IMPL_TAG, "render_server.py": IMPL_TAG,
-           "visuals.py": DEMO_TAG, "demo.py": DEMO_TAG}
-TAG_SHA = {IMPL_TAG: IMPL_SHA, DEMO_TAG: DEMO_SHA}
+IMPL_TAG, IMPL_SHA = "greedy-foveal-explorer-v0-impl", "a437df048b555d5b59f6855b6572eea2665ab0da"  # selftest only
+PG2_TAG, PG2_SHA = "playground-2-sparse-lattice", "1f50bd6a3f3cf77ccf260375b2cf2fee60c4738f"
+SOURCES = {name: PG2_TAG for name in ("explorer.py", "run.py", "render_server.py", "visuals.py", "demo.py",
+                                      "check_lattice.py")}
+TAG_SHA = {PG2_TAG: PG2_SHA, IMPL_TAG: IMPL_SHA}
 
 # trajectory.json: run-level fields compared exactly (everything else is metadata: code, timings)
 SUMMARY_EXACT = ("schema", "label", "spp", "max_fix", "stop_reason", "fixations", "local_saccades", "global_saccades",
@@ -52,9 +56,9 @@ EVAL_EXACT = ("schema", "label", "radius_m", "coverage_function", "vectorized_cr
               "covered_cells_nn_distance_mm")
 EVAL_EXPLORER_METADATA = ("wall_seconds", "seconds_sum")
 EVAL_NPZ_BITWISE = ("cells_rc", "covered", "instance")
-KNOWN_ANSWER = {"fixations": 542, "stop_reason": "seen >= 99 % of 4 pi", "local_saccades": 322, "global_saccades": 219,
-                "seen_pct": "99.00", "depth_pct": "98.28", "covered_cells": 251966, "reference_cells": 255758,
-                "cell_pct": "98.52", "solid_angle_pct": "98.32"}
+KNOWN_ANSWER = {"fixations": 356, "stop_reason": "no valid unseen fixation", "local_saccades": 315, "global_saccades": 40,
+                "seen_pct": "100.00", "depth_pct": "99.26", "covered_cells": 253023, "reference_cells": 255758,
+                "cell_pct": "98.93", "solid_angle_pct": "98.82"}   # Playground-2 run, docs/playground/sparse-lattice-report.md
 MAX_LISTED = 10
 
 
@@ -365,8 +369,11 @@ def compare_run(run: Path, base: Path, prefix: bool, known: bool) -> Ledger:
             got |= {"covered_cells": p["covered_cells"], "reference_cells": p["reference_cells"],
                     "cell_pct": f"{100 * p['cell_coverage']:.2f}", "solid_angle_pct": f"{100 * p['solid_angle_coverage']:.2f}"}
         wrong = {k: [got.get(k), v] for k, v in KNOWN_ANSWER.items() if got.get(k) != v}
-        L.check("known answer: 542 / SEEN >= 99 % / 99.00 % / 98.28 % / 322 local / 219 global / 98.52 % cells "
-                "(251,966 / 255,758) / 98.32 % sr", not wrong, wrong or None)
+        ka = KNOWN_ANSWER
+        L.check(f"known answer: {ka['fixations']} / {ka['stop_reason']} / {ka['seen_pct']} % / {ka['depth_pct']} % / "
+                f"{ka['local_saccades']} local / {ka['global_saccades']} global / {ka['cell_pct']} % cells "
+                f"({ka['covered_cells']:,d} / {ka['reference_cells']:,d}) / {ka['solid_angle_pct']} % sr", not wrong,
+                wrong or None)
         L.report("known_answer_observed", got)
     return L
 
@@ -452,7 +459,7 @@ def main() -> int:
     r.add_argument("--run", required=True)
     r.add_argument("--baseline", required=True)
     r.add_argument("--prefix", action="store_true", help="compare a shorter run with the first N baseline fixations")
-    r.add_argument("--known-answer", action="store_true", help="also assert the literal frozen grow600 numbers")
+    r.add_argument("--known-answer", action="store_true", help="also assert the literal frozen Playground-2 numbers")
     r.add_argument("--out", default=None, help="record path (default: RUN/equivalence[-prefix].json)")
     a = ap.parse_args()
     return {"source": source, "selftest": selftest, "run": run_mode}[a.cmd](a)

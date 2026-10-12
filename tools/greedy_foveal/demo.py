@@ -8,6 +8,10 @@ changes the run, the explorer or any measured product; the run's freeze is verif
     .venv/bin/python tools/greedy_foveal/demo.py build      # derived assets -> reference assets -> video -> stills
     .venv/bin/python tools/greedy_foveal/demo.py check
 
+``--profile`` picks the replayed run: ``v0`` (default, the frozen grow600 demo, unchanged) or ``lattice`` (the
+accepted Playground-1 run, docs/playground/gaze-lattice-visuals-contract.md).  ``--out DIR`` redirects the outputs;
+``--poster-fix N`` overrides the profile's poster fixation.
+
 ``rerender`` drives the unchanged render server (``run.Server`` / ``render_server.py``) at each fixation's saved gaze;
 the calibration it writes must be byte-identical to the saved one, and the re-rendered left Position must reproduce
 the saved reconstructed points (a same-view check).  Only the left / right foveal RGB is kept (display only).
@@ -42,9 +46,47 @@ from exr_lite import read_uncompressed_exr  # noqa: E402
 from visuals import dashed_polyline, display_rgb, oracle_colors  # noqa: E402
 
 SHARED = Path("/home/lvelho/rd/f3d-vision")
-RUN = SHARED / "previews/greedy-foveal-explorer-v0-grow600"
-CACHE = SHARED / "previews/greedy-foveal-explorer-v0-demo-cache"
-OUT = SHARED / "visuals/greedy-foveal-explorer-v0-demo"
+V0_RUN = SHARED / "previews/greedy-foveal-explorer-v0-grow600"
+PROFILES = {
+    "v0": {
+        "run": V0_RUN, "cache": SHARED / "previews/greedy-foveal-explorer-v0-demo-cache",
+        "out": SHARED / "visuals/greedy-foveal-explorer-v0-demo", "run_name": "greedy-foveal-explorer-v0-grow600",
+        "schema": "GFE-v0-demo-manifest", "stop_tag": "99 % SEEN · STOP",
+        "global_tag": "NEXT: GLOBAL SACCADE → largest unseen region",
+        "local_legend": "local saccade: crawl to a neighbouring view",
+        "global_legend": "global saccade: jump to the largest unseen region",
+        "intro_foot": "PERFECT / ORACLE correspondence  ·  fixed-head synthetic proof of concept (Blender Classroom)",
+        "stop_rule": "stop rule: SEEN ≥ 99 % of the sphere (controller-time)",
+        "poster_label": "prototype/greedy-foveal-explorer-v0", "lattice_dots": False,
+        "known": {"fixations": "542", "seen": "99.00 %", "depth": "98.28 %", "coverage_sr": "98.32 %",
+                  "coverage_cells": "98.52 %", "surfels": "16,517,811"}},
+    "lattice": {
+        "run": SHARED / "previews/playground-gaze-lattice",
+        "cache": SHARED / "previews/playground-gaze-lattice-demo-cache",
+        "out": SHARED / "visuals/playground-gaze-lattice-demo", "run_name": "playground-gaze-lattice",
+        "schema": "GFE-playground1-demo-manifest", "stop_tag": "100 % SEEN · STOP",
+        "global_tag": "NEXT: GLOBAL SACCADE → best lattice gaze",
+        "local_legend": "local saccade: step to a nearby lattice gaze",
+        "global_legend": "global saccade: jump to the best lattice gaze",
+        "intro_foot": "PERFECT / ORACLE correspondence  ·  Playground-1: gaze on a fixed covering lattice of 496 views  "
+                      "·  Blender Classroom",
+        "stop_rule": "stop rule: no lattice gaze adds unseen area (controller-time)",
+        "poster_label": "Playground-1 gaze lattice · tag playground-1-gaze-lattice", "lattice_dots": True,
+        "known": {"fixations": "496", "seen": "100.00 %", "depth": "99.31 %", "coverage_sr": "98.82 %",
+                  "coverage_cells": "98.94 %", "surfels": "16,702,245"}},
+}
+PROFILE = PROFILES["v0"]
+RUN, CACHE, OUT = PROFILE["run"], PROFILE["cache"], PROFILE["out"]
+POSTER_OVERRIDE: int | None = None
+
+
+def use_profile(name: str, out: str | None = None, poster_fix: int | None = None) -> None:
+    """Select the replayed run (module-level paths, wording and known answers)."""
+    global PROFILE, RUN, CACHE, OUT, POSTER_OVERRIDE
+    PROFILE = PROFILES[name]
+    RUN, CACHE = PROFILE["run"], PROFILE["cache"]
+    OUT = Path(out).resolve() if out else PROFILE["out"]
+    POSTER_OVERRIDE = poster_fix
 B1_EXR = SHARED / "previews/breadth-1-classroom-234-spherical-glance/render/canonical.exr"
 B1_EXR_SHA256 = "4ea036fc74eab3b3ab06a0c4470c2b01740c9322de0eea522f957ddfffa172f8"
 SPP = 64
@@ -476,6 +518,12 @@ class Replay:
         self.d_img = np.empty((EQ_H, EQ_W, 3), np.uint8)
         self.d_img[:] = BG3D
         self.d_z = np.full((EQ_H, EQ_W), np.inf)
+        self.lat_xy = self.fix_lat = None
+        if PROFILE["lattice_dots"]:                  # Playground-1: the gaze lattice the run was restricted to
+            L = X.lattice()
+            self.lat_xy = np.stack(eq_xy(L["yaw_deg"], L["pitch_deg"], EQ_W, EQ_H), axis=1)
+            ang = X.angle_deg(self.dirs, L["dir"])
+            self.fix_lat = np.where(ang.min(axis=1) < X.LATTICE_VISIT_DEG, ang.argmin(axis=1), -1)
         self.static = self._static()
 
     # ---------------- static chrome
@@ -566,6 +614,8 @@ class Replay:
         c[own] = np.rint((1 - C_TINT) * self.c_rgb[own] + C_TINT * np.array(C_DEPTH)).astype(np.uint8)
         c[(st == X.UNSEEN) & self.c_dots] = S.STIPPLE
         ci = Image.fromarray(c)
+        if self.lat_xy is not None:
+            self._lattice_dots(ci, k)
         self._gaze_overlays(ci, k, nxt)
         img.paste(ci, (EQ_POS[0], STRIP_H + PH + EQ_POS[1]))
         # ---- B
@@ -588,6 +638,20 @@ class Replay:
                                    "yellow = added by this fixation", size=13, fill=S.INK2, plate=(255, 255, 255))
         img.paste(di, (PW + EQ_POS[0], STRIP_H + PH + EQ_POS[1]))
         return img
+
+    def _lattice_dots(self, im: Image.Image, k: int) -> None:
+        """Panel C: every lattice gaze; filled once fixated (fixations 1..k), else a small ring."""
+        d = ImageDraw.Draw(im)
+        seen = np.zeros(len(self.lat_xy), bool)
+        idx = self.fix_lat[:k]
+        seen[idx[idx >= 0]] = True
+        for (x, y), v in zip(self.lat_xy, seen):
+            if v:
+                d.ellipse([x - 2.5, y - 2.5, x + 2.5, y + 2.5], fill=S.INK)
+            else:
+                d.ellipse([x - 3.5, y - 3.5, x + 3.5, y + 3.5], outline=S.INK2, width=1)
+        S.text(d, (8, EQ_H - 24), f"gaze lattice: {len(self.lat_xy)} views; ring = not yet fixated, dot = fixated",
+               size=13, fill=S.INK2, plate=(255, 255, 255))
 
     def _gaze_overlays(self, im: Image.Image, k: int, nxt: dict | None) -> None:
         d = ImageDraw.Draw(im)
@@ -639,10 +703,10 @@ class Replay:
             d.rectangle([0, 0, W, STRIP_H - 1], fill=(253, 233, 220))
         S.text(d, (32, 10), "FIXATION", size=14, fill=S.INK2, outline=None)
         S.text(d, (32, 26), f"{k} / {self.N}", size=30, bold=True, outline=None)
-        if nxt is None:
-            tag(img, 230, 20, "99 % SEEN · STOP", "stop", size=18)
+        if nxt is None or nxt["kind"] == "none":       # v0 stops on SEEN (null); the lattice on decide() "none"
+            tag(img, 230, 20, PROFILE["stop_tag"], "stop", size=18)
         elif glob:
-            tag(img, 230, 20, "NEXT: GLOBAL SACCADE → largest unseen region", "global", size=18)
+            tag(img, 230, 20, PROFILE["global_tag"], "global", size=18)
         else:
             tag(img, 230, 20, f"NEXT: LOCAL SACCADE ({nxt.get('dir', '')})", "local", size=18)
         x = 760
@@ -704,11 +768,10 @@ def intro_card() -> Image.Image:
         tag(img, x + 84, y + 102, {"reference": "REFERENCE / PRESENTATION", "oracle": "ORACLE CORRESPONDENCE",
                                    "controller": "CONTROLLER-TIME", "derived": "DERIVED"}[kind], kind, size=13)
     d.line([x0, 880, x0 + 70, 880], fill=C_LOCAL, width=4)
-    S.text(d, (x0 + 84, 866), "local saccade: crawl to a neighbouring view", size=21, outline=None)
+    S.text(d, (x0 + 84, 866), PROFILE["local_legend"], size=21, outline=None)
     dashed_polyline(d, [(x0 + 600, 880), (x0 + 670, 880)], C_GLOBAL, width=4)
-    S.text(d, (x0 + 684, 866), "global saccade: jump to the largest unseen region", size=21, outline=None)
-    S.text(d, (W / 2, 990), "PERFECT / ORACLE correspondence  ·  fixed-head synthetic proof of concept (Blender Classroom)",
-           size=20, fill=S.MUTED, outline=None, anchor="ma")
+    S.text(d, (x0 + 684, 866), PROFILE["global_legend"], size=21, outline=None)
+    S.text(d, (W / 2, 990), PROFILE["intro_foot"], size=20, fill=S.MUTED, outline=None, anchor="ma")
     return img
 
 
@@ -720,9 +783,11 @@ def freeze_overlay(frame: Image.Image, hl: dict) -> Image.Image:
     d.rounded_rectangle([x0, y0, x0 + bw, y0 + bh], radius=14, fill=S.WHITE, outline=S.INK, width=3)
     S.text(d, (W / 2, y0 + 26), f"EXPLORATION COMPLETE  ·  FIXATION {hl['fixations']}", size=32, bold=True,
            outline=None, anchor="ma")
-    S.text(d, (W / 2, y0 + 82), f"{hl['seen']} SEEN   ·   {hl['depth']} DEPTH", size=56, bold=True, fill=C_DEPTH,
-           outline=None, anchor="ma")
-    S.text(d, (W / 2, y0 + 168), "stop rule: SEEN ≥ 99 % of the sphere (controller-time)", size=21, fill=S.INK2,
+    line, size = f"{hl['seen']} SEEN   ·   {hl['depth']} DEPTH", 56
+    while d.textlength(line, font=S.font(size, True)) > bw - 40:   # keep >= 20 px inside the card (v0 fits at 56)
+        size -= 2
+    S.text(d, (W / 2, y0 + 82), line, size=size, bold=True, fill=C_DEPTH, outline=None, anchor="ma")
+    S.text(d, (W / 2, y0 + 168), PROFILE["stop_rule"], size=21, fill=S.INK2,
            outline=None, anchor="ma")
     return im
 
@@ -783,7 +848,8 @@ def depth_bar(img, x, y, w, label=True):
 def final_board(D: dict, Rf: dict, hl: dict) -> Image.Image:
     img = Image.new("RGB", (W, H), S.SURFACE)
     d = ImageDraw.Draw(img)
-    S.text(d, (40, 22), "RESULT  ·  ONE PERSISTENT 3-D MAP FROM 542 FIXATIONS", size=34, bold=True, outline=None)
+    S.text(d, (40, 22), f"RESULT  ·  ONE PERSISTENT 3-D MAP FROM {hl['fixations']} FIXATIONS", size=34, bold=True,
+           outline=None)
     S.text(d, (40, 66), "fixed head  ·  PERFECT / ORACLE correspondence  ·  Blender Classroom  ·  frozen run, "
                         "evaluated only after the explorer stopped", size=18, fill=S.INK2, outline=None)
     tiles = [(hl["fixations"], f"fixations ({hl['local']} local · {hl['global']} global saccades)"),
@@ -960,8 +1026,8 @@ def poster(D: dict, T: list[dict], hl: dict, fix_k: int) -> Image.Image:
         S.text(d, (nx, y), big, size=56, bold=True, fill=C_DEPTH if i else S.INK, outline=None)
         S.text(d, (nx + 6, y + 66), cap, size=20, fill=S.INK2, outline=None)
     tag(img, PWp - 80, y2 - 48 + 3 * 104 + 18, "REFERENCE / EVALUATION, post-hoc", "reference", size=13, right=True)
-    S.text(d, (80, PHp - 30), "Blender Classroom · 64 spp · 542 fixations · prototype/greedy-foveal-explorer-v0 "
-                              "(run greedy-foveal-explorer-v0-grow600)", size=15, fill=S.MUTED, outline=None)
+    S.text(d, (80, PHp - 30), f"Blender Classroom · 64 spp · {hl['fixations']} fixations · {PROFILE['poster_label']} "
+                              f"(run {PROFILE['run_name']})", size=15, fill=S.MUTED, outline=None)
     return img
 
 
@@ -969,11 +1035,27 @@ def poster(D: dict, T: list[dict], hl: dict, fix_k: int) -> Image.Image:
 POSTER_FIX = 179                 # chosen for legibility (layered chairs / desks); presentation only
 
 
+def poster_fixation(T: list[dict]) -> tuple[int, str]:
+    """v0: POSTER_FIX.  Other runs: the fixation whose gaze is nearest v0 #POSTER_FIX's gaze (the same view of the
+    room), unless --poster-fix overrides it."""
+    if POSTER_OVERRIDE is not None:
+        return POSTER_OVERRIDE, "--poster-fix override"
+    if PROFILE is PROFILES["v0"]:
+        return POSTER_FIX, "chosen for legibility (layered chairs / desks)"
+    v0 = read_json(V0_RUN / "trajectory.json")["trajectory"][POSTER_FIX - 1]
+    d0 = X.direction(v0["yaw_deg"], v0["pitch_deg"])
+    dirs = X.direction(np.array([e["yaw_deg"] for e in T]), np.array([e["pitch_deg"] for e in T]))
+    k = int(np.argmax(dirs @ d0)) + 1
+    return k, (f"nearest gaze to v0 #{POSTER_FIX} ({v0['yaw_deg']:.2f}, {v0['pitch_deg']:.2f}): "
+               f"{float(X.angle_deg(dirs[k - 1][None], d0[None])[0, 0]):.2f} deg away")
+
+
 def build(a) -> None:
     fz = verify_run()
     traj = read_json(RUN / "trajectory.json")
     T = traj["trajectory"]
     ev = read_json(RUN / "evaluation.json")
+    poster_k, poster_why = poster_fixation(T)
     if len(list((CACHE / "eyes").glob("fix-*.npz"))) != len(T):
         raise SystemExit(f"{PREFIX} REFUSED run `rerender` first")
     OUT.mkdir(parents=True, exist_ok=True)
@@ -987,11 +1069,11 @@ def build(a) -> None:
     ref_rgb = np.asarray(Image.open(CACHE / REF_RGB_REL).convert("RGB"))
     final = final_board(D, Rf, hl)
     final.save(OUT / "demo-final.png", optimize=True)
-    poster(D, T, hl, POSTER_FIX).save(OUT / "demo-poster.png", optimize=True)
+    poster(D, T, hl, poster_k).save(OUT / "demo-poster.png", optimize=True)
     print(f"{PREFIX} stills written ({time.perf_counter() - t0:.0f} s)", flush=True)
     meta = (f"fixations={hl['fixations']}; seen={hl['seen']}; depth={hl['depth']}; "
             f"coverage_solid_angle={hl['coverage_sr']}; coverage_cells={hl['coverage_cells']}; surfels={hl['surfels']}; "
-            f"run=greedy-foveal-explorer-v0-grow600; run_freeze_sha256={sha256(RUN / 'freeze.json')}")
+            f"run={PROFILE['run_name']}; run_freeze_sha256={sha256(RUN / 'freeze.json')}")
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS),
            "-i", "-", "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
            "-movflags", "+faststart", "-metadata", "title=Active foveal 3-D vision: FIXATE -> RECONSTRUCT -> SACCADE",
@@ -1036,14 +1118,14 @@ def build(a) -> None:
     opens = {k: sorted(v) for k, v in AUDIT.opens.items()}
     replay = [f for seg, f in schedule if seg == "replay"]
     write_json(OUT / "demo-manifest.json", {
-        "schema": "GFE-v0-demo-manifest", "label": "PRESENTATION ONLY (offline replay of a frozen run)",
+        "schema": PROFILE["schema"], "label": "PRESENTATION ONLY (offline replay of a frozen run)",
         "run": str(RUN), "run_freeze_sha256": sha256(RUN / "freeze.json"), "run_code": fz["code"],
         "final_map_sha256_used": D["map_sha256"], "final_map_sha256_frozen": fz["files"]["final-map.npz"],
         "headline": hl, "video": {"path": str(OUT / "demo.mp4"), "frames": len(schedule), "fps": FPS,
                                   "size": [W, H], "seconds": len(schedule) / FPS, "metadata_comment": meta,
                                   "segments": {s: sum(1 for x in schedule if x[0] == s)
                                                for s in ("intro", "replay", "freeze", "orbit", "final")}},
-        "replay_fixations": replay, "poster_fixation": POSTER_FIX,
+        "replay_fixations": replay, "poster_fixation": poster_k, "poster_fixation_reason": poster_why,
         "panels": {"replay A": {"sources": ["reference rgb (" + REF_RGB_REL + ")", "trajectory.json"],
                                 "labels": ["REFERENCE / PRESENTATION · NOT AVAILABLE TO CONTROLLER"]},
                    "replay B": {"sources": ["eye cache (post-hoc display re-render)", "points.npz", "calibration.json"],
@@ -1062,9 +1144,9 @@ def build(a) -> None:
                    "final REFERENCE instance panorama": {"sources": ["Breadth-1 Object Index"],
                                                          "labels": ["REFERENCE / EVALUATION · NOT AVAILABLE DURING "
                                                                     "CONTROL", "ORACLE SEGMENTATION · VISUALIZATION ONLY"]},
-                   "final headline 98.32 % tile": {"sources": ["evaluation.json (Breadth-1 evaluation)"],
+                   f"final headline {hl['coverage_sr']} tile": {"sources": ["evaluation.json (Breadth-1 evaluation)"],
                                                    "labels": ["REFERENCE / EVALUATION"]},
-                   "poster headline 98.32 %": {"sources": ["evaluation.json (Breadth-1 evaluation)"],
+                   f"poster headline {hl['coverage_sr']}": {"sources": ["evaluation.json (Breadth-1 evaluation)"],
                                                "labels": ["REFERENCE / EVALUATION, post-hoc"]}},
         "stage_opens": opens, "eyes_manifest_sha256": sha256(CACHE / "eyes-manifest.json"),
         "build_seconds": time.perf_counter() - t0})
@@ -1081,7 +1163,9 @@ def check(a) -> None:
     res = {}
     rf = man["replay_fixations"]
     seq = [rf[0]] + [b for a_, b in zip(rf, rf[1:]) if b != a_]
-    res["replay_in_exact_order"] = (seq == [e["n"] for e in traj["trajectory"]] == list(range(1, 543))
+    known = PROFILE["known"]
+    res["replay_in_exact_order"] = (seq == [e["n"] for e in traj["trajectory"]]
+                                    == list(range(1, int(known["fixations"]) + 1))
                                     and all(b >= a_ for a_, b in zip(rf, rf[1:])))
     probe = json.loads(subprocess.run(["ffprobe", "-v", "error", "-count_frames", "-show_entries",
                                        "stream=width,height,r_frame_rate,nb_read_frames,codec_name:format=duration:"
@@ -1091,7 +1175,7 @@ def check(a) -> None:
     comment = dict(kv.split("=", 1) for kv in fm["tags"]["comment"].split("; "))
     res["metadata_seen_depth_equal_run"] = (comment["seen"] == f"{100 * traj['final_seen_fraction']:.2f} %"
                                             and comment["depth"] == f"{100 * traj['final_depth_fraction']:.2f} %"
-                                            and comment["seen"] == "99.00 %" and comment["depth"] == "98.28 %")
+                                            and comment["seen"] == known["seen"] and comment["depth"] == known["depth"])
     res["final_map_from_frozen_run"] = (man["final_map_sha256_used"] == fz["files"]["final-map.npz"]
                                         == sha256(RUN / "final-map.npz"))
     op = man["stage_opens"]
@@ -1105,9 +1189,9 @@ def check(a) -> None:
         and all(any("REFERENCE" in lab for lab in v["labels"]) for v in man["panels"].values()
                 if any("reference" in s.lower() or "breadth-1" in s.lower() for s in v["sources"])))
     hl = headline(traj, ev)
-    res["headline_equals_evaluation"] = (man["headline"] == hl and hl["coverage_sr"] == "98.32 %"
-                                         and hl["coverage_cells"] == "98.52 %" and hl["surfels"] == "16,517,811"
-                                         and hl["fixations"] == "542")
+    res["headline_equals_evaluation"] = (man["headline"] == hl and hl["coverage_sr"] == known["coverage_sr"]
+                                         and hl["coverage_cells"] == known["coverage_cells"]
+                                         and hl["surfels"] == known["surfels"] and hl["fixations"] == known["fixations"])
     n = int(st["nb_read_frames"])
     res["mp4_frames_and_size"] = (st["codec_name"] == "h264" and (st["width"], st["height"]) == (W, H)
                                   and st["r_frame_rate"] == f"{FPS}/1" and n == man["video"]["frames"])
@@ -1126,7 +1210,11 @@ def check(a) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=("rerender", "build", "check"))
+    ap.add_argument("--profile", choices=sorted(PROFILES), default="v0")
+    ap.add_argument("--out", default=None, help="output directory (default: the profile's)")
+    ap.add_argument("--poster-fix", type=int, default=None, help="override the profile's poster fixation")
     a = ap.parse_args()
+    use_profile(a.profile, a.out, a.poster_fix)
     {"rerender": rerender, "build": build, "check": check}[a.cmd](a)
 
 

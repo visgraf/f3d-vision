@@ -290,7 +290,10 @@ def oracle_colors(ids):
     return np.clip(col, 0, 255).astype(np.uint8)
 
 
-def overview(run: Path, vis: Path, marks: list[tuple[int, str]] | None = None) -> dict:
+OVERVIEW_TITLE = "Greedy Foveal Explorer v0 — FIXATE → RECONSTRUCT → SACCADE (Classroom, fixed head H0)"
+
+
+def overview(run: Path, vis: Path, marks: list[tuple[int, str]] | None = None, title: str = OVERVIEW_TITLE) -> dict:
     vis.mkdir(parents=True, exist_ok=True)
     traj = json.loads((run / "trajectory.json").read_text())
     with np.load(run / "final-map.npz") as z:
@@ -302,8 +305,7 @@ def overview(run: Path, vis: Path, marks: list[tuple[int, str]] | None = None) -
     W_, M = 2000, 90
     img = Image.new("RGB", (W_, 4200), S.SURFACE)
     d = ImageDraw.Draw(img)
-    S.text(d, (M, 30), "Greedy Foveal Explorer v0 — FIXATE → RECONSTRUCT → SACCADE (Classroom, fixed head H0)",
-           size=S.T_TITLE, bold=True, outline=None)
+    S.text(d, (M, 30), title, size=S.T_TITLE, bold=True, outline=None)
     S.text(d, (M, 72), "PROTOTYPE. PERFECT / ORACLE correspondence; geometry from accepted spherical epipolar "
                        "triangulation; one global 12-mm surfel map. Breadth-1 used only after the run froze.",
            size=S.T_SMALL, fill=S.INK2, outline=None)
@@ -364,6 +366,7 @@ if __name__ == "__main__":
     ap.add_argument("--mark-fix", type=int, nargs="*", default=[])
     ap.add_argument("--mark-name", nargs="*", default=None, help="one name per --mark-fix value")
     ap.add_argument("--mark-final", action="store_true", help="also mark the final fixation")
+    ap.add_argument("--title", default=OVERVIEW_TITLE, help="figure title (default: the v0 title)")
     a = ap.parse_args()
     names = a.mark_name if a.mark_name is not None else (["v0 stopped here"] if len(a.mark_fix) == 1 else
                                                          [""] * len(a.mark_fix))
@@ -373,4 +376,4 @@ if __name__ == "__main__":
     if a.mark_final:
         n_final = len(json.loads((Path(a.run) / "trajectory.json").read_text())["trajectory"])
         marks.append((n_final, "final"))
-    overview(Path(a.run).resolve(), Path(a.vis).resolve(), marks)
+    overview(Path(a.run).resolve(), Path(a.vis).resolve(), marks, a.title)

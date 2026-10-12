@@ -18,21 +18,25 @@ future experiments, not a finished vision system.
 
 ## Current baseline
 
-This is a controlled synthetic proof of concept and engineering baseline. In the Blender Classroom scene, with a
-fixed head and oracle stereo correspondence, the official reproduction gave the following (MEASURED,
-[Engineering-1 report](docs/engineering/greedy-foveal-playground-baseline-report.md)):
+This is a controlled synthetic proof of concept and engineering baseline. The official baseline is the **sparse
+covering lattice** explorer (Engineering-2, [contract](docs/engineering/sparse-lattice-baseline-contract.md)): the
+accepted Playground-2 behavior, tag `playground-2-sparse-lattice`. In the Blender Classroom scene, with a fixed head
+and oracle stereo correspondence, its frozen run gave the following (MEASURED,
+[Playground-2 report](docs/playground/sparse-lattice-report.md)):
 
 | | |
 |---|---|
-| stop | after **542 fixations**: 99 % of the sphere seen |
-| 360° sphere SEEN | **99.00 %** |
-| with reconstructed DEPTH | **98.28 %** |
-| first-hit solid angle reconstructed within 12 mm (post hoc) | **98.32 %** |
-| saccades | **322 local / 219 global** |
-| persistent map | **16,517,811 surfels** |
+| stop | after **356 fixations**, when no lattice gaze adds unseen area |
+| 360° sphere SEEN | **100.00 %** (0 UNSEEN cells) |
+| with reconstructed DEPTH | **99.26 %** |
+| first-hit solid angle reconstructed within 12 mm (post hoc) | **98.82 %** |
+| saccades | **315 local / 40 global**, no all-global tail |
+| persistent map | **16,943,073 surfels**, in 416 s |
 
-The official reproduction is **bitwise equivalent** to the frozen Greedy v0 control path: **23 / 23** equivalence
-checks pass. Gazes, decisions, points, fusion, coverage, the final map and the evaluation are identical.
+The official reproduction must be **bitwise equivalent** to that frozen run's control path
+(`tools/greedy_foveal/check_equivalence.py`). The previous official baseline, Greedy Foveal Explorer v0 (542
+fixations, 99.00 % SEEN, 98.32 % within 12 mm; [Engineering-1 report](docs/engineering/greedy-foveal-playground-baseline-report.md)),
+stays reproducible from tag `greedy-foveal-playground-baseline`.
 
 These numbers describe this one setting. They are not a general vision result.
 
@@ -44,9 +48,10 @@ These numbers describe this one setting. They are not a general vision result.
 - **spherical metric triangulation** of every matched foveal ray;
 - **one persistent global H0 surfel map**, fused at 12 mm;
 - a **1° cyclopean sphere** with each cell UNSEEN, SEEN or DEPTH;
-- **greedy local saccades** to one of 8 neighbouring views, where the fovea's edge shows surface and the neighbour
-  is unexplored;
-- **global jumps** to the deepest point of the largest unexplored region;
+- a fixed **gaze lattice** of 356 views on 17 rings about the eye baseline, whose 12° footprints cover every 1° cell;
+- **greedy local saccades** to a neighbouring lattice view that still adds unseen area, preferring views where the
+  fovea's edge shows surface;
+- **global jumps** to the unvisited lattice view that adds the most unseen area, and a stop when none adds any;
 - **post-hoc first-hit evaluation** against a full-sphere reference, opened only after the run is frozen.
 
 There is no object scheduler and no Controller-01/02 state machine in the active baseline.

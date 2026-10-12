@@ -1,8 +1,10 @@
 # Greedy Foveal Playground — architecture
 
 This is the architecture reference for the **Greedy Foveal Explorer**, the official baseline of the active-foveal
-playground. Code: [`tools/greedy_foveal/`](../../tools/greedy_foveal/README.md). Officialization step:
-[Engineering-1 contract](../engineering/greedy-foveal-playground-baseline-contract.md).
+playground. Code: [`tools/greedy_foveal/`](../../tools/greedy_foveal/README.md). Officialization steps:
+[Engineering-1 contract](../engineering/greedy-foveal-playground-baseline-contract.md) (the v0 behavior) and
+[Engineering-2 contract](../engineering/sparse-lattice-baseline-contract.md) (the current behavior: the sparse covering
+lattice of Playground-2). Sections 10, 11, 16 and 17 describe the current behavior; the rest is unchanged.
 
 You can read this document without the project's historical controller work. Each number is labelled as MEASURED
 (with its run) or as a parameter.
@@ -16,7 +18,7 @@ The playground answers one question with as little machinery as possible:
 > Can a pair of foveated eyes on a fixed head reconstruct a whole 360° scene by looking around, one fixation at a time,
 > using only what it has measured so far to decide where to look next?
 
-The baseline does this in the Blender **Classroom** scene. It is deliberately small, five source files, so that each
+The baseline does this in the Blender **Classroom** scene. It is deliberately small, a handful of source files, so that each
 component can be swapped out and compared against a frozen, reproducible reference run.
 
 What it is: a research / engineering playground, and a known-good baseline for comparisons.
@@ -249,39 +251,52 @@ records. Fusion is the largest host cost (255 of 729 s).
 `explorer.decide(state, core_valid, yaw, pitch, visited)` is a pure function of the coverage, the current core mask,
 the current gaze and the visited directions. It is deterministic: `run.checks` re-decides every saved state.
 
-**LOCAL.** There are eight candidates in the current tangent frame: E, W, N, S, NE, NW, SE, SW (image +x right,
-+y down). Each sits at `d = z + tan(7.2°) · (a·x + b·y)`, normalized, with `a, b ∈ {−1, 0, 1}`. A side neighbour's
-centre is 7.2° (0.6 × the 12° core) from the current gaze; a diagonal's is about 10.1°.
+**The gaze lattice.** Every gaze is one of a fixed set of 356 views, built once by `build_baseline_lattice()`
+(Playground-2, [`sparse-lattice-contract.md`](../playground/sparse-lattice-contract.md)).
 
-- `EDGE_SUPPORT` is the fraction of valid-geometry pixels in the outer quarter (64 px) of the 256-px core on that side,
-  or in the corner block for diagonals. It asks whether the fovea's own measurement shows surface continuing that way.
-- `UNSEEN_GAIN` is the UNSEEN solid-angle fraction of the candidate's 12° footprint.
-- A candidate is eligible when `EDGE_SUPPORT ≥ 0.25`, `UNSEEN_GAIN ≥ 0.25` and it lies at least 2° from every
-  visited gaze.
-- Among eligible candidates, the highest `EDGE_SUPPORT × UNSEEN_GAIN` wins. Ties go to the first in the order above.
+- A footprint is a 12° square in its gaze's tangent plane, and its x axis is the eye baseline (head +X) projected into
+  that plane (`frame`). The squares are therefore aligned with circles about the baseline axis.
+- The lattice puts 17 rings about that axis at θ = 6°, 16.5°, …, 174° from +X, with gazes at φ = j · 360°/n about it
+  (φ = 0 forward). Each ring has the fewest gazes that cover its band, so every square sits square-on to its ring.
+- MEASURED (`check_lattice.py`): the ring sizes are 6, 11, 16, 20, 24, 27, 29, 30, 30, 30, 29, 27, 24, 20, 16, 11 and
+  6 gazes. The footprints contain every 1° cell centre, and no gaze is redundant.
+- No gaze is closer than 6° to the baseline axis, and the start gaze (0°, 0°) is a lattice gaze.
+- `LATTICE_KIND = "pitch"` rebuilds Playground-1's 496-gaze pitch-ring lattice for comparison.
 
-**GLOBAL.** Used when no local candidate is eligible.
+A lattice gaze is visited when a fixation lies within 0.5° of it.
 
-- Label the 4-connected UNSEEN components (longitude wrap, links across the poles) and order them by solid angle.
-- In the largest component, take its **deepest** cell: the cell farthest (in angle) from the nearest SEEN cell that
-  borders unseen territory. Large sets are subsampled with a fixed stride (`max_pts = 4000` candidates, twice that
-  for border cells).
-- Skip cells within 2° of a visited gaze; fall back to the next-deepest cell, then to the next component.
-- If no cell is left: NONE.
+**LOCAL.** The candidates are the unvisited lattice gazes within 16° of the current gaze.
+
+- `EDGE_SUPPORT` is the fraction of valid-geometry pixels in the outer quarter (64 px) of the 256-px core, on the side
+  (or in the corner block) of the octant that holds the candidate's offset in the current tangent frame. It asks
+  whether the fovea's own measurement shows surface continuing that way.
+- `UNSEEN_GAIN` is the UNSEEN solid-angle fraction of the candidate's footprint.
+- A candidate is eligible when `EDGE_SUPPORT ≥ 0.25` and `UNSEEN_GAIN > 0`.
+- The highest `EDGE_SUPPORT × UNSEEN_GAIN` wins; ties go to the lower lattice index.
+
+**GLOBAL.** Used when no local candidate is eligible: the unvisited lattice gaze with the largest `UNSEEN_GAIN`
+(lowest index on ties). If no unvisited lattice gaze has any unseen gain: NONE, and the run stops.
 
 **No object scheduler.** No object identity, segmentation or per-object state enters the decision.
 
 | parameter (`explorer.py`) | value | role |
 |---|---|---|
 | `CORE_FOV_DEG` | 12.0 | nominal square fovea |
-| `LOCAL_STEP_DEG` | 7.2 | local neighbour offset (0.6 × core) |
+| `LATTICE_KIND` | `"baseline"` | the lattice construction (`"pitch"` = Playground-1) |
+| `LATTICE_CAP_DEG`, `LATTICE_AXIS_STEP_DEG` | 6.0, 10.5 | first ring's angle from the baseline axis; ring spacing |
+| `LATTICE_NEIGHBOUR_DEG` | 16.0 | local candidates: unvisited lattice gazes this close |
+| `LATTICE_VISIT_DEG` | 0.5 | a lattice gaze counts as visited within this angle |
 | `EDGE_BAND_PX` | 64 | edge band width (core / 4) |
-| `EDGE_MIN`, `GAIN_MIN` | 0.25, 0.25 | eligibility thresholds |
-| `VISIT_TOL_DEG` | 2.0 | "same fixation" tolerance |
-| `SEEN_STOP` | 0.99 | stop fraction of 4π |
+| `EDGE_MIN`, `GAIN_MIN` | 0.25, 0.0 | eligibility: edge support ≥ 0.25, unseen gain > 0 |
+| `VISIT_TOL_DEG` | 2.0 | "same fixation" tolerance of `run.checks` |
+| `SEEN_STOP` | 2.0 | unreachable on purpose: the stop comes from `decide` returning NONE |
+| `LOCAL_STEP_DEG`, `LATTICE_RING_DEG` | 7.2, 10.0 | v0's neighbour offset (recorded, unused); Playground-1's pitch-ring spacing |
 | `ASSOC_RADIUS_M`, `ASSOC_CELL_M` | 0.012, 0.012 | fusion radius and hash cell |
 | `ZERO_TOL_ABS_M`, `ZERO_TOL_REL` | 0.005, 0.01 | instance-0 correspondence tolerance |
 | `GRID_DEG` (with `H`, `W`) | 1.0 (180, 360) | coverage resolution |
+
+The v0 policy (8 tangent-frame neighbours 7.2° away with `GAIN_MIN` 0.25, and a jump to the deepest cell of the largest
+UNSEEN component) is at tag `greedy-foveal-playground-baseline`.
 
 Every run records these in `trajectory.json` under `parameters`.
 
@@ -291,23 +306,25 @@ After each fixation's coverage update, `run.explore` checks, in this order:
 
 ```mermaid
 flowchart TD
-    A["fixation n: map fused, coverage updated"] --> S{"SEEN >= 99 % of 4π?"}
-    S -- yes --> X1["STOP: seen >= 99 % of 4 pi"]
+    A["fixation n: map fused, coverage updated"] --> S{"SEEN >= SEEN_STOP? (2.0: never)"}
+    S -- yes --> X1["STOP: seen >= 99 % of 4 pi (unreachable)"]
     S -- no --> K{"n == max-fix?"}
     K -- yes --> X2["STOP: fixation cap"]
-    K -- no --> L{"an eligible local neighbour?"}
+    K -- no --> L{"an eligible local lattice neighbour?"}
     L -- yes --> LOC["LOCAL saccade"]
-    L -- no --> G{"an unvisited cell in an UNSEEN component?"}
+    L -- no --> G{"an unvisited lattice gaze with unseen gain?"}
     G -- yes --> GLO["GLOBAL saccade"]
     G -- no --> X3["STOP: no valid unseen fixation"]
     LOC --> N["fixation n + 1"]
     GLO --> N
 ```
 
-1. **SEEN ≥ 99 %**: the scientific stop.
-2. **The fixation cap** (`--max-fix`): a safety cap. The official baseline uses 600 and stops at 542 without reaching
+1. **SEEN ≥ `SEEN_STOP`**: set to 2.0, so it never fires. `run.py` is unchanged, and its fixed text "seen >= 99 % of
+   4 pi" would misreport the stop. v0 used 0.99 here.
+2. **The fixation cap** (`--max-fix`): a safety cap. The official baseline uses 600 and stops at 356 without reaching
    it.
-3. **No candidate** (`decide` returns NONE): nothing left to look at.
+3. **No candidate** (`decide` returns NONE): no lattice gaze adds unseen area. Since the lattice covers every cell,
+   this is the scientific stop: 100 % SEEN.
 
 ## 12. Post-hoc evaluation
 
@@ -372,16 +389,17 @@ Presentation products:
 
 ## 15. Software map
 
-### 15.1 The five source files
+### 15.1 The source files
 
 | file | runs in | key contents |
 |---|---|---|
-| `explorer.py` | host `.venv` | the parameters; the sphere grid (`row_weights`, `direction`, `yaw_pitch`, `cell_of`, `frame`, `footprint`); the observation (`load_observation`, `perfect_correspondence`, `reconstruct`); the map (`GlobalMap`: `nearest`, `fuse`, `save`, `load`); coverage (`update_coverage`, `fractions`); the policy (`edge_support`, `unseen_gain`, `local_candidates`, `unseen_components`, `global_target`, `decide`) |
+| `explorer.py` | host `.venv` | the parameters; the sphere grid (`row_weights`, `direction`, `yaw_pitch`, `cell_of`, `frame`, `footprint`); the observation (`load_observation`, `perfect_correspondence`, `reconstruct`); the map (`GlobalMap`: `nearest`, `fuse`, `save`, `load`); coverage (`update_coverage`, `fractions`); the lattice (`build_baseline_lattice`, `build_lattice`, `lattice`, `lattice_gains`, `lattice_visited`); the policy (`edge_support`, `unseen_gain`, `local_candidates`, `global_target`, `decide`; `unseen_components` is kept for analysis) |
 | `run.py` | host `.venv` | `Server` (starts and drives the render server); `explore` (the control loop and the freeze); `evaluate` (post-hoc); `checks`; `visualize`; `OpenAudit` (the Breadth-1 firewall) |
 | `render_server.py` | Blender's Python (`blender -b … -P`) | `serve` (the request loop); `trim_passes` |
 | `visuals.py` | host `.venv` | `overview` (the one-page figure); `display_rgb` and `oracle_colors` (also used by `explore` for the PLYs) |
-| `demo.py` | host `.venv` | `rerender` (display RGB of every saved fixation via the unchanged `run.Server`), `build` (video and stills in audited truth stages), `check` |
-| `check_equivalence.py` | host `.venv` | `source`, `run`, `selftest` (Engineering-1) |
+| `demo.py` | host `.venv` | `rerender` (display RGB of every saved fixation via the unchanged `run.Server`), `build` (video and stills in audited truth stages), `check`; `--profile v0` (default) or `lattice` (the Playground-1 run) |
+| `check_lattice.py` | host `.venv` | the lattice's fail-capable checks K1–K7, N1–N2, including a coverage-only replay of the policy (Playground-1 / -2) |
+| `check_equivalence.py` | host `.venv` | `source`, `run`, `selftest` (Engineering-1; target retargeted by Engineering-2) |
 
 ### 15.2 Dependency map
 
@@ -431,9 +449,10 @@ rest of the loop relies on.
 | **map representation** | `explorer.GlobalMap`: flat growable float64 arrays | — | the surfel set with attributes; `nearest` queries | voxel / TSDF / octree; float32; within-patch de-duplication |
 | **fusion** | `GlobalMap.fuse` + `nearest` (FSG3 12-mm rule) | one patch: `xyz`, `rgb`, `inst`, fixation number | updated map; matched / new / affected counts | confidence-weighted fusion; outlier rejection; a different radius |
 | **coverage resolution** | `explorer` grid (`GRID_DEG`, `H`, `W`, `ROW_W`, `footprint`, `update_coverage`) | gaze; the fixation's points | the UNSEEN / SEEN / DEPTH sphere; SEEN / DEPTH fractions | 0.5° or HEALPix grids; graded confidence states. Change `GRID_DEG`, `H` and `W` together. |
-| **local policy** | `local_candidates`, `edge_support`, `unseen_gain` (8 neighbours, `EDGE_SUPPORT × UNSEEN_GAIN`) | coverage, `core_valid`, gaze, visited | the best eligible neighbour, or none | 3-D frontier edges from the map; information gain; an adaptive step |
-| **global policy** | `unseen_components`, `global_target` (deepest cell of the largest UNSEEN component) | coverage, visited | a target gaze, or none | the nearest large hole (shorter jumps); tour ordering for the hole-filling tail |
-| **stopping rule** | `SEEN_STOP` + the `run.explore` loop | SEEN fraction, fixation number, decision | stop reason | stop on DEPTH, on map growth or on a time budget |
+| **gaze lattice** | `build_baseline_lattice`, `lattice` (356 gazes on 17 baseline rings) | the footprint and frame conventions | the candidate gazes with their footprints | a sparser lattice (e.g. a 2° cap, 346 gazes); an adaptive or scene-dependent lattice |
+| **local policy** | `local_candidates`, `edge_support`, `unseen_gain` (lattice gazes within 16°, `EDGE_SUPPORT × UNSEEN_GAIN`, gain > 0) | coverage, `core_valid`, gaze, visited | the best eligible lattice neighbour, or none | 3-D frontier edges from the map; information gain |
+| **global policy** | `global_target` (the unvisited lattice gaze with the largest unseen gain) | coverage, visited | a target gaze, or none | the nearest useful gaze (shorter jumps); tour ordering |
+| **stopping rule** | `decide` returning NONE + the `run.explore` loop (`SEEN_STOP` unreachable) | lattice gains, fixation number | stop reason | stop on DEPTH, on map growth or on a time budget |
 | **segmentation / semantics** | none in control; the oracle Object Index is carried for visualization only | — | — | natural segmentation feeding identity; object-aware attention |
 | **head motion** | none: the head is fixed and checked every fixation | — | — | head pose as an action; observations transformed into H0; well-conditioned stereo by recentering the head |
 | **visualization** | `visuals.overview`, `demo.py` | run products (+ the reference after the freeze) | figures, video, PLYs | an interactive viewer; a web page; a `demo.py` with parameterized run paths |
@@ -448,27 +467,35 @@ Two cautions:
 
 | item | value |
 |---|---|
-| official playground baseline | tag `greedy-foveal-playground-baseline` (accepted Engineering-1 `main`) |
-| frozen implementation | tag `greedy-foveal-explorer-v0-impl` → `a437df048b555d5b59f6855b6572eea2665ab0da` |
-| frozen demo | tag `greedy-foveal-explorer-v0-demo` → `8066a246bf251fb1e2d66b7061899c32df236bf1` |
-| frozen run | `previews/greedy-foveal-explorer-v0-grow600/`, `freeze.json` sha256 `a4283ab7436f03d8a5babd1086da760d0bfb614fdcefd73928f3a25c1ff72f55` |
+| official playground baseline | the sparse covering lattice: tag `playground-2-sparse-lattice` → `1f50bd6a3f3cf77ccf260375b2cf2fee60c4738f`, promoted to `main` by Engineering-2 |
+| frozen run | `previews/playground-sparse-lattice/` (code `70d992e`), `freeze.json` sha256 `3f8bf4bd…4a7d` |
+| previous official baseline | Greedy Foveal Explorer v0: tag `greedy-foveal-playground-baseline` (Engineering-1); frozen implementation `greedy-foveal-explorer-v0-impl` → `a437df0`; frozen run `previews/greedy-foveal-explorer-v0-grow600/` |
 | command | `run.py explore --run RUN --max-fix 600 --spp 64`, then `evaluate`, `checks` |
 | environment | Blender 5.2.1 LTS, Cycles OPTIX (RTX 4090), 64 spp, seeds L 2111 / R 2112 |
 
-MEASURED result of the frozen run (closure record): it stops at **fixation 542** (SEEN ≥ 99 % of 4π) with
-**99.00 %** SEEN and **98.28 %** DEPTH, after **322** local and **219** global saccades. The map has **16,517,811**
-surfels and the run took 729 s. Post hoc, Breadth-1 coverage within 12 mm is **98.52 %** of first-hit cells
-(251,966 / 255,758) and **98.32 %** of first-hit solid angle.
+MEASURED result of the frozen run ([Playground-2 report](../playground/sparse-lattice-report.md)):
+
+- it stops at **fixation 356** (`no valid unseen fixation`) with **100.00 %** SEEN (0 UNSEEN cells) and **99.26 %**
+  DEPTH;
+- **315** local and **40** global saccades, with no all-global tail;
+- **16,943,073** surfels, in 416 s;
+- post hoc, Breadth-1 coverage within 12 mm is **98.93 %** of first-hit cells (253,023 / 255,758) and **98.82 %** of
+  first-hit solid angle.
+
+The v0 baseline gave 542 fixations, 99.00 % SEEN (640 UNSEEN cells in 184 holes), 322 local / 219 global saccades,
+16,517,811 surfels, 98.32 % of solid angle, 729 s (the frozen grow600 run; the Engineering-1 reproduction took 733 s).
 
 **Determinism.** The Position and Object Index passes, and therefore every control decision, point, fusion and coverage
 value, reproduce bitwise run to run. Cycles OPTIX RGB does not. In the Engineering-1 official reproduction, per-point
 RGB differed from the frozen run by up to 0.118 (linear), and 3,127 of 49.6 M display-PLY colour values changed
 (MEASURED). RGB is display-only.
 
-**Official reproduction (Engineering-1, MEASURED).** Run from this branch at `b77b1d9`, it reproduces all of the numbers
-above exactly. It is **bitwise equivalent** to the frozen run in every control-path product: gazes, decisions, points,
-oracle ids, fusion, coverage, the final map and the evaluation (`check_equivalence.py run`: 23 / 23). See the
-[Engineering-1 report](../engineering/greedy-foveal-playground-baseline-report.md).
+**Official reproductions.** Engineering-1's reproduction of v0 (code `b77b1d9`) was bitwise equivalent to the
+frozen grow600 run in every control-path product: gazes, decisions, points, oracle ids, fusion, coverage, the final
+map and the evaluation (`check_equivalence.py run`: 23 / 23;
+[Engineering-1 report](../engineering/greedy-foveal-playground-baseline-report.md)). Engineering-2's reproduction of
+the sparse lattice must be bitwise equivalent to `previews/playground-sparse-lattice/` in the same sense
+([Engineering-2 contract](../engineering/sparse-lattice-baseline-contract.md)).
 
 ## 18. Limitations
 
@@ -476,8 +503,11 @@ oracle ids, fusion, coverage, the final map and the evaluation (`check_equivalen
 - PERFECT / ORACLE correspondence: Blender Position and Object Index decide the matches. Natural stereo is deferred.
 - Oracle identity is used only for visualization. There is no natural segmentation.
 - First-hit evaluation: hidden or occluded surfaces are not targets.
-- The trajectory is deliberately unsophisticated: a diagonal bias, triangular holes, and a long tail of single global
-  jumps into small holes (after fixation 450, all 92 moves were global).
+- The fixation count is the lattice size: every one of the 356 lattice gazes is fixated once, and each still adds
+  area. A smaller lattice is the way to fewer fixations. The 6° envelope around the baseline axis is a choice, not a
+  necessity; v0 fixated as close as 0.71° (Playground-2 report, F1).
+- The v0 trajectory, kept at its tag, has a diagonal bias, triangular holes and a long tail of single global jumps;
+  the lattice removed both (Playground-1).
 - Storage and speed are not optimized (section 8).
 - The map is not read by the policy (section 3).
 
