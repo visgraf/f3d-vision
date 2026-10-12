@@ -1,6 +1,7 @@
 # The official baseline's demo (the Playground-2 run): contract
 
-**Status: CONTRACT (PROPOSED).** Requested by Luiz on 2026-10-12 to complete this phase. Presentation only. ClaudeChat
+**Status: EXECUTED and ACCEPTED** (2026-10-12; see [the report](official-baseline-demo-report.md), section 9; its F1
+adds the per-profile poster snapshots §2 missed). Requested by Luiz on 2026-10-12 to complete this phase. Presentation only. ClaudeChat
 wrote this contract and the code changes; Claude Code renders, builds and checks on the workstation.
 
 | item | value |

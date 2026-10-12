@@ -336,8 +336,17 @@ baseline is established**
   near-axis coverage identical cell for cell (MEASURED). The gain is
   too small to promote; the official baseline stays the 6° lattice.
   The code is at tag `playground-3-cap-2deg`.
-- Next: the full demo of the official baseline (the Playground-2 run),
-  to complete this phase (Luiz, 2026-10-12).
+- **The official baseline's demo is ACCEPTED**
+  (`docs/presentation/official-baseline-demo-report.md`):
+
+      OFFICIAL_BASELINE_DEMO_ACCEPTED
+
+  `demo.py --profile sparse` replays the frozen Playground-2 run (the
+  official baseline's known answer): 356 fixations, 44.07 s at
+  1920 × 1080, in the gitignored `visuals/playground-sparse-lattice-demo/`.
+  The `v0` and Playground-1 replays stay byte-identical.
+- **This phase is COMPLETE** (Luiz, 2026-10-12). No next step is
+  authorized; Luiz decides the next phase.
 
 - The concept demo is COMPLETE. The frozen implementation is tag
   `greedy-foveal-explorer-v0-impl` (`a437df048b555d5b59f6855b6572eea2665ab0da`).
@@ -356,8 +365,10 @@ baseline is established**
 - The active baseline is the sparse covering lattice (Engineering-2),
   reproduced bitwise by the official reproduction. Any later
   optimization must keep reproducing it
-  (`tools/greedy_foveal/check_equivalence.py`). Playground-1, -2 and -3
-  are closed; no new research experiment is open.
+  (`tools/greedy_foveal/check_equivalence.py`, which pins the control
+  files to `playground-2-sparse-lattice` and `demo.py` to its own
+  commit). Playground-1, -2 and -3 and the official baseline's demo are
+  closed; no new step is open.
 - The prototype branch `prototype/greedy-foveal-explorer-v0` descends
   from the unaccepted NS1e branch. It is never merged or fast-forwarded
   into `main`; Engineering-1 extracted the small explorer onto a clean

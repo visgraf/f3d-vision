@@ -121,9 +121,11 @@ not host them. Their sha256 hashes are in the
 [closure record](docs/prototype/greedy-foveal-explorer-v0-closure.md). `tools/greedy_foveal/demo.py` regenerates
 them from the frozen run.
 
-`demo.py --profile sparse` replays the official baseline's known-answer run (the frozen Playground-2 run) in the same
-format, into `visuals/playground-sparse-lattice-demo/`
-([contract](docs/presentation/official-baseline-demo-contract.md)); `--profile lattice` replays the Playground-1 run.
+The official baseline has its own accepted demo
+([report](docs/presentation/official-baseline-demo-report.md)). `demo.py --profile sparse` replays its known-answer
+run (the frozen Playground-2 run) in the same format: `demo.mp4` (1920 × 1080, 44.1 s), `demo-poster.png` and
+`demo-final.png`, in the gitignored `visuals/playground-sparse-lattice-demo/`. Their sha256 hashes are in the report.
+`--profile lattice` replays the Playground-1 run.
 
 ## Limitations
 

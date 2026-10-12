@@ -1,9 +1,28 @@
 # Chat Handoff
 
-## Read first: Playground-3 (2° cap) is ACCEPTED, not promoted; next is the official baseline's demo
+## Read first: the official baseline's demo is ACCEPTED — this phase is complete
 
-**PLAYGROUND-3 ACCEPTED AS A PLAYGROUND RESULT, NOT PROMOTED. NEXT: THE FULL DEMO OF THE OFFICIAL BASELINE (THE
-PLAYGROUND-2 RUN), TO COMPLETE THIS PHASE.**
+**OFFICIAL BASELINE DEMO ACCEPTED. THE PHASE IS COMPLETE; NO NEXT STEP IS AUTHORIZED. LUIZ DECIDES THE NEXT PHASE.**
+
+    OFFICIAL_BASELINE_DEMO_ACCEPTED
+
+| item | value |
+|---|---|
+| `main` | the acceptance commit, fast-forwarded from `presentation/official-baseline-demo` (`b0567c8` -> `74e4d76` contract -> `076efe0` profile `sparse` and the lattice fix -> `5ad73f6` demo pin, READMEs -> `bead2b0` poster fix (Claude Code) -> `1ea62a6` re-pin -> `cb21ae2` report -> acceptance) |
+| contract / report | `docs/presentation/official-baseline-demo-contract.md` / `-report.md` |
+| run replayed | `previews/playground-sparse-lattice/` (the frozen Playground-2 run; the official reproduction is bitwise equal to it) |
+| deliverables | `visuals/playground-sparse-lattice-demo/` (gitignored): `demo.mp4` (1,322 frames, 44.07 s), `demo-poster.png`, `demo-final.png`, `overview.png`; sha256 in the report, section 4 |
+
+- `demo.py --profile sparse` is new. Each profile now builds its own gaze lattice: on `b0567c8` the `lattice` profile
+  drew the 356 baseline rings over the Playground-1 video (N2).
+- The `v0` and Playground-1 replays rebuild byte-identically (V1, V2).
+- `check_equivalence.py source` pins `demo.py` to `bead2b0`; the five control files stay pinned to
+  `playground-2-sparse-lattice`.
+- **NS1e is REVIEW PENDING, NOT ACCEPTED and NOT MERGED.**
+
+## Playground-3 (2° cap) is ACCEPTED, not promoted
+
+**PLAYGROUND-3 ACCEPTED AS A PLAYGROUND RESULT, NOT PROMOTED.**
 
     PLAYGROUND3_CAP_2DEG_ACCEPTED
 
@@ -262,13 +281,16 @@ optimized.
 
 ## Accepted main
 
-`main` = the docs-only Playground-3 acceptance commit that adds the "Read first" section above. The official baseline
-is tag `greedy-foveal-playground-baseline-2` (`9bf936d`). The chain of fast-forwards since the technical report:
+`main` = the official baseline's demo acceptance commit that adds the "Read first" section above. The official
+baseline is tag `greedy-foveal-playground-baseline-2` (`9bf936d`). The chain of fast-forwards since the technical
+report:
 
     9fdf043 (technical report) -> 55ba7ba working agreement (ClaudeChat) -> 4eb2a54 Playground-1 acceptance
     -> 03b6969 Playground-1 visualization acceptance -> 65eca40 slides acceptance -> 41c7193 Playground-2 acceptance
     -> Engineering-2 (cb1217b contract -> a5f1aae promotion -> f108e5e report -> 9bf936d acceptance)
-    -> Playground-3 acceptance (docs only)
+    -> b0567c8 Playground-3 acceptance (docs only)
+    -> the official baseline's demo (74e4d76 contract -> 076efe0 -> 5ad73f6 -> bead2b0 -> 1ea62a6 -> cb21ae2 report
+       -> acceptance)
 
 The Playground-1 code is not on `main`: tag `playground-1-gaze-lattice` -> `3c64c1f` on `playground/gaze-lattice`
 (`55ba7ba` -> `326699c` contract -> `85fb962` implementation -> `847be8a` report -> `3c64c1f` acceptance), followed by

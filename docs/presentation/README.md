@@ -41,3 +41,10 @@ The figures are:
 
 The demo videos are not committed. They live in the workstation's `visuals/greedy-foveal-explorer-v0-demo/` and
 `visuals/playground-gaze-lattice-demo/`.
+
+## The official baseline's demo
+
+After the deck, the official baseline (the sparse covering lattice) got its own demo, in the same format:
+[contract](official-baseline-demo-contract.md) and [report](official-baseline-demo-report.md), **ACCEPTED** by Luiz
+on 2026-10-12. Its package is in the workstation's `visuals/playground-sparse-lattice-demo/`. The deck predates it
+and is not changed.

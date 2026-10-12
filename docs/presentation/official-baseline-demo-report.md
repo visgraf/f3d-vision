@@ -1,7 +1,9 @@
 # The official baseline's demo (the Playground-2 run): report
 
-**Status: EXECUTED — REVIEW PENDING.** This is presentation only. Claude Code built and checked the package on the
-workstation, under the contract below. Acceptance is Luiz's viewing decision (contract §6).
+**Status: EXECUTED and ACCEPTED** by Luiz on 2026-10-12 (section 9). This is presentation only. Claude Code built and
+checked the package on the workstation, under the contract below.
+
+    OFFICIAL_BASELINE_DEMO_ACCEPTED
 
 **Machine half (contract §6):**
 
@@ -256,3 +258,25 @@ was found. In the overview, the long official-baseline title fits the 2,000-px w
 The machine half is complete; the viewing half (contract §6) is open. The deliverables to view are `demo.mp4`,
 `demo-poster.png`, `demo-final.png` and `overview.png`, in `visuals/playground-sparse-lattice-demo/`. `main` was not
 touched.
+
+## 9. Acceptance
+
+**Luiz's decision (2026-10-12): ACCEPTED** ("It's done and accepted"), after viewing the deliverables of section 4.
+With it, the phase that began with Playground-1 is complete.
+
+**ClaudeChat review**, from GitHub at `cb21ae2`:
+
+- **The machine half holds at the final head.** S1 passes 12 / 12 with `demo.py` pinned to `bead2b0`. V1 and V2 are
+  byte-equal to the frozen v0 record and the accepted Playground-1 package, N1 fails and N2 differs, as required.
+- **F1 was a defect in ClaudeChat's code.** `poster()` hard-coded its snapshots at fixations 50, 200 and 450, and the
+  `sparse` profile did not override them. The Chat-sandbox test rendered the intro, strips, freeze card and panel C,
+  but not the poster, which needs the derived assets. Claude Code's fix is within contract §7, leaves `v0` and
+  `lattice` unchanged by construction, and V1 / V2 confirm it.
+- **N2 confirms the lattice defect on `b0567c8`.** Only the video differs (panel C draws 356 baseline rings over the
+  Playground-1 run). The stills do not draw the lattice. The accepted Playground-1 package was never affected.
+- D1–D4 are recorded deviations with no effect on the deliverables. D2's before / after snapshot of both frozen
+  packages and their caches is identical.
+
+**On `main`:** this branch is fast-forwarded into `main` with this acceptance. `tools/greedy_foveal/demo.py` on `main`
+is then `bead2b0`'s, and `check_equivalence.py source` pins it there. The deliverables stay workstation-local
+(gitignored); their sha256 hashes are section 4's.
