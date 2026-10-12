@@ -2,8 +2,9 @@
 
     .venv/bin/python tools/greedy_foveal/check_lattice.py        # exit 1 on any failed check
 
-Contracts: docs/playground/gaze-lattice-contract.md and docs/playground/sparse-lattice-contract.md, section 4 of each.
-The lattice checked is the one explorer.lattice() returns (Playground-2's baseline rings).
+Contracts: docs/playground/gaze-lattice-contract.md, docs/playground/sparse-lattice-contract.md and
+docs/playground/cap-2deg-contract.md, section 4 of each.  The lattice checked is the one explorer.lattice() returns
+(Playground-3: the baseline rings with a 2-deg cap).
 
 K1 the lattice footprints contain every 1-deg cell centre.
 K2 every lattice gaze has a valid tangent frame, and every pair is >= VISIT_TOL_DEG apart.
@@ -13,11 +14,12 @@ K4 a coverage-only replay of the run.py control loop (start at gaze (0, 0), full
    points) through explorer.decide ends with "none", 0 UNSEEN cells, at most one fixation per lattice gaze (plus the
    start), and no two fixations closer than VISIT_TOL_DEG.
 K5 a mid-replay state re-decided twice gives the same decision as the live one.
-K6 the lattice has 356 gazes, and the Playground-1 pitch lattice (LATTICE_KIND "pitch") still has 496.
-K7 no gaze is redundant (each covers a cell no other gaze covers), every gaze is >= 6 deg from the baseline axis, and
+K6 the lattice has 346 gazes; the official 6-deg baseline-ring lattice still has 356 and the Playground-1 pitch lattice
+   (LATTICE_KIND "pitch") still has 496.
+K7 no gaze is redundant (each covers a cell no other gaze covers), every gaze is >= 2 deg from the baseline axis, and
    the start gaze (0, 0) is a lattice gaze.
 N1 negative control: K1 with the start gaze removed must FAIL.
-N2 negative control: K7's 6-deg envelope on the 2-deg cap design must FAIL.
+N2 negative control: K2's 2-deg minimum pair on the 1-deg cap design must FAIL.
 
 The replay numbers are a Chat-sandbox model of the workstation run, not a measurement of it.
 """
@@ -37,9 +39,10 @@ if str(HERE) not in sys.path:
 import explorer as X  # noqa: E402
 
 PREFIX = "[lattice]"
-LATTICE_SIZE = 356       # Playground-2 known answer (K6)
+LATTICE_SIZE = 346       # Playground-3 known answer (K6)
+OFFICIAL_LATTICE_SIZE = 356  # the official baseline's 6-deg lattice (K6)
 PITCH_LATTICE_SIZE = 496 # Playground-1 known answer (K6)
-ENVELOPE_DEG = 6.0       # no gaze closer to the baseline axis (K7)
+ENVELOPE_DEG = 2.0       # no gaze closer to the baseline axis (K7)
 checked = failed = 0
 
 
@@ -162,8 +165,10 @@ def main() -> None:
         n_pitch = len(X.lattice()["dir"])
     finally:
         X.LATTICE_KIND, X._LATTICE = kind, L
-    check(f"K6 lattice size {LATTICE_SIZE}; Playground-1 pitch lattice {PITCH_LATTICE_SIZE}",
-          n == LATTICE_SIZE and n_pitch == PITCH_LATTICE_SIZE, f"{n} gazes; pitch lattice {n_pitch}")
+    n_official = len(X.build_baseline_lattice(cap_deg=6.0, step_deg=10.5)["dir"])
+    check(f"K6 lattice size {LATTICE_SIZE}; official 6-deg lattice {OFFICIAL_LATTICE_SIZE}; Playground-1 pitch lattice "
+          f"{PITCH_LATTICE_SIZE}", n == LATTICE_SIZE and n_official == OFFICIAL_LATTICE_SIZE
+          and n_pitch == PITCH_LATTICE_SIZE, f"{n} gazes; official {n_official}; pitch lattice {n_pitch}")
 
     red, env = redundant(L["footprints"]), float(axis_angle_deg(L).min())
     start = float(X.angle_deg(X.direction(0.0, 0.0)[None], L["dir"]).min())
@@ -175,10 +180,11 @@ def main() -> None:
     ok_n1, miss_n1 = covers_all(L["footprints"][:s0] + L["footprints"][s0 + 1:])
     check("N1 negative control: removing the start gaze breaks the cover", not ok_n1, f"{miss_n1} cells uncovered")
 
-    near = X.build_baseline_lattice(cap_deg=2.0, step_deg=11.0)
-    env2 = float(axis_angle_deg(near).min())
-    check(f"N2 negative control: the 2-deg cap design breaks the {ENVELOPE_DEG:g}-deg envelope", env2 < ENVELOPE_DEG,
-          f"{len(near['dir'])} gazes, closest to axis {env2:.2f} deg")
+    near = X.build_baseline_lattice(cap_deg=1.0, step_deg=89.0 / 8.0)
+    a1 = X.angle_deg(near["dir"], near["dir"]) + np.eye(len(near["dir"])) * 999
+    check(f"N2 negative control: the 1-deg cap design breaks the {X.VISIT_TOL_DEG:g}-deg minimum pair",
+          float(a1.min()) < X.VISIT_TOL_DEG,
+          f"{len(near['dir'])} gazes, min pair {a1.min():.2f} deg, redundant {redundant(near['footprints'])}")
 
     print(f"{PREFIX} SUMMARY checked={checked} failed={failed} ({time.perf_counter() - t0:.0f} s)", flush=True)
     if failed:

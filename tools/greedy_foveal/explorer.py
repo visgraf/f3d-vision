@@ -54,8 +54,8 @@ SEEN_STOP = 2.0                                # unreachable on purpose: the lat
                                                # "none" (every cell SEEN), so run.py records that reason
 LATTICE_KIND = "baseline"                      # Playground-2 baseline rings; "pitch" = Playground-1's pitch rings
 LATTICE_RING_DEG = 10.0                        # Playground-1: pitch-ring spacing
-LATTICE_CAP_DEG = 6.0                          # Playground-2: first ring's angle from the baseline axis (the envelope)
-LATTICE_AXIS_STEP_DEG = 10.5                   # Playground-2: spacing of the baseline rings (6, 16.5, ..., 90, ..., 174)
+LATTICE_CAP_DEG = 2.0                          # Playground-3: first ring's angle from the baseline axis (official: 6.0)
+LATTICE_AXIS_STEP_DEG = 11.0                   # Playground-3: ring spacing (2, 13, ..., 90, ..., 178; official: 10.5)
 LATTICE_NEIGHBOUR_DEG = 16.0                   # local candidates: unvisited lattice gazes this close to the gaze
 LATTICE_VISIT_DEG = 0.5                        # a lattice gaze is visited when a fixation lies this close to it
 ASSOC_RADIUS_M = 0.012                         # the accepted 12-mm association radius ...
