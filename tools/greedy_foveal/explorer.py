@@ -9,8 +9,10 @@ behavior is frozen to tag greedy-foveal-explorer-v0-impl (docs/engineering/greed
   accepted AB1b spherical epipolar geometry (``ab1b_geometry.compute_epipolar``) in canonical fixed-head H0;
 - one global H0 surfel map with the accepted FSG3 12-mm association / fusion rule (``fsg3_surface_map.fuse``)
   re-implemented with a vectorized spatial hash, WITHOUT the instance filter and without the 63-patch provenance cap;
-- the greedy policy, restricted to a fixed gaze lattice (Playground-1, docs/playground/gaze-lattice-contract.md): pitch
-  rings every 10 deg whose 12-deg footprints cover every 1-deg cell.  Local: the unvisited lattice neighbours within
+- the greedy policy, restricted to a fixed gaze lattice (Playground-1, docs/playground/gaze-lattice-contract.md).  The
+  lattice is Playground-2's (docs/playground/sparse-lattice-contract.md): 17 rings about the eye baseline (+X), whose
+  12-deg footprints sit square-on to them and cover every 1-deg cell with 356 gazes; LATTICE_KIND = "pitch" rebuilds
+  Playground-1's 496-gaze pitch rings.  Local: the unvisited lattice neighbours within
   16 deg, scored EDGE_SUPPORT * UNSEEN_GAIN, eligible at any UNSEEN_GAIN > 0; else a global saccade to the unvisited
   lattice gaze with the largest UNSEEN_GAIN; else stop (every cell SEEN).  The official baseline's 8 tangent-frame
   neighbours and deepest-cell jump are at tag greedy-foveal-playground-baseline.
@@ -48,7 +50,10 @@ GAIN_MIN = 0.0                                 # local eligibility: UNSEEN gain 
 VISIT_TOL_DEG = 2.0                            # an "effectively identical" fixation
 SEEN_STOP = 2.0                                # unreachable on purpose: the lattice run stops when decide() is
                                                # "none" (every cell SEEN), so run.py records that reason
-LATTICE_RING_DEG = 10.0                        # pitch-ring spacing of the gaze lattice
+LATTICE_KIND = "baseline"                      # Playground-2 baseline rings; "pitch" = Playground-1's pitch rings
+LATTICE_RING_DEG = 10.0                        # Playground-1: pitch-ring spacing
+LATTICE_CAP_DEG = 6.0                          # Playground-2: first ring's angle from the baseline axis (the envelope)
+LATTICE_AXIS_STEP_DEG = 10.5                   # Playground-2: spacing of the baseline rings (6, 16.5, ..., 90, ..., 174)
 LATTICE_NEIGHBOUR_DEG = 16.0                   # local candidates: unvisited lattice gazes this close to the gaze
 LATTICE_VISIT_DEG = 0.5                        # a lattice gaze is visited when a fixation lies this close to it
 ASSOC_RADIUS_M = 0.012                         # the accepted 12-mm association radius ...
@@ -419,7 +424,7 @@ def visited_near(d: np.ndarray, visited: np.ndarray) -> bool:
     return bool(len(visited)) and float(angle_deg(d[None], visited).min()) < VISIT_TOL_DEG
 
 
-# ------------------------------------------------------------------ the gaze lattice (Playground-1)
+# ------------------------------------------------------------------ the gaze lattice (Playground-1 / Playground-2)
 _LATTICE: dict | None = None
 
 
@@ -461,11 +466,59 @@ def build_lattice(ring_deg: float = LATTICE_RING_DEG) -> dict:
             "ring_deg": float(ring_deg)}
 
 
+def baseline_direction(theta_deg: float, phi_deg: float) -> np.ndarray:
+    """Head-frame unit direction at angle theta from the baseline axis (+X) and rotation phi about it, phi = 0 forward
+    (-Z): (cos theta, sin theta sin phi, -sin theta cos phi), the epipolar convention of CLAUDE.md."""
+    t, p = math.radians(theta_deg), math.radians(phi_deg)
+    return np.array([math.cos(t), math.sin(t) * math.sin(p), -math.sin(t) * math.cos(p)])
+
+
+def build_baseline_lattice(cap_deg: float = LATTICE_CAP_DEG, step_deg: float = LATTICE_AXIS_STEP_DEG) -> dict:
+    """Playground-2: rings at theta = cap, cap + step, ..., 180 - cap from the baseline axis (a ring must land on
+    theta = 90).  Ring i carries the fewest (>= 1) gazes at phi = j * 360 / n whose nominal footprints contain the
+    centre of every cell with theta_c in [theta_i - step / 2, theta_i + step / 2]; the two cap rings reach the poles.
+    Every ring starts at phi = 0, so the start gaze (yaw 0, pitch 0) is on the theta = 90 ring."""
+    k = (90.0 - cap_deg) / step_deg
+    if abs(k - round(k)) > 1e-9:
+        raise ValueError("the baseline rings must land on theta = 90 deg")
+    thetas = [cap_deg + i * step_deg for i in range(2 * int(round(k)) + 1)]
+    theta_c = np.degrees(np.arccos(np.clip(CELL_DIR[:, 0], -1.0, 1.0)))
+    yaws: list[float] = []
+    pitches: list[float] = []
+    fps: list[np.ndarray] = []
+    for i, t in enumerate(thetas):
+        lo = 0.0 if i == 0 else t - step_deg / 2.0
+        hi = 180.0 if i == len(thetas) - 1 else t + step_deg / 2.0
+        band = np.flatnonzero((theta_c >= lo) & (theta_c <= hi))
+        for n in range(1, 1000):
+            ring = []
+            for j in range(n):
+                y, p = (float(v) for v in yaw_pitch(baseline_direction(t, j * 360.0 / n)))
+                ring.append((y, p, footprint(y, p)))
+            cov = np.zeros(H * W, bool)
+            for *_, f in ring:
+                cov[f] = True
+            if cov[band].all():
+                break
+        else:
+            raise RuntimeError(f"no ring of <= 999 gazes covers the band at theta {t}")
+        for y, p, f in ring:
+            yaws.append(y), pitches.append(p), fps.append(f)
+    yaw, pitch = np.array(yaws), np.array(pitches)
+    return {"yaw_deg": yaw, "pitch_deg": pitch, "dir": direction(yaw, pitch), "footprints": fps,
+            "ring_deg": float(step_deg), "kind": "baseline"}
+
+
 def lattice() -> dict:
-    """The gaze lattice, built once per process (deterministic)."""
+    """The gaze lattice selected by LATTICE_KIND, built once per process (deterministic)."""
     global _LATTICE
     if _LATTICE is None:
-        _LATTICE = build_lattice()
+        if LATTICE_KIND == "baseline":
+            _LATTICE = build_baseline_lattice()
+        elif LATTICE_KIND == "pitch":
+            _LATTICE = build_lattice()
+        else:
+            raise ValueError(f"unknown LATTICE_KIND {LATTICE_KIND!r}")
     return _LATTICE
 
 

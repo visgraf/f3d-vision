@@ -1,8 +1,9 @@
-"""Playground-1 (gaze lattice): fail-capable host-side checks.  No Blender, no rendering, no Breadth-1.
+"""Playground-1 / Playground-2 (gaze lattice): fail-capable host-side checks.  No Blender, no rendering, no Breadth-1.
 
     .venv/bin/python tools/greedy_foveal/check_lattice.py        # exit 1 on any failed check
 
-Contract: docs/playground/gaze-lattice-contract.md, section 4.
+Contracts: docs/playground/gaze-lattice-contract.md and docs/playground/sparse-lattice-contract.md, section 4 of each.
+The lattice checked is the one explorer.lattice() returns (Playground-2's baseline rings).
 
 K1 the lattice footprints contain every 1-deg cell centre.
 K2 every lattice gaze has a valid tangent frame, and every pair is >= VISIT_TOL_DEG apart.
@@ -12,8 +13,11 @@ K4 a coverage-only replay of the run.py control loop (start at gaze (0, 0), full
    points) through explorer.decide ends with "none", 0 UNSEEN cells, at most one fixation per lattice gaze (plus the
    start), and no two fixations closer than VISIT_TOL_DEG.
 K5 a mid-replay state re-decided twice gives the same decision as the live one.
-N1 negative control: K1 with one equator gaze removed must FAIL.
-N2 negative control: K4 plus "all-global tail <= 25" with the baseline threshold GAIN_MIN = 0.25 must FAIL.
+K6 the lattice has 356 gazes, and the Playground-1 pitch lattice (LATTICE_KIND "pitch") still has 496.
+K7 no gaze is redundant (each covers a cell no other gaze covers), every gaze is >= 6 deg from the baseline axis, and
+   the start gaze (0, 0) is a lattice gaze.
+N1 negative control: K1 with the start gaze removed must FAIL.
+N2 negative control: K7's 6-deg envelope on the 2-deg cap design must FAIL.
 
 The replay numbers are a Chat-sandbox model of the workstation run, not a measurement of it.
 """
@@ -33,7 +37,9 @@ if str(HERE) not in sys.path:
 import explorer as X  # noqa: E402
 
 PREFIX = "[lattice]"
-TAIL_MAX = 25            # the contract's A3 tail bound, used by the negative control N2
+LATTICE_SIZE = 356       # Playground-2 known answer (K6)
+PITCH_LATTICE_SIZE = 496 # Playground-1 known answer (K6)
+ENVELOPE_DEG = 6.0       # no gaze closer to the baseline axis (K7)
 checked = failed = 0
 
 
@@ -84,16 +90,30 @@ def replay(max_fix: int = 1000) -> dict:
 
 
 def k4_ok(r: dict, n_lattice: int) -> bool:
-    return (r["stop"] == "none" and r["unseen_cells"] == 0 and r["fixations"] <= n_lattice + 1
+    return (r["stop"] == "none" and r["unseen_cells"] == 0 and r["fixations"] <= n_lattice
             and r["min_pair_deg"] >= X.VISIT_TOL_DEG)
+
+
+def axis_angle_deg(L: dict) -> np.ndarray:
+    """Each gaze's angle from the baseline axis (either direction)."""
+    return np.degrees(np.arccos(np.clip(np.abs(L["dir"][:, 0]), 0.0, 1.0)))
+
+
+def redundant(footprints: list[np.ndarray]) -> int:
+    cnt = np.zeros(X.H * X.W, np.int32)
+    for f in footprints:
+        cnt[f] += 1
+    return sum(1 for f in footprints if cnt[f].min() >= 2)
 
 
 def main() -> None:
     t0 = time.perf_counter()
     L = X.lattice()
     n = len(L["dir"])
-    rings = {float(p): int((L["pitch_deg"] == p).sum()) for p in np.unique(L["pitch_deg"])}
-    print(f"{PREFIX} lattice: {n} gazes on {len(rings)} rings of {L['ring_deg']:g} deg "
+    ring_key = (np.round(np.degrees(np.arccos(np.clip(L["dir"][:, 0], -1.0, 1.0))), 6)
+                if L.get("kind") == "baseline" else L["pitch_deg"])           # baseline rings: theta from +X
+    rings = {float(v): int((ring_key == v).sum()) for v in np.unique(ring_key)}
+    print(f"{PREFIX} lattice ({L.get('kind', 'pitch')}): {n} gazes on {len(rings)} rings of {L['ring_deg']:g} deg "
           f"({time.perf_counter() - t0:.1f} s); per ring {list(rings.values())}", flush=True)
 
     ok, missing = covers_all(L["footprints"])
@@ -136,20 +156,29 @@ def main() -> None:
     check("K5 a mid-replay state re-decides identically", d1 == d2 == live, f"{live['kind']} -> "
           f"({live.get('yaw_deg', float('nan')):.2f}, {live.get('pitch_deg', float('nan')):.2f})")
 
-    eq = int(np.flatnonzero(L["pitch_deg"] == 0.0)[0])
-    ok_n1, miss_n1 = covers_all(L["footprints"][:eq] + L["footprints"][eq + 1:])
-    check("N1 negative control: one equator gaze removed breaks the cover", not ok_n1, f"{miss_n1} cells uncovered")
-
-    saved = X.GAIN_MIN
-    X.GAIN_MIN = 0.25
+    kind = X.LATTICE_KIND
+    X.LATTICE_KIND, X._LATTICE = "pitch", None
     try:
-        neg = replay()
+        n_pitch = len(X.lattice()["dir"])
     finally:
-        X.GAIN_MIN = saved
-    check(f"N2 negative control: GAIN_MIN 0.25 fails K4 + tail <= {TAIL_MAX}",
-          not (k4_ok(neg, n) and neg["tail"] <= TAIL_MAX),
-          f"{neg['fixations']} fixations ({neg['local']} local / {neg['global']} global, tail {neg['tail']}), "
-          f"UNSEEN cells {neg['unseen_cells']}")
+        X.LATTICE_KIND, X._LATTICE = kind, L
+    check(f"K6 lattice size {LATTICE_SIZE}; Playground-1 pitch lattice {PITCH_LATTICE_SIZE}",
+          n == LATTICE_SIZE and n_pitch == PITCH_LATTICE_SIZE, f"{n} gazes; pitch lattice {n_pitch}")
+
+    red, env = redundant(L["footprints"]), float(axis_angle_deg(L).min())
+    start = float(X.angle_deg(X.direction(0.0, 0.0)[None], L["dir"]).min())
+    check(f"K7 no redundant gaze; every gaze >= {ENVELOPE_DEG:g} deg from the baseline axis; start gaze on the lattice",
+          red == 0 and env >= ENVELOPE_DEG - 1e-9 and start < X.LATTICE_VISIT_DEG,
+          f"redundant {red}, closest to axis {env:.2f} deg, start offset {start:.2e} deg")
+
+    s0 = int(np.argmin(X.angle_deg(X.direction(0.0, 0.0)[None], L["dir"])[0]))
+    ok_n1, miss_n1 = covers_all(L["footprints"][:s0] + L["footprints"][s0 + 1:])
+    check("N1 negative control: removing the start gaze breaks the cover", not ok_n1, f"{miss_n1} cells uncovered")
+
+    near = X.build_baseline_lattice(cap_deg=2.0, step_deg=11.0)
+    env2 = float(axis_angle_deg(near).min())
+    check(f"N2 negative control: the 2-deg cap design breaks the {ENVELOPE_DEG:g}-deg envelope", env2 < ENVELOPE_DEG,
+          f"{len(near['dir'])} gazes, closest to axis {env2:.2f} deg")
 
     print(f"{PREFIX} SUMMARY checked={checked} failed={failed} ({time.perf_counter() - t0:.0f} s)", flush=True)
     if failed:
